@@ -9,6 +9,7 @@
 
 #include "G4TARCDetectorConstruction.hh"
 #include "G4TARCHisto.hh"
+#include "G4GeneralParticleSource.hh"
 // #include "G4TARCAnalysis.hh"
 #include "globals.hh"
 #include "G4Material.hh"
@@ -99,11 +100,13 @@ public:
 
   inline G4int GetVerbose()               const           { return fVerbose; }
   inline G4double GetLength()             const           { return fLength; }
+  inline G4double GetGPSEnergy()          const           { return fPrimaryKineticEnergy; }
   //inline G4double GetBeamEnergy()         const           { return G4GeneralParticleSource::GetParticleEnergy(); }
 
   inline void SetNumberOfBinsE(G4int val)                 { fNBinsE = val;}
   inline void SetMaxEnergyDeposit(G4double val)           { fEdepMax = val;}
   inline void SetVerbose ( G4int val)                     { fVerbose = val;}
+  inline void SetGPSEnergyIN (const G4double value)       { fPrimaryKineticEnergy = value; }
 
 private:
   G4String                    fRootFileName;
@@ -115,7 +118,7 @@ private:
   const G4ParticleDefinition* fNeutron;
   const G4ParticleDefinition* fProton;
 
-  G4double fMaxLVal     = 3000.0 * mm;
+  G4double fMaxLVal     = 5000.0 * mm;
   G4double fMaxEVal     = 2000.0 * CLHEP::MeV;
   G4double fEVal0       = 2000.0 * CLHEP::MeV;
   G4int    fNumMax      = 1000;  // for fE/Msecond etc.

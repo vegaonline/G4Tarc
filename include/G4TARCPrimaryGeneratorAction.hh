@@ -19,7 +19,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
-//#include "G4TARCHistoManager.hh"
+#include "G4TARCHistoManager.hh"
 #include "G4TARCPrimaryMessenger.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4RandomDirection.hh"

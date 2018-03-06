@@ -138,8 +138,9 @@ void G4TARCHistoManager::BeginOfRun() {
   }
   fTkin = fTcut; // fEVal0 // Does it affect?
   fEbin = fTkin / fMaxBin;
-  G4double EDelta = 1.0 * MeV; //(fMaxEVal / fMaxBin);
-  G4double MDelta = 0.5 * GeV; //(fEVal0 / fMaxBin);
+
+  G4double EDelta = (fMaxEVal / fMaxBin);
+  G4double MDelta = (fEVal0 / fMaxBin);
   for( G4int ii = 0; ii < fMaxBin; ii++ )
   {
     fEsecond[ii]  = ii * EDelta;
@@ -207,6 +208,7 @@ void G4TARCHistoManager::EndOfEvent() {
 // Normalization for no hadron interaction in the target. EM and hadron elastic shuld be inactivated
 void G4TARCHistoManager::AddNzero(const G4Track* myTrack, const G4Step* myStep ) {
   G4double cosTheta = myTrack->GetDynamicParticle()->GetMomentumDirection().x();
+  // change x, y z
   if (cosTheta > 0.999) {
     fNzero++;
   }else {
@@ -243,9 +245,9 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
                               + myStep->GetPostStepPoint()->GetPosition()
                               );
 
-    G4double x = pos.x() - fAbsX0;
-    G4double y = pos.y() - fAbsY0;
-    G4double z = pos.z() - fAbsZ0;
+    G4double x = pos.x(); //- fAbsX0;
+    G4double y = pos.y(); //- fAbsY0;
+    G4double z = pos.z();// - fAbsZ0;
 
     //Scoring.
     fEdepEvt += fEdep;
@@ -283,7 +285,12 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
 // For Primary Track
   if (myTrack->GetTrackID() == 1) {
     fNevt++;
-    fPrimaryKineticEnergy = ke;
+    if (ke/MeV > 0){
+      G4double enerMean = GetGPSEnergy();
+      enerMean = (0.5 * (ke + enerMean));
+      SetGPSEnergyIN(enerMean);
+    }
+    //fPrimaryKineticEnergy = ke;
     fPrimaryDef = pd;
     G4ThreeVector dir = myTrack->GetMomentumDirection();
 
@@ -356,14 +363,14 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   const G4ParticleDefinition* pd           = myTrack->GetDefinition();
   const G4DynamicParticle*    dynSecondary = myTrack->GetDynamicParticle();
   G4double                    Tkin         = dynSecondary->GetKineticEnergy();
-/*
+
   if (myTrack->GetKineticEnergy()/MeV <= 0.0) {
     G4String pname  = pd->GetParticleName();
     G4double mass   = pd->GetPDGMass();
     return;
   }
-  */
-  G4double en       = std::log10(myTrack->GetKineticEnergy()/MeV);
+
+  G4double en       = std::log10(myTrack->GetKineticEnergy()/eV);
   G4ThreeVector pos = myTrack->GetPosition();
   G4ThreeVector dir = myTrack->GetMomentumDirection();
 
@@ -373,46 +380,50 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   G4bool isLeaking  = false;
 
   if ( (
-         (xx > -fAbsX0 && dir.x() > 0.0) // - was added later originally > +fAbsX0
-    ||   (yy > -fAbsY0 && dir.y() > 0.0)
-    ||   (zz > -fAbsZ0 && dir.z() > 0.0)
+         // (xx > -fAbsX0 && dir.x() > 0.0) // - was added later originally > +fAbsX0
+         // ||   (yy > -fAbsY0 && dir.y() > 0.0)
+         // ||
+         (zz > -fHLength && dir.z() > 0.0)
        )
   ) { // forward
       isLeaking = true;
-      if (pd == fNeutron && Tkin < fTcut) {
+      if (pd == fNeutron) { // && Tkin < fTcut) {
         ++fNneu_forw;
         fHisto->Fill(15, en,  1.0);
       }
   }
-
   if ( (
-         (xx < fAbsX0 && dir.x() < 0.0)
-    ||   (yy < fAbsY0 && dir.y() < 0.0)
-    ||   (zz < fAbsZ0 && dir.z() < 0.0)
+         // (xx < fAbsX0 && dir.x() < 0.0)
+         // ||   (yy < fAbsY0 && dir.y() < 0.0)
+         // ||
+           (zz < fHLength && dir.z() < 0.0)
        )
   ) { // backward
     isLeaking = true;
-    if (pd == fNeutron && Tkin < fTcut)   {
+    if (pd == fNeutron) { // && Tkin < fTcut)   {
        ++fNneu_back;
        fHisto->Fill(16, en,  1.0);
      }
   }
-
   if ( (
-         (std::abs(xx) <= fAbsX0 && (zz * dir.z()  + yy * dir.y()) > 0.0 )
-    ||   (std::abs(yy) <= fAbsY0 && (xx * dir.x()  + zz * dir.z()) > 0.0 )
-    ||   (std::abs(zz) <= fAbsZ0 && (xx * dir.x()  + yy * dir.y()) > 0.0 )
+         // (std::abs(xx) <= fAbsX0 && (zz * dir.z()  + yy * dir.y()) > 0.0 )
+         // ||   (std::abs(yy) <= fAbsY0 && (xx * dir.x()  + zz * dir.z()) > 0.0 )
+         // ||
+         //(std::abs(zz) <= -fHLength && (xx * dir.x()  + yy * dir.y()) > 0.0 )
+         (std::abs(xx) > fHLength || std::abs(yy) > fHLength)
+         && ((xx * dir.x()  + yy * dir.y()) > 0.0 )
        )
   ) { // side
     isLeaking = true;
-    if (pd == fNeutron && Tkin < fTcut)  {
+    if (pd == fNeutron){ // && Tkin < fTcut)  {
       ++fNneu_leak;
+      G4cout << "-------------------->   side " << fNneu_leak << G4endl;
       fHisto->Fill(14, en,  1.0);
     }
   }
 
   if (isLeaking) {
-    if (pd == G4Proton::Proton() && myTrack->GetTrackID() == 1){
+    if (pd == G4Proton::Proton()) { // && myTrack->GetTrackID() == 1){
        ++fNprot_leak;
        fHisto->Fill(17, en,  1.0);
      }
@@ -443,7 +454,7 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack, const G4Step* my
         break;
       }
     }
-    jj = (ii - fNbin) ? fNbin-1 : jj;
+    jj = (ii == fNbin) ? fNbin-1 : jj;
 
   }
 }
@@ -460,6 +471,7 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myS
            || myTrack->GetVertexPosition().y() >= -35.0 && myTrack->GetVertexPosition().y() <= 35.0
            || myTrack->GetVertexPosition().z() >= -1500.0 && myTrack->GetVertexPosition().z() <= -299.0
            )
+           && (myTrack->GetGlobalTime()/nanosecond <= 10.0)
            && (myTrack->GetParentID() == 1)
      ) {
        fNeutronInit += 1.0;
@@ -508,7 +520,7 @@ void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myS
 
 void G4TARCHistoManager::WriteEventRange(G4ThreeVector rsum, G4double lsum, G4double dsum) {
   G4int ix;
-  G4double x, y, z, rho, range, xbin, ybin, zbin, rbin, dbin, dEdx, length;
+  G4double x, y, z, rho, xbin, ybin, zbin, rbin, dbin, dEdx, length;
 
   x = rsum.x();
   y = rsum.y();
@@ -520,36 +532,28 @@ void G4TARCHistoManager::WriteEventRange(G4ThreeVector rsum, G4double lsum, G4do
   rbin               = fRho / fMaxBin;
   dbin               = fTmax  / fMaxBin;
 
-  range = x / (xbin) + 0.5;
-  ix = G4int(range);
+  ix = (G4int)(x / (xbin) + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleX[ix] += 1.0;
 
-  range = y / (ybin) + 0.5;
-  ix = G4int(range);
+  ix = (G4int)(y / (ybin) + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleY[ix] += 1.0;
 
-  range = z / (zbin) + 0.5;
-  ix = G4int(range);
+  ix = (G4int)(z / (zbin) + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleZ[ix] += 1.0;
 
-  range = lsum / xbin + 0.5;
-  ix = (G4int)(range);
+  ix = (G4int)(lsum / xbin + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleTLX[ix] += 1.0;
 
-  range = lsum / ybin + 0.5;
-  ix = (G4int)(range);
+  ix = (G4int)(lsum / ybin + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleTLY[ix] += 1.0;
 
-  range = lsum / zbin + 0.5;
-  ix = (G4int)(range);
+  ix = (G4int)(lsum / zbin + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleTLZ[ix] += 1.0;
 
-  range = dsum / dbin + 0.5;
-  ix = (G4int)(range);
+  ix = (G4int)(dsum / dbin + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleDep[ix] += 1.0;
 
-  range = rho / rbin + 0.5;
-  ix = (G4int)(range);
+  ix = (G4int)(rho / rbin + 0.5);
   if (ix > 0 && ix < fMaxBin) fGunParticleRho[ix] += 1.0;
 }
 
@@ -629,13 +633,16 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << std::setprecision(4) << "Average Number of ions "        << xIons             << G4endl;
   trackout << "                                                      " << "              "  << G4endl;
 
-  trackout << " Leakage from the system: "                                                                                            << G4endl;
-  trackout << std::setprecision(4) << "Average Number of leaked Neutrons "     << xNeutronLeak << G4endl;
-  trackout << std::setprecision(4) << "Average Number of forward Neutrons "    << xneuF        << G4endl;
-  trackout << std::setprecision(4) << "Average Number of reflected Neutrons "  << xneuB        << G4endl;
-  trackout << std::setprecision(4) << "Average Number of leaked Protons "      << xProtonLeak  << G4endl;
-  trackout << std::setprecision(4) << "Average Number of leaked Pions "        << xp0          << G4endl;
-  trackout <<                                                                                                                            G4endl;
+  trackout << " Leakage from the system: "                                                       << G4endl;
+  trackout << std::setprecision(4) << "Average Number of forward Neutrons "      << xneuF        << G4endl;
+  trackout << std::setprecision(4) << "Average Number of reflected Neutrons "    << xneuB        << G4endl;
+  //trackout << std::setprecision(4) << "Average Number of other leaked Neutrons " << xNeutronLeak << G4endl;
+  trackout << std::setprecision(4) << "Average Number of total leaked Neutrons " <<  xNeutronLeak
+                                                                                    + xneuF
+                                                                                    + xneuB      << G4endl;
+  trackout << std::setprecision(4) << "Average Number of leaked Protons "        << xProtonLeak  << G4endl;
+  trackout << std::setprecision(4) << "Average Number of leaked Pions "          << xp0          << G4endl;
+  trackout <<                                                                                     G4endl;
 
   G4double kEffective, rho, rat, react, perN=x;
   kEffective = fNeutronSum / fNeutronInit;

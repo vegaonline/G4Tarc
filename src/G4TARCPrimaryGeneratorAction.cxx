@@ -27,6 +27,10 @@ void G4TARCPrimaryGeneratorAction::GeneratePrimaries( G4Event* anEvent ){
   }
   fGPS->GeneratePrimaryVertex(anEvent);
   G4double tmp = fGPS->GetParticleEnergy();
-  if (!GetEnergy()) SetEnergy(tmp);
+
+  if (!GetEnergy()){
+     SetEnergy(tmp);
+     (G4TARCHistoManager::GetPointer())->SetGPSEnergyIN(tmp);
+   }
 
 }

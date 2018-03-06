@@ -35,9 +35,9 @@
 #/gps/ang/rot2  0  1  0
 #/gps/ang/rot1 -1  0  0
 
-#### Beam energy is in gaussian profile centered at 800 MeV
+#### Beam energy is in gaussian profile centered at 900 MeV with 1 keV dispersion
 /gps/ene/type Gauss
-/gps/ene/mono 1310.0 MeV
+/gps/ene/mono 900.0 MeV
 /gps/ene/sigma 0.5 keV
 
 
@@ -47,5 +47,5 @@
 /tarc/histo/setHisto 0 10  0 1500 MeV
 
 
-/run/beamOn 500
+/run/beamOn 20
 
