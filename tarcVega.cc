@@ -28,6 +28,7 @@
 #include "G4TARCStackingAction.hh"
 
 // I am adding all these and later we may be selective to pick effective ones
+#include "G4GeneralParticleSource.hh"
 #include "G4ParallelWorldPhysics.hh"
 #include "G4PhysListFactory.hh"
 #include "G4VModularPhysicsList.hh"
@@ -112,6 +113,8 @@ int main(int argc, char** argv) {
 
   G4String fileName = argv[1];
 
+  //auto gpsHead = new G4GeneralParticleSource();
+
   //  construction of detector geometry setup
   G4String parallelWorldName = "tarcParallelWorld";                // trying to use it
   auto geomConstruct = new G4TARCDetectorConstruction(fileName);
@@ -140,6 +143,7 @@ int main(int argc, char** argv) {
   if (!phys) { phys = new G4TARCPhysicsList(); }
   phys->RegisterPhysics(new G4ParallelWorldPhysics(parallelWorldName, true));
   //physMess = new G4TARCPhysicsListMessenger(phys);
+
   runManager->SetUserInitialization(phys);      // RUNMANAGER for Physics List
 
   // Action Initialization

@@ -32,12 +32,15 @@ G4TARCHistoManager::G4TARCHistoManager()
 }
 
 G4TARCHistoManager::~G4TARCHistoManager() {
-  //delete fHisto;
-  //delete G4AnalysisManager::Instance();
+  delete fHisto;
 }
 
 void G4TARCHistoManager::BookHisto() {
   fHistoBooked = true;
+
+  //G4cout << GetBeamEnergy() << G4endl;
+  //exit(0);
+
   //fHisto->Add1D("1","Energy deposition (MeV/mm/event) in the target", fNSlices, 0.0,fLength/mm,MeV/mm);
   fHisto->Add1D("1","Energy deposition (keV) in the target", fNBinsE, 0.0,1200*MeV, 1.0);
   /*
@@ -104,8 +107,8 @@ void G4TARCHistoManager::BeginOfRun() {
   fTmin       = 0.001 * CLHEP::eV;
   fTmax       = fMaxEVal;   //  ***** I want to give value ~ 2.0 * incident beam energy ******* // CHECK
   // fTmax    = 1000. * CLHEP::MeV;
-  fTimeMin   = 1. * nanosecond;
-  fTimeMax   = 1. * millisecond;
+  fTimeMin   = 1.0 * nanosecond;
+  fTimeMax   = 1.0 * millisecond;
   fNbin      = fMaxBin; // fNumMax; // 60; // 100;  // 1000; // 10; //
   fnEsecond  = G4PhysicsLogVector(fTmin,fTmax,fNbin);
   fnTsecond  = G4PhysicsLogVector(fTimeMin,fTimeMax,fNbin);
@@ -246,7 +249,7 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
 
     //Scoring.
     fEdepEvt += fEdep;
-    G4cout << " Energy for histogram-> " << fEdep/keV << " keV" << G4endl;
+    //G4cout << " Energy for histogram-> " << fEdep/keV << " keV" << G4endl;
     fHisto->Fill(0, z, fEdep/keV);
     const G4ParticleDefinition* pd = myTrack->GetDefinition();
 
@@ -458,15 +461,15 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myS
      ) {
        fNeutronInit += 1.0;
        xn = myTrack->GetVertexPosition().x() + 0.5 * fRange;
-       ix    = G4int(xn / fLBin + 0.5);
+       ix = G4int(xn / fLBin + 0.5);
        if (ix >= 0 && ix < fLMax) fGunParticleX[ix] += 1.0;
 
        xn = myTrack->GetVertexPosition().y() + 0.5 * fRange;
-       ix    = G4int(xn / fLBin + 0.5);
+       ix = G4int(xn / fLBin + 0.5);
        if (ix >= 0 && ix < fLMax) fGunParticleY[ix] += 1.0;
 
        xn = myTrack->GetVertexPosition().z() + 0.5 * fRange;
-       ix    = G4int(xn / fLBin + 0.5);
+       ix = G4int(xn / fLBin + 0.5);
        if (ix >= 0 && ix < fLMax) fGunParticleZ[ix] += 1.0;
      }
   }

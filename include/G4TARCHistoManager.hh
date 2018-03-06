@@ -44,6 +44,7 @@
 #include "G4TrackStatus.hh"
 #include "G4HadronicProcessType.hh"
 #include "G4VProcess.hh"
+#include "G4GeneralParticleSource.hh"
 
 #include "g4root.hh"
 
@@ -55,6 +56,7 @@ class G4TARCHisto;
 class G4Track;
 class G4Step;
 class G4ParticleDefinition;
+class G4GeneralParticleSource;
 //class G4TARCDetectorConstruction;
 // class G4AnalysisManager;
 
@@ -96,6 +98,7 @@ public:
 
   inline G4int GetVerbose()               const           { return fVerbose; }
   inline G4double GetLength()             const           { return fLength; }
+  //inline G4double GetBeamEnergy()         const           { return G4GeneralParticleSource::GetParticleEnergy(); }
 
   inline void SetNumberOfBinsE(G4int val)                 { fNBinsE = val;}
   inline void SetMaxEnergyDeposit(G4double val)           { fEdepMax = val;}

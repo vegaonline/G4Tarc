@@ -12,14 +12,10 @@ G4bool G4TARCTargetSD::ProcessHits(G4Step* myStep, G4TouchableHistory*){
   G4StepPoint* point2 = myStep->GetPostStepPoint();
   G4TouchableHandle touch2 = point2->GetTouchableHandle();
 
-  G4cout << "PreStep "  << touch1->GetVolume()->GetName()
-         << " ****** "
-         << "PostStep " << touch2->GetVolume()->GetName() << G4endl;
-
-
   fHisto->AddTargetStep(myStep);
   fHisto->ScoreNewTrack(myTrack);
-  if (myTrack->GetTrackID() > 1) {
+  if (myTrack->GetTrackID() > 1) {   // secondary id > 1 or primary ==0 ??
+
     fHisto->AddEnergyTime(myTrack, myStep);
   } else {
     fHisto->GunParticleDistribution(myTrack, myStep);

@@ -1,15 +1,16 @@
 #=========================================
 #   Neutron spallation
 #=========================================
-/control/verbose 1
+/control/verbose 0
 /tracking/verbose 0
 /event/verbose 0
 /vis/verbose errors
-/run/verbose 1
+/run/verbose 0
+/gps/verbose 0 #2
 
 /run/initialize
 
-/control/manual /tarc
+#/control/manual /tarc
 
 /vis/scene/create
 #/vis/open HepRepFile
@@ -62,7 +63,7 @@
 
 
 #### Default intensity say 1
-/gps/source/intensity 1
+#/gps/source/intensity 1
 
 #### fix gps source particle and type
 /gps/particle proton
@@ -87,15 +88,14 @@
 
 #### Beam energy is in gaussian profile centered at 800 MeV
 /gps/ene/type Gauss
-/gps/ene/mono 1000.0 MeV
+/gps/ene/mono 1310.0 MeV
 /gps/ene/sigma 0.5 keV
 
 
 ####
 /tarc/beam/DefaultBeamPosition false
 /tarc/histo/fileName Hadro
-/tarc/histo/setHisto 0 10  0 1000 MeV
-/tarc/phys/listphysics
+/tarc/histo/setHisto 0 10  0 1500 MeV
 
 
 /run/beamOn 10

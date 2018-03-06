@@ -38,7 +38,7 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
   if (!fFileLoaded) {
     fParser.Read(fGdmlFileNAME, true);
     fFileLoaded = true;
-
+}
     //*************** testing logical volumes ****************
     fLVS = G4LogicalVolumeStore::GetInstance();
     int icount = 0;
@@ -53,22 +53,19 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
                  << G4endl;
         }
 
-		G4GDMLAuxListType auxInfo = fParser.GetVolumeAuxiliaryInformation(*fLVciter);
-    	G4cout << "****** " << auxInfo.size() << G4endl;
+        G4GDMLAuxListType auxInfo = fParser.GetVolumeAuxiliaryInformation(*fLVciter);
 
-		if (auxInfo.size()>0)
-		G4cout << "Auxiliary Information is found for Logical Volume :  "
-			   << (*fLVciter)->GetName() << G4endl;
-
-		print_aux(&auxInfo, "SS");
-
-      } else {
-        G4cout << G4endl;
+        if (auxInfo.size()>0) {
+          G4cout << "Auxiliary Information is found for Logical Volume :  "
+			           << (*fLVciter)->GetName() << G4endl;
+          print_aux(&auxInfo, "SS");
+        } else {
+          G4cout << "There is no auxilliary information" << G4endl;
+        }
       }
       ++icount;
     }
-
-  }
+    G4cout << G4endl;
 
   fWorldPhysVol = fParser.GetWorldVolume();
   //G4cout << *(G4Material::GetMaterialTable() ) << G4endl;
@@ -163,14 +160,15 @@ void G4TARCDetectorConstruction::ConstructSDandField() {
     (G4SDManager::GetSDMpointer())->AddNewDetector( fCheckVolumeSD);
     //fAllLead->SetSensitiveDetector(fCheckVolumeSD);
     // Let us consider that beamBlock is target initially
-    //fBeamBlock->SetSensitiveDetector(fCheckVolumeSD);
+    fBeamBlock->SetSensitiveDetector(fCheckVolumeSD);
     fABlocks->SetSensitiveDetector(fCheckVolumeSD);
-    fBBlocks->SetSensitiveDetector(fCheckVolumeSD);
+    //fBBlocks->SetSensitiveDetector(fCheckVolumeSD);
     fCBlocks->SetSensitiveDetector(fCheckVolumeSD);
 
     G4TARCTargetSD* fTargetSD = new G4TARCTargetSD("targetSD");
     (G4SDManager::GetSDMpointer())->AddNewDetector(fTargetSD);
-    fBeamBlock->SetSensitiveDetector(fCheckVolumeSD);
+    fBBlocks->SetSensitiveDetector(fTargetSD);
+    //fBeamBlock->SetSensitiveDetector(fCheckVolumeSD);
     // We shall use sample tube later with rare earth for fission.
     //fSampleTubes->SetSensitiveDetector(fTargetSD);
     //fSampleSpheres->SetSensitiveDetector(fTargetSD);
