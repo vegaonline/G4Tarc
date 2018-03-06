@@ -53,6 +53,7 @@ set(G4TARC_SCRIPTS
   GeomData/schema/gdml_materials.xsd GeomData/schema/gdml_parameterised.xsd GeomData/schema/gdml_replicas.xsd
   GeomData/schema/gdml_solids.xsd GeomData/schema/gdml.xsd
   run.mac 
+  vis.mac
   TARCVEGA.run
 )
 foreach(_script ${G4TARC_SCRIPTS})

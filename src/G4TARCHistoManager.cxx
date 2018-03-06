@@ -20,9 +20,10 @@ G4TARCHistoManager::G4TARCHistoManager()
   fNeutron( 0 ),
   fEdepMax( fMaxEVal ),
   fLength( fMaxLVal ),
+  fHLength(0.5 * fMaxLVal),
   fPrimaryKineticEnergy ( fEVal0 ),
   fVerbose( 0 ),
-  fNBinsE( 100),  //fMaxBin ),
+  fNBinsE( fMaxBin ),
   fNSlices( fMaxSlices ) {
     //fDetector = new G4TARCDetectorConstruction();
     fHisto    = new G4TARCHisto();
@@ -38,42 +39,38 @@ G4TARCHistoManager::~G4TARCHistoManager() {
 void G4TARCHistoManager::BookHisto() {
   fHistoBooked = true;
 
-  //G4cout << GetBeamEnergy() << G4endl;
-  //exit(0);
+  fHisto->Add1D("1","Energy deposition (MeV/mm/event) in the target", fNSlices, -10,fHLength/mm,MeV/mm);
+  //fHisto->Add1D("1","Energy deposition (MeV) in the target",          fNBinsE,  0.0,1200*MeV,  1.0);
+  fHisto->Add1D("2","Log10 Energy (eV) of gammas",                   fNBinsE, -3.0,3.0,       1.0);
+  fHisto->Add1D("3","Log10 Energy (eV) of electrons",                fNBinsE, -3.0,3.0,       1.0);
+  fHisto->Add1D("4","Log10 Energy (eV) of positrons",                fNBinsE, -3.0,3.0,       1.0);
+  fHisto->Add1D("5","Log10 Energy (eV) of protons",                  fNBinsE, -3.0,4.0,       1.0);
+  fHisto->Add1D("6","Log10 Energy (eV) of neutrons",                 fNBinsE, -2.0,9.0,       1.0);
+  fHisto->Add1D("7","Log10 Energy (eV) of charged pions",            fNBinsE, -4.0,4.0,       1.0);
+  fHisto->Add1D("8","Log10 Energy (eV) of pi0",                      fNBinsE, -2.0,4.0,       1.0);
+  fHisto->Add1D("9","Log10 Energy (eV) of charged kaons",            fNBinsE, -9.0,9.0,       1.0);
+  fHisto->Add1D("10","Log10 Energy (eV) of neutral kaons",           fNBinsE, -9.0,9.0,       1.0);
+  fHisto->Add1D("11","Log10 Energy (eV) of deuterons and tritons",   fNBinsE, -2.0,4.0,       1.0);
+  fHisto->Add1D("12","Log10 Energy (eV) of He3 and alpha",           fNBinsE, -3.0,4.0,       1.0);
+  fHisto->Add1D("13","Log10 Energy (eV) of Generic Ions",            fNBinsE, -2.0,2.0,       1.0);
+  fHisto->Add1D("14","Log10 Energy (eV) of muons",                   fNBinsE, -9.0,2.0,       1.0);
+  fHisto->Add1D("15","log10 Energy (eV) of side-leaked neutrons",    fNBinsE, -9.0,2.0,       1.0);
+  fHisto->Add1D("16","log10 Energy (eV) of forward-leaked neutrons", fNBinsE, -9.0,2.0,       1.0);
+  fHisto->Add1D("17","log10 Energy (eV) of backward-leaked neutrons",fNBinsE, -9.0,2.0,       1.0);
+  fHisto->Add1D("18","log10 Energy (eV) of leaking protons",         fNBinsE, -9.0,2.0,       1.0);
+  fHisto->Add1D("19","log10 Energy (eV) of leaking charged pions",   fNBinsE, -9.0,2.0,       1.0);
+  fHisto->Add1D("20","Log10 Energy (eV) of pi+",                     fNBinsE, -9.0,2.0,       1.0);
+  fHisto->Add1D("21","Log10 Energy (eV) of pi-",                     fNBinsE, -2.0,4.0,       1.0);
+  fHisto->Add1D("22","Energy deposition in the target normalized to beam energy", fNBinsE,0.0,1.1,1.0);
+  fHisto->Add1D("23","EM energy deposition in the target normalized to beam energy",fNBinsE,0.0,1.1,1.0);
+  fHisto->Add1D("24","Pion energy deposition in the target normalized to beam energy",fNBinsE,0.0,1.1,1.0);
+  fHisto->Add1D("25","Proton energy deposition in the target normalized to beam energy",fNBinsE,0.0,1.1,1.0);
 
-  //fHisto->Add1D("1","Energy deposition (MeV/mm/event) in the target", fNSlices, 0.0,fLength/mm,MeV/mm);
-  fHisto->Add1D("1","Energy deposition (keV) in the target", fNBinsE, 0.0,1200*MeV, 1.0);
-  /*
-  fHisto->Add1D("2","Log10 Energy (MeV) of gammas",                   fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("3","Log10 Energy (MeV) of electrons",                fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("4","Log10 Energy (MeV) of positrons",                fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("5","Log10 Energy (MeV) of protons",                  fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("6","Log10 Energy (MeV) of neutrons",                 fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("7","Log10 Energy (MeV) of charged pions",            fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("8","Log10 Energy (MeV) of pi0",                      fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("9","Log10 Energy (MeV) of charged kaons",            fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("10","Log10 Energy (MeV) of neutral kaons",           fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("11","Log10 Energy (MeV) of deuterons and tritons",   fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("12","Log10 Energy (MeV) of He3 and alpha",           fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("13","Log10 Energy (MeV) of Generic Ions",            fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("14","Log10 Energy (MeV) of muons",                   fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("15","log10 Energy (MeV) of side-leaked neutrons",    fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("16","log10 Energy (MeV) of forward-leaked neutrons", fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("17","log10 Energy (MeV) of backward-leaked neutrons",fNBinsE, -5.0,5.0,       1.0);
-  fHisto->Add1D("18","log10 Energy (MeV) of leaking protons",         fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("19","log10 Energy (MeV) of leaking charged pions",   fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("20","Log10 Energy (MeV) of pi+",                     fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("21","Log10 Energy (MeV) of pi-",                     fNBinsE, -4.0,6.0,       1.0);
-  fHisto->Add1D("22","Energy deposition in the target normalized to beam energy",110,0.0,1.1,1.0);
-  fHisto->Add1D("23","EM energy deposition in the target normalized to beam energy",110,0.0,1.1,1.0);
-  fHisto->Add1D("24","Pion energy deposition in the target normalized to beam energy",110,0.0,1.1,1.0);
-  fHisto->Add1D("25","Proton energy deposition in the target normalized to beam energy",110,0.0,1.1,1.0);
-  */
 }
 
 
 void G4TARCHistoManager::BeginOfRun() {
-  fAbsX0 = fAbsY0 = fAbsZ0 = 0.5 * fLength;
+  fAbsX0 = fAbsY0 = fAbsZ0 = 0.0; // 0.5 * fLength;
   fNevt       = 0;
   fNelec      = 0;
   fNposit     = 0;
@@ -96,19 +93,19 @@ void G4TARCHistoManager::BeginOfRun() {
   fEdepSum    = 0.0;
   fEdepSum2   = 0.0;
   fRange      = fMaxLVal;
-  fRho        = 60.0 * mm;  //-------------------------->  Diagnose with GDML file  ********
+  fRho        = 5.0 * mm;  //-------------------------->  Diagnose with GDML file  ********
   fLMax       = fMaxLVal;
-  fLBin       = fRange / fLMax;
-  fTcut       = 100.0 * CLHEP::MeV;
+  fLBin       = fRange / (fLMax / mm);
+  fTcut       = 1.0 * CLHEP::MeV;   // 100.0 tried with 300, 100 and result does not change.
   fNeutronInit = fNeutronSum = fNeutronBreed = 0.0;
   fEsecond    = G4DataVector(fMaxBin, 0.0); //  fNumMax, 0.);
   fMsecond    = G4DataVector(fMaxBin, 0.0); //  fNumMax, 0.);
   // n-spectra, E, T and ET
-  fTmin       = 0.001 * CLHEP::eV;
+  fTmin       = 0.01 * CLHEP::eV;
   fTmax       = fMaxEVal;   //  ***** I want to give value ~ 2.0 * incident beam energy ******* // CHECK
   // fTmax    = 1000. * CLHEP::MeV;
   fTimeMin   = 1.0 * nanosecond;
-  fTimeMax   = 1.0 * millisecond;
+  fTimeMax   = 1.0 * second;   //1.0 * millisecond;
   fNbin      = fMaxBin; // fNumMax; // 60; // 100;  // 1000; // 10; //
   fnEsecond  = G4PhysicsLogVector(fTmin,fTmax,fNbin);
   fnTsecond  = G4PhysicsLogVector(fTimeMin,fTimeMax,fNbin);
@@ -139,10 +136,10 @@ void G4TARCHistoManager::BeginOfRun() {
     fRhoVector[ii]   = ii * fRho / fLBin;
     fDeltaVector[ii] = ii * fTmax / fLBin;
   }
-  fTkin = fEVal0;
-  fEbin = fTkin / fNumMax;
-  G4double EDelta = (fMaxEVal / fMaxBin);
-  G4double MDelta = (fEVal0 / fMaxBin);
+  fTkin = fTcut; // fEVal0 // Does it affect?
+  fEbin = fTkin / fMaxBin;
+  G4double EDelta = 1.0 * MeV; //(fMaxEVal / fMaxBin);
+  G4double MDelta = 0.5 * GeV; //(fEVal0 / fMaxBin);
   for( G4int ii = 0; ii < fMaxBin; ii++ )
   {
     fEsecond[ii]  = ii * EDelta;
@@ -164,17 +161,17 @@ void G4TARCHistoManager::EndOfRun() {
   G4cout << "fNevt = " << fNevt << G4endl;
   G4cout << "EndOfRun(), fEdepSum = " << fEdepSum << G4endl;
   G4cout << "======================================================================" << G4endl;
-  G4double x = ( G4double )fNevt, perN = 1.0;
+  G4double x = ( G4double )fNevt;
+  G4double perN = 1.0;
   if (fNevt > 0){
-    perN = 1.0 / x;
-    x = perN;
+    x = perN = 1.0 / x;
   }
   TrackRun(x);  // track and get leaks
   NeutronRun(x); // neutron leak data and spectra
   GunParticleRun(x);  // beam distribution in target.
 
   //****************** This is for G4ParticleHPThermalScattering
-  fNHisto = 1;
+  //fNHisto = 1;
 
   for (G4int i = 0; i < fNHisto; i++)
     fHisto->ScaleH1(i, x);           // Normalize Histogram
@@ -186,6 +183,7 @@ void G4TARCHistoManager::BeginOfEvent() {
   fEdepEvt    = 0.0;
   fEdepEM     = 0.0;
   fEdepProton = 0.0;
+  fEdepPI     = 0.0;
   fNsecondary = 0.0;
   fRangeSum   = G4ThreeVector(0.0, 0.0, 0.0);
   fStepSum    = 0.0;
@@ -197,10 +195,10 @@ void G4TARCHistoManager::EndOfEvent() {
   fEdepSum2 += fEdepEvt * fEdepEvt;
   fNevt ++;
   if (fNsecondary > 0) fNinelastic++;
-  //fHisto->Fill(21,fEdepEvt/fPrimaryKineticEnergy,1.0);
-  //fHisto->Fill(22,fEdepEM/fPrimaryKineticEnergy,1.0);
-  //fHisto->Fill(23,fEdepPI/fPrimaryKineticEnergy,1.0);
-  //fHisto->Fill(24,fEdepProton/fPrimaryKineticEnergy,1.0);
+  fHisto->Fill(21,fEdepEvt/fPrimaryKineticEnergy,1.0);
+  fHisto->Fill(22,fEdepEM/fPrimaryKineticEnergy,1.0);
+  fHisto->Fill(23,fEdepPI/fPrimaryKineticEnergy,1.0);
+  fHisto->Fill(24,fEdepProton/fPrimaryKineticEnergy,1.0);
 
   WriteEventRange( fRangeSum, fStepSum, fDeltaSum );
 }
@@ -241,7 +239,9 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
   }
   //if (fEdep >= DBL_MIN) {
     const G4Track* myTrack = myStep->GetTrack();
-    G4ThreeVector pos = (myStep->GetPreStepPoint()->GetPosition() + myStep->GetPostStepPoint()->GetPosition())*0.5;
+    G4ThreeVector pos = 0.5 * ( myStep->GetPreStepPoint()->GetPosition()
+                              + myStep->GetPostStepPoint()->GetPosition()
+                              );
 
     G4double x = pos.x() - fAbsX0;
     G4double y = pos.y() - fAbsY0;
@@ -249,8 +249,9 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
 
     //Scoring.
     fEdepEvt += fEdep;
+
     //G4cout << " Energy for histogram-> " << fEdep/keV << " keV" << G4endl;
-    fHisto->Fill(0, z, fEdep/keV);
+    fHisto->Fill(0, z, fEdep/MeV);
     const G4ParticleDefinition* pd = myTrack->GetDefinition();
 
   if (pd == G4Gamma::Gamma() || pd == G4Electron::Electron() || pd == G4Positron::Positron()) {
@@ -276,9 +277,11 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
   G4String name = pd->GetParticleName();
   G4double ke = myTrack->GetKineticEnergy();
   G4double TKin = myTrack->GetKineticEnergy();
+  //if (myTrack->GetTrackID() == 1)
+  //  G4cout << name << "  energy = " << ke << "  ID---> " << myTrack->GetTrackID() << G4endl;
 
 // For Primary Track
-  if (myTrack->GetTrackID() == 0) {
+  if (myTrack->GetTrackID() == 1) {
     fNevt++;
     fPrimaryKineticEnergy = ke;
     fPrimaryDef = pd;
@@ -296,55 +299,55 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
                              << "; Pos(mm) = "   << myTrack->GetPosition() / mm
                              << "; Dir = "       << myTrack->GetMomentumDirection()
                              << G4endl;
-    ke = std::log10(ke/MeV);
+    ke = std::log10(ke/eV);
     if (pd == G4Gamma::Gamma()){
       fNgam++;
-      //fHisto->Fill(1, ke, 1.0);
+      fHisto->Fill(1, ke, 1.0);
     }else if (pd == G4Electron::Electron()){
       fNelec++;
-      //fHisto->Fill(2, ke, 1.0);
+      fHisto->Fill(2, ke, 1.0);
     }else if (pd == G4Positron::Positron()) {
       fNposit++;
-      //fHisto->Fill(3, ke, 1.0);
+      fHisto->Fill(3, ke, 1.0);
     } else if (pd == G4Proton::Proton()){
       fNproton++;
-      //fHisto->Fill(4, ke, 1.0);
-    } else if (pd == fNeutron && TKin < fTcut){  // <----- CHECK
+      fHisto->Fill(4, ke, 1.0);
+    } else if (pd == fNeutron ){//&& TKin < fTcut){  // <----- CHECK
       fNneutron++;
-      //fHisto->Fill(5, ke, 1.0);
+      fHisto->Fill(5, ke, 1.0);
     } else if (pd == G4AntiProton::AntiProton()){
       fNaproton++;
     } else if ( pd == G4PionPlus::PionPlus() ) {
       fNcpions++;
-      //fHisto->Fill(6, ke, 1.0);
-      //fHisto->Fill(19, ke, 1.0);
+      fHisto->Fill(6, ke, 1.0);
+      fHisto->Fill(19, ke, 1.0);
     } else if ( pd == G4PionMinus::PionMinus()) {
       fNcpions++;
-      //fHisto->Fill(6, ke, 1.0);
-      //fHisto->Fill(20, ke, 1.0);
+      fHisto->Fill(6, ke, 1.0);
+      fHisto->Fill(20, ke, 1.0);
     } else if ( pd == G4PionZero::PionZero()) {
       fNpi0++;
-      //fHisto->Fill(7, ke, 1.0);
+      fHisto->Fill(7, ke, 1.0);
     } else if ( pd == G4KaonPlus::KaonPlus() ||
                 pd == G4KaonMinus::KaonMinus()) {
       fNkaons++;
-      //fHisto->Fill(8, ke, 1.0);
+      fHisto->Fill(8, ke, 1.0);
     } else if ( pd == G4KaonZeroShort::KaonZeroShort() ||
                 pd == G4KaonZeroLong::KaonZeroLong()) {
       fNkaons++;
-      //fHisto->Fill(9, ke, 1.0);
+      fHisto->Fill(9, ke, 1.0);
     } else if (pd == G4Deuteron::Deuteron() || pd == G4Triton::Triton()){
       fNdeut++;
-      //fHisto->Fill(10, ke, 1.0);
+      fHisto->Fill(10, ke, 1.0);
     } else if (pd == G4He3::He3() || pd == G4Alpha::Alpha()) {
       fNalpha++;
-      //fHisto->Fill(11, ke, 1.0);
+      fHisto->Fill(11, ke, 1.0);
     } else if (pd->GetParticleType() == "nucleus"){
       fNions++;
-      //fHisto->Fill(12, ke, 1.0);
+      fHisto->Fill(12, ke, 1.0);
     } else if (pd == G4MuonPlus::MuonPlus() || pd == G4MuonMinus::MuonMinus()){
       fNmuons++;
-      //fHisto->Fill(13, ke, 1.0);
+      fHisto->Fill(13, ke, 1.0);
     }
   }
 }
@@ -378,7 +381,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
       isLeaking = true;
       if (pd == fNeutron && Tkin < fTcut) {
         ++fNneu_forw;
-        //fHisto->Fill(15, en,  1.0);
+        fHisto->Fill(15, en,  1.0);
       }
   }
 
@@ -391,7 +394,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
     isLeaking = true;
     if (pd == fNeutron && Tkin < fTcut)   {
        ++fNneu_back;
-       //fHisto->Fill(16, en,  1.0);
+       fHisto->Fill(16, en,  1.0);
      }
   }
 
@@ -404,18 +407,18 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
     isLeaking = true;
     if (pd == fNeutron && Tkin < fTcut)  {
       ++fNneu_leak;
-      //fHisto->Fill(14, en,  1.0);
+      fHisto->Fill(14, en,  1.0);
     }
   }
 
   if (isLeaking) {
     if (pd == G4Proton::Proton() && myTrack->GetTrackID() == 1){
        ++fNprot_leak;
-       //fHisto->Fill(17, en,  1.0);
+       fHisto->Fill(17, en,  1.0);
      }
     if (pd == G4PionPlus::PionPlus() || pd == G4PionMinus::PionMinus()) {
       ++fNPionleak;
-      //fHisto->Fill(18, en,  1.0);
+      fHisto->Fill(18, en,  1.0);
     }
   }
 }
@@ -567,38 +570,71 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   G4double xIons         = x * (G4double)fNions;
   G4double xAlpha        = x * (G4double)fNalpha;
   G4double xDeut         = x * (G4double)fNdeut;
+  G4double xp0           = x * (G4double)fNPionleak;
 
-  trackout << " Total Eenergy Deposited (MeV) = " << fEdepSum/MeV << G4endl;
+  div_t divresult = div((fEdepSum/MeV),1000);
+  if (divresult.quot >= 1){
+      trackout << " Total Eenergy Deposited = " << fEdepSum/GeV << " GeV"<< G4endl;
+  } else {
+      trackout << " Total Eenergy Deposited = " << fEdepSum/MeV << " MeV"<< G4endl;
+  }
+
   fEdepSum  *= x;
   fEdepSum2 *= x;
   fEdepSum2 -= fEdepSum * fEdepSum;
   fEdepSum2  = (fEdepSum2 > 0.0) ? std::sqrt(fEdepSum2) : 0.0;
 
+  trackout << "x = 1/fNevt = "               << x                                          << G4endl;
 
-  trackout << " x = 1/fNevt = "               << x                                          << G4endl;
-  trackout << "x * Total Energy deposited (MeV) = " << fEdepSum/MeV                         << G4endl;
+  divresult = div((fEdepSum/MeV),1000);
+  if (divresult.quot >= 1){
+      trackout << "x * Total Energy deposited = " << fEdepSum/GeV  << " GeV"         << G4endl;
+  }else {
+      trackout << "x * Total Energy deposited = " << fEdepSum/MeV  << " MeV"         << G4endl;
+  }
+
   if (fPrimaryDef){
-    trackout << "Beam Particle "                << fPrimaryDef->GetParticleName()           << G4endl;
-    trackout << "Beam Energy   "                << fPrimaryKineticEnergy/MeV      << " MeV" << G4endl;
+    trackout << "Beam Particle "                << fPrimaryDef->GetParticleName()    << " having ";
+    divresult = div((fPrimaryKineticEnergy/MeV),1000);
+    if (divresult.quot >= 1){
+        trackout << "beam energy = " << fPrimaryKineticEnergy/GeV  << " GeV"         << G4endl;
+    }else {
+        trackout << "beam Energy = " << fPrimaryKineticEnergy/MeV  << " MeV"         << G4endl;
+    }
   }
   trackout << "Number of Events "             << fNevt                                    << G4endl;
-  trackout <<                                                                                G4endl;
+  trackout << "                                                                        "  << G4endl;
 
-  trackout << " Production in Target:"                                                                                                << G4endl;
-  trackout << std::setprecision(4) << "Mean Energy deposit  "         << fEdepSum/MeV << " MeV " << " +- " << fEdepSum2/MeV << " MeV" << G4endl;
-  trackout << std::setprecision(4) << "Average Number of steps "      << xStep                                                        << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Gammas "     << xGamma                                                       << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Electrons "  << xElectron                                                    << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Positrons "  << xPositron                                                    << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Protons "    << xProton                                                      << G4endl;
-  trackout << std::setprecision(4) << "Average Number of AntiProton " << xAntiProton                                                  << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Neutrons "   << xNeutron                                                     << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Muons "      << xMuons                                                       << G4endl;
-  trackout <<                                                                                                                            G4endl;
+  trackout << " Production in Target:"        << "                                     "  << G4endl;
 
-  trackout << " leakage from the system: "                                                                                            << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Leaked Neutrons " << xNeutronLeak << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Leaked Protons "  << xProtonLeak  << G4endl;
+  divresult = div((fEdepSum/MeV),1000);
+  if (divresult.quot >= 1){
+    trackout << std::setprecision(4) << "Mean Energy deposited = " << fEdepSum/GeV  << " GeV "
+             << " RMS " << fEdepSum2/MeV << " MeV" "    "<< G4endl;
+  }else {
+    trackout << std::setprecision(4) << "Mean Energy deposited = " << fEdepSum/MeV  << " MeV "
+             << " RMS " << fEdepSum2/MeV << " MeV" "    "<< G4endl;
+  }
+
+  trackout << std::setprecision(4) << "Average Number of steps "       << xStep             << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Gammas "      << xGamma            << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Electrons "   << xElectron         << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Positrons "   << xPositron         << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Protons "     << xProton           << G4endl;
+  trackout << std::setprecision(4) << "Average Number of AntiProton "  << xAntiProton       << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Neutrons "    << xNeutron          << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Muons "       << xMuons            << G4endl;
+  trackout << std::setprecision(4) << "Average Number of D + T "       << xDeut             << G4endl;
+  trackout << std::setprecision(4) << "Average Number of He3 + alpha " << xAlpha            << G4endl;
+  trackout << std::setprecision(4) << "Average Number of ions "        << xIons             << G4endl;
+  trackout << "                                                      " << "              "  << G4endl;
+
+  trackout << " Leakage from the system: "                                                                                            << G4endl;
+  trackout << std::setprecision(4) << "Average Number of leaked Neutrons "     << xNeutronLeak << G4endl;
+  trackout << std::setprecision(4) << "Average Number of forward Neutrons "    << xneuF        << G4endl;
+  trackout << std::setprecision(4) << "Average Number of reflected Neutrons "  << xneuB        << G4endl;
+  trackout << std::setprecision(4) << "Average Number of leaked Protons "      << xProtonLeak  << G4endl;
+  trackout << std::setprecision(4) << "Average Number of leaked Pions "        << xp0          << G4endl;
   trackout <<                                                                                                                            G4endl;
 
   G4double kEffective, rho, rat, react, perN=x;
@@ -608,7 +644,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   react      = rat / (1.0 + rat);
 
   trackout << " IMP Parameters : "    << G4endl;
-  trackout << " Neutron_Init/p = "    << fNeutronInit* perN << ",  neutron_Sum/p = " << fNeutronSum * perN << G4endl;
+  trackout << " Neutron_Init/p = "    << fNeutronInit* perN << ",  Neutron_Sum/p = " << fNeutronSum * perN << G4endl;
   trackout << " kEffective = "        << kEffective         << ", Rho = "            << rho                << G4endl;
   trackout << "Estimated reactivity " << react                                       << G4endl             << G4endl;
   trackout << "==========================================================================================" << G4endl;
@@ -624,9 +660,30 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
   nspec << fNSecondSum1.size() << G4endl;
 
   for (size_t k = 0; k < fNSecondSum1.size(); k++){
-      nspec << fnEsecond.GetLowEdgeEnergy(k)/MeV
-            << "  " << perN * fNSecondSum1[k] << "   " << perN * fNSecondSum2[k] << "  " << perN * fNSecondSum3[k] << G4endl;
+      nspec << fnEsecond.GetLowEdgeEnergy(k)/MeV << "  "  << perN * fNSecondSum1[k]
+                                                 << "   " << perN * fNSecondSum2[k]
+                                                 << "  "  << perN * fNSecondSum3[k] << G4endl;
       ngSum += fNSecondSum1[k];
+  }
+  G4cout << "integral S-spectrum per event = " << ngSum * perN << G4endl;
+
+//--------------------------------------------------
+  std::ofstream tenspectr("tenspectr.dat",std::ios::out);
+  tenspectr<<fnETsum.size()<<G4endl;
+  for( size_t k = 0; k < fNbin; k++ )
+  {
+    for( size_t j = 0; j < fNbin; j++ )
+    {
+      // tenspectr<<perN*fnETsum[k]<<G4endl;
+      tenspectr << (G4int)k << "    " << (G4int)j << "    " << perN * fET[j][k] << G4endl;
+    }
+  }
+//-------------------------------------------------
+  std::ofstream teaxis("teaxis.dat",std::ios::out);
+  teaxis << fnEsecond.GetVectorLength() << G4endl;
+  for( size_t k = 0; k < fnEsecond.GetVectorLength(); k++ )
+  {
+    teaxis << fnEsecond.GetLowEdgeEnergy(k) << "        " << fnTsecond.GetLowEdgeEnergy(k) << G4endl;
   }
 }
 
@@ -637,12 +694,16 @@ void G4TARCHistoManager::GunParticleRun(G4double x) {
   gunspectrum << fRangeVector.size() << G4endl;
 
   for (size_t k = 0; k < fRangeVector.size(); k++) {
-    gunspectrum << fRangeVector[k] << "  " << x * fGunParticleX[k]  << "  " << x * fGunParticleY[k]   << "  "   << x * fGunParticleZ[k]
+    gunspectrum << fRangeVector[k] << "  " << x * fGunParticleX[k]
+                                   << "  " << x * fGunParticleY[k]
+                                   << "  " << x * fGunParticleZ[k]
                                    << "  " << x * fGunParticleTLX[k]
                                    << "  " << x * fGunParticleTLY[k]
                                    << "  " << x * fGunParticleTLZ[k]
-                                   << "  " << fDeltaVector[k]        << "  "   << x * fGunParticleDep[k]
-                                   << "  " << fRhoVector[k]       << "  " << x * fGunParticleRho[k] << G4endl;
+                                   << "  " <<     fDeltaVector[k]
+                                   << "  " << x * fGunParticleDep[k]
+                                   << "  " <<     fRhoVector[k]
+                                   << "  " << x * fGunParticleRho[k] << G4endl;
   }
 }
 

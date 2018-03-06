@@ -5,6 +5,7 @@
  ***************************************************/
 #ifndef G4TARC_HISTOMANAGER_H
 #define G4TARC_HISTOMANAGER_H
+#include <cstdlib>
 
 #include "G4TARCDetectorConstruction.hh"
 #include "G4TARCHisto.hh"
@@ -120,6 +121,7 @@ private:
   G4int    fNumMax      = 1000;  // for fE/Msecond etc.
   G4int    fMaxBin      = 100;
   G4int    fMaxSlices   = 3 * fMaxBin;
+  G4int    fNHisto      = 25;
 
   G4double fEdepMax;
   G4double fEdepEvt;
@@ -133,6 +135,7 @@ private:
   G4double fTmax;
   G4double fTmin;
   G4double fLength;
+  G4double fHLength;
   G4double fRange;
   G4double fRho;
   G4double fAbsX0;
@@ -167,7 +170,6 @@ private:
   G4int fNpi0;
   G4int fNkaons;
   G4int fNstep;
-  G4int fNHisto;
   G4int fLMax;
   G4int fLBin;
 
