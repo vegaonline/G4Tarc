@@ -125,6 +125,7 @@ private:
   G4int    fMaxBin      = 100;
   G4int    fMaxSlices   = 3 * fMaxBin;
   G4int    fNHisto      = 25;
+  G4int    fMaxNdx      = 10000;
 
   G4double fEdepMax;
   G4double fEdepEvt;
@@ -181,6 +182,7 @@ private:
   G4double fEbin;
   G4double fNeutronInit,fNeutronSum, fNeutronBreed, fTimeMin, fTimeMax;
   std::vector<std::vector<G4double> > fET;
+  std::vector<std::vector<G4double> > fNSpectra;
 
 
   G4DataVector       fGunParticleX;
@@ -197,6 +199,8 @@ private:
   G4DataVector       fEsecond;
   G4DataVector       fMsecond;
   G4DataVector       fnETsum;
+
+
 
   G4DataVector       fNSecondSum1;
   G4DataVector       fNSecondSum2;

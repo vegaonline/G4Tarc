@@ -109,10 +109,11 @@ void G4TARCHistoManager::BeginOfRun() {
   fNbin      = fMaxBin; // fNumMax; // 60; // 100;  // 1000; // 10; //
   fnEsecond  = G4PhysicsLogVector(fTmin,fTmax,fNbin);
   fnTsecond  = G4PhysicsLogVector(fTimeMin,fTimeMax,fNbin);
-  fNSecondSum1 = G4DataVector(fNbin, 0.0);
-  fNSecondSum2 = G4DataVector(fNbin, 0.0);
-  fNSecondSum3 = G4DataVector(fNbin, 0.0);
-  fnETsum    = G4DataVector(fNbin * fNbin, 0.);
+  fNSecondSum1  = G4DataVector(fNbin, 0.0);
+  fNSecondSum2  = G4DataVector(fNbin, 0.0);
+  fNSecondSum3  = G4DataVector(fNbin, 0.0);
+  fnETsum       = G4DataVector(fNbin * fNbin, 0.0);
+
 
   for( G4int ii = 0; ii < fNbin; ii++ )
   {
@@ -169,6 +170,7 @@ void G4TARCHistoManager::EndOfRun() {
   }
   TrackRun(x);  // track and get leaks
   NeutronRun(x); // neutron leak data and spectra
+
   GunParticleRun(x);  // beam distribution in target.
 
   //****************** This is for G4ParticleHPThermalScattering
@@ -493,28 +495,44 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myS
 
 void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myStep) {
   G4double Tkin = 0.0, myTime, myStepLength;
+  G4double Qenergy, Qtime;
   size_t ii, jj, eii, tjj;
+  std::vector<G4double> tmp;
 
   if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron") {
     Tkin = myTrack->GetDynamicParticle()->GetKineticEnergy();
     myStepLength = myStep->GetStepLength();
     myTime = myTrack->GetProperTime();
 
+
     for (ii = 0; ii < fNbin; ii++) {
       if (Tkin <= fnEsecond.GetLowEdgeEnergy(ii)) {
         eii = (ii == 0) ? ii : ii - 1;
+        Qenergy = log10(Tkin);  // Tkin; //
+        //G4cout << "--> " << ii  << " E: "      << fnEsecond.GetLowEdgeEnergy(ii)/eV
+        //                        << " Tkin: "   << Tkin/eV
+        //                        << " eii: "    << eii;
         break;
       }
     }
     if (ii == fNbin) eii = fNbin -1 ;
     for (jj = 0; jj < fNbin; jj++) {
       if (myTime <= fnTsecond.GetLowEdgeEnergy(jj)) {
+        Qtime = log10(myTime);
         tjj = (jj == 0) ?  jj : jj - 1;
+        //G4cout << "--> " << jj << " T: "      << fnTsecond.GetLowEdgeEnergy(jj)/nanosecond
+        //                       << " myTime: " << myTime/nanosecond
+        //                       << " tjj: "    << tjj   << G4endl;
         break;
       }
     }
     if (jj == fNbin) tjj = fNbin - 1;
     fET[tjj][eii] += 1.0;
+
+    tmp.push_back(Qtime);
+    tmp.push_back(Qenergy);
+    fNSpectra.push_back(tmp);
+    std::vector<G4double>().swap(tmp);
   }
 }
 
@@ -685,6 +703,12 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
       tenspectr << (G4int)k << "    " << (G4int)j << "    " << perN * fET[j][k] << G4endl;
     }
   }
+//----------------------------------------------------
+  std::ofstream neutSpec("neutSpec.dat", std::ios::out);
+  for (size_t ii = 0; ii < fNSpectra.size(); ii ++){
+    neutSpec << fNSpectra[ii][0] << "   " << fNSpectra[ii][1] << G4endl;
+  }
+  neutSpec.close();
 //-------------------------------------------------
   std::ofstream teaxis("teaxis.dat",std::ios::out);
   teaxis << fnEsecond.GetVectorLength() << G4endl;

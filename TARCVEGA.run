@@ -8,6 +8,11 @@
 # export PHYSLIST="QGSP_BERT_HP"
 # export PHYSLIST="QGSP_INCLXX_HP"
 
+export G4NEUTRONHP_PRODUCE_FISSION_FRAGMENTS=1
+export G4NEUTRONHP_SKIP_MISSING_ISOTOPES=1 
+export AllowForHeavyElements=1
+#export G4NEUTRONHPDATA=/opt/G4_Master/share/Geant4-10.4.1/data/ENDF.B-VII.0
+
 export PHYSLIST="QGSP_BIC_HP"
 export dateStr=`date +%d_%m_%Y`
 mkdir -p $dateStr
