@@ -24,7 +24,7 @@
 
 #### Beam spot is centred at (0 0 -1800)1D Gaussian shape with 10 mm central plateau
 /gps/pos/shape Circle
-/gps/position 0.0 0.0 -2000.0 mm       #  /gps/pos/centre 0.0 0.0 -1800.0 mm
+/gps/position 0.0 0.0 -1500.0 mm       #  1200 mm length of beam pipe
 /gps/pos/radius 10.0 mm
 /gps/pos/sigma_r 0.1 mm
 
@@ -37,7 +37,8 @@
 
 #### Beam energy is in gaussian profile centered at 900 MeV with 1 keV dispersion
 /gps/ene/type Gauss
-/gps/ene/mono 900.0 MeV
+/gps/ene/mono 3.33 GeV   # 2.5 GeV/c
+#/gps/ene/mono 6.53 GeV   # 3.5 GeV/c
 /gps/ene/sigma 0.5 keV
 
 

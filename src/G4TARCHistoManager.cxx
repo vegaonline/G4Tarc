@@ -494,7 +494,7 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myS
 
 
 void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myStep) {
-  G4double Tkin = 0.0, myTime, myStepLength;
+  G4double Tkin = 0.0, myTime, myGlobalTime, myStepLength;
   G4double Qenergy, Qtime;
   size_t ii, jj, eii, tjj;
   std::vector<G4double> tmp;
@@ -503,12 +503,14 @@ void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myS
     Tkin = myTrack->GetDynamicParticle()->GetKineticEnergy();
     myStepLength = myStep->GetStepLength();
     myTime = myTrack->GetProperTime();
+    myGlobalTime = myTrack->GetGlobalTime();
 
 
     for (ii = 0; ii < fNbin; ii++) {
       if (Tkin <= fnEsecond.GetLowEdgeEnergy(ii)) {
         eii = (ii == 0) ? ii : ii - 1;
-        Qenergy = log10(Tkin);  // Tkin; //
+        Qenergy = (Tkin/eV != 0.0) ? std::log10(Tkin/eV) : -6.0;  // Tkin; //
+        //G4cout << Tkin/eV << "   " << Qenergy << G4endl;
         //G4cout << "--> " << ii  << " E: "      << fnEsecond.GetLowEdgeEnergy(ii)/eV
         //                        << " Tkin: "   << Tkin/eV
         //                        << " eii: "    << eii;
@@ -518,7 +520,7 @@ void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myS
     if (ii == fNbin) eii = fNbin -1 ;
     for (jj = 0; jj < fNbin; jj++) {
       if (myTime <= fnTsecond.GetLowEdgeEnergy(jj)) {
-        Qtime = log10(myTime);
+        Qtime = std::log10(myGlobalTime/microsecond);
         tjj = (jj == 0) ?  jj : jj - 1;
         //G4cout << "--> " << jj << " T: "      << fnTsecond.GetLowEdgeEnergy(jj)/nanosecond
         //                       << " myTime: " << myTime/nanosecond
@@ -679,7 +681,8 @@ void G4TARCHistoManager::TrackRun(G4double x) {
 
 
 void G4TARCHistoManager::NeutronRun(G4double x) {
-  G4double perN = x, ngSum = 0.0;
+  G4double perN = x;
+  G4double ngSum = 0.0;
   std::ofstream nspec("neutronSpectra.dat", std::ios::out);
 
   nspec << fNSecondSum1.size() << G4endl;
@@ -700,7 +703,8 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
     for( size_t j = 0; j < fNbin; j++ )
     {
       // tenspectr<<perN*fnETsum[k]<<G4endl;
-      tenspectr << (G4int)k << "    " << (G4int)j << "    " << perN * fET[j][k] << G4endl;
+      if (perN * fET[j][k] != 0.0)
+        tenspectr << (G4int)k << "    " << (G4int)j << "    " << perN * fET[j][k] << G4endl;
     }
   }
 //----------------------------------------------------

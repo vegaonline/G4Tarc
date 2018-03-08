@@ -9,6 +9,8 @@
 #ifndef G4TARC_DETECTORCONSTRUCTION_H
 #define G4TARC_DETECTORCONSTRUCTION_H
 
+#include <algorithm>
+
 #include "G4TARCTargetSD.hh"
 #include "G4TARCCheckVolumeSD.hh"
 #include "G4TARCDetectorMessenger.hh"
@@ -34,6 +36,7 @@
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
+#include "G4VSolid.hh"
 #include "G4SolidStore.hh"
 #include "G4PVPlacement.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -67,6 +70,7 @@ public:
   virtual void ConstructSDandField();
   void SetReadFile( const G4String& );  // GDML file reader
   void CheckGDMLGeomTree(const G4VPhysicalVolume*);
+  void setBoundsToProtonTarget ( const G4ThreeVector&, const G4ThreeVector&);
 
   void print_aux(const G4GDMLAuxListType*, G4String );
 
@@ -100,6 +104,8 @@ private:
   G4bool                   fLogiTestLogPBeamTest = false;
   G4LogicalVolumeStore*    fLVS;
   std::vector<G4LogicalVolume*> ::const_iterator fLVciter;
+  G4ThreeVector            pbTargetMin;
+  G4ThreeVector            pbTargetMax;
 
 };
 

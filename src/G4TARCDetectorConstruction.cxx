@@ -38,17 +38,29 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
   if (!fFileLoaded) {
     fParser.Read(fGdmlFileNAME, true);
     fFileLoaded = true;
-}
+    fWorldPhysVol = fParser.GetWorldVolume();
+  }
     //*************** testing logical volumes ****************
     fLVS = G4LogicalVolumeStore::GetInstance();
     int icount = 0;
+    G4VSolid *thisBlock;
+    G4ThreeVector pMin;
+    G4ThreeVector pMax;
+
     for (fLVciter = fLVS->begin(); fLVciter !=fLVS->end(); fLVciter++) {
-      G4cout << icount << "    " << (*fLVciter)->GetName() << "  ";
+      G4cout << icount << "    " << (*fLVciter)->GetName() << "  " ;
       if ((*fLVciter)->GetName() == "blockB_log")
       {
-        G4cout << (*fLVciter)->GetNoDaughters()<< "   ";
+        thisBlock = (*fLVciter)->GetSolid();
+        thisBlock->BoundingLimits(pMin, pMax);
+        setBoundsToProtonTarget(pMin, pMax);
+        G4cout << "\n -------------> " << thisBlock->GetName() << " is bounded by "
+               << "  pMin:  " << pbTargetMin << "  pMax: " << pbTargetMax
+               << G4endl;
+        G4cout << "\n  " << (*fLVciter)->GetName() << ":-->  "<< (*fLVciter)->GetNoDaughters()<< "   ";
         for (G4int iij = 0 ; iij < (*fLVciter)->GetNoDaughters(); iij++){
-          G4cout << " Daughter volume = " << (*fLVciter)->GetDaughter(iij)->GetName() << "   "
+          G4cout << " Daughter volume = " << (*fLVciter)->GetDaughter(iij)->GetName()
+                 << "  Logical of Daughter : "
                  <<  (*fLVciter)->GetDaughter(iij)->GetLogicalVolume()->GetName()
                  << G4endl;
         }
@@ -67,7 +79,7 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
     }
     G4cout << G4endl;
 
-  fWorldPhysVol = fParser.GetWorldVolume();
+
   //G4cout << *(G4Material::GetMaterialTable() ) << G4endl;
   //G4cout << "Physical Volume Name: " << fWorldPhysVol->GetName()
   //       << "  Logical Volume under this Physical volume: " << fWorldPhysVol->GetLogicalVolume()->GetName()
@@ -188,4 +200,9 @@ void G4TARCDetectorConstruction::print_aux(const G4GDMLAuxListType* auxInfoList,
 		if (iaux->auxList) print_aux(iaux->auxList, prepend + "|");
 	}
 	return;
+}
+
+void G4TARCDetectorConstruction::setBoundsToProtonTarget( const G4ThreeVector &pMin,  const G4ThreeVector &pMax){
+  pbTargetMin = pMin;
+  pbTargetMax = pMax;
 }
