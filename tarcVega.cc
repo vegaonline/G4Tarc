@@ -42,6 +42,7 @@
 #include "G4DecayPhysics.hh"
 #include "G4ParticleTable.hh"
 #include "G4VTrajectoryModel.hh"
+#include "G4Material.hh"
 #include "G4TrajectoryDrawByParticleID.hh"
 
 #include "FTFP_BERT.hh"

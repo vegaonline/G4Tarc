@@ -5,7 +5,7 @@
 /tracking/verbose 0
 /event/verbose 0
 /vis/verbose errors
-/run/verbose 0
+/run/verbose 2
 /gps/verbose 0 #2
 
 /run/initialize
@@ -13,8 +13,8 @@
 #/control/manual /tarc
 
 /vis/scene/create
-#/vis/open HepRepFile
-/vis/open OGL 1020x980-0+0
+/vis/open HepRepFile
+# /vis/open OGL 1020x980-0+0
 /vis/drawVolume   # ---> working for full volume
 
 #/vis/open OGL
@@ -75,7 +75,7 @@
 
 #### Beam spot is centred at (0 0 -1800)1D Gaussian shape with 10 mm central plateau
 /gps/pos/shape Circle
-/gps/position 0.0 0.0 -2000.0 mm       #  /gps/pos/centre 0.0 0.0 -1800.0 mm
+/gps/position 0.0 0.0 -1800.0 mm       # 1200 mm long beam pipe at 0, 0, -900 
 /gps/pos/radius 10.0 mm
 /gps/pos/sigma_r 0.1 mm
 
@@ -86,9 +86,10 @@
 #/gps/ang/rot2  0  1  0
 #/gps/ang/rot1 -1  0  0
 
-#### Beam energy is in gaussian profile centered at 800 MeV
+#### Beam energy is in gaussian profile with 1 keV dispersion
 /gps/ene/type Gauss
-/gps/ene/mono 1310.0 MeV
+/gps/ene/mono 3.33 GeV    # 2.5 GeV/c
+/gps/ene/mono 6.53 GeV    # 3.5 GeV/c
 /gps/ene/sigma 0.5 keV
 
 
@@ -98,4 +99,4 @@
 /tarc/histo/setHisto 0 10  0 1500 MeV
 
 
-/run/beamOn 10
+/run/beamOn 2

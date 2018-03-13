@@ -40,20 +40,52 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
     fFileLoaded = true;
     fWorldPhysVol = fParser.GetWorldVolume();
   }
+
     //*************** testing logical volumes ****************
     fLVS = G4LogicalVolumeStore::GetInstance();
+    fPVS = G4PhysicalVolumeStore::GetInstance();
     int icount = 0;
     G4VSolid *thisBlock;
     G4ThreeVector pMin;
     G4ThreeVector pMax;
 
-    for (fLVciter = fLVS->begin(); fLVciter !=fLVS->end(); fLVciter++) {
+
+    G4cout << " physical volume" << G4endl;
+    for (fPVciter = fPVS->begin(); fPVciter != fPVS->end(); fPVciter++){
+      if (
+           ((*fPVciter)->GetLogicalVolume()->GetName() == "beamblockB_log")
+        || ((*fPVciter)->GetLogicalVolume()->GetName() == "blockB_log")
+      ){
+        (*fPVciter)->GetLogicalVolume()->GetSolid()->BoundingLimits(pMin, pMax);
+        setBoundsToProtonTarget(pMin, pMax);
+        /*
+        if ( ((*fPVciter)->GetLogicalVolume()->GetName() == "blockB_log")
+            && ((*fPVciter)->GetCopyNo() == 50)
+           ){
+
+
+        G4cout << icount << " --> "
+             << (*fPVciter)->GetName() << " copy num # " << (*fPVciter)->GetCopyNo() << "   "
+             << " Rotation Matrix " << (*fPVciter)->GetObjectRotationValue() << "   "
+             << " Rotation/translation wrt mother " << (*fPVciter)->GetObjectTranslation() << "   "
+             << " logical volume name: " << (*fPVciter)->GetLogicalVolume()->GetName()
+             << "  Bounding limits: " << pMin << "  " << pMax
+             << " Material: " << (*fPVciter)->GetLogicalVolume()->GetMaterial()
+             << G4endl;
+           }
+           */
+         }
+          //   ++icount;
+    }
+/*
+      icount = 0;
+      for (fLVciter = fLVS->begin(); fLVciter !=fLVS->end(); fLVciter++) {
       G4cout << icount << "    " << (*fLVciter)->GetName() << "  " ;
       if ((*fLVciter)->GetName() == "blockB_log")
       {
         thisBlock = (*fLVciter)->GetSolid();
         thisBlock->BoundingLimits(pMin, pMax);
-        setBoundsToProtonTarget(pMin, pMax);
+
         G4cout << "\n -------------> " << thisBlock->GetName() << " is bounded by "
                << "  pMin:  " << pbTargetMin << "  pMax: " << pbTargetMax
                << G4endl;
@@ -78,7 +110,7 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
       ++icount;
     }
     G4cout << G4endl;
-
+*/
 
   //G4cout << *(G4Material::GetMaterialTable() ) << G4endl;
   //G4cout << "Physical Volume Name: " << fWorldPhysVol->GetName()

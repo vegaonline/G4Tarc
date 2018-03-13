@@ -5,7 +5,12 @@
  ***************************************************/
 #ifndef G4TARC_HISTOMANAGER_H
 #define G4TARC_HISTOMANAGER_H
+
 #include <cstdlib>
+#include <string>
+#include <algorithm>
+#include <vector>
+
 
 #include "G4TARCDetectorConstruction.hh"
 #include "G4TARCHisto.hh"
@@ -89,6 +94,7 @@ public:
 
   void TargetProfile(const G4Track*, const G4Step*);
   void AddEnergyTime(const G4Track*, const G4Step*);
+  void AddEnergyTimeHole(const G4Track*, const G4Step*);
   void AddNzero( const G4Track*, const G4Step*);
   void GunParticleDistribution ( const G4Track*, const G4Step* );
   void WriteEventRange(G4ThreeVector, G4double, G4double);
@@ -107,6 +113,8 @@ public:
   inline void SetMaxEnergyDeposit(G4double val)           { fEdepMax = val;}
   inline void SetVerbose ( G4int val)                     { fVerbose = val;}
   inline void SetGPSEnergyIN (const G4double value)       { fPrimaryKineticEnergy = value; }
+  inline void TotalProtonIn ()                            { fProtonIN++; }
+  inline void TotalNCount()                               { fNCountTotal++; }
 
 private:
   G4String                    fRootFileName;
@@ -118,15 +126,20 @@ private:
   const G4ParticleDefinition* fNeutron;
   const G4ParticleDefinition* fProton;
 
+  G4double fTotVolVBox  = (150.0 * mm) * (150.0 * mm) * (300.0 * mm);  // volume of virtual box around holes
   G4double fMaxLVal     = 5000.0 * mm;
-  G4double fMaxEVal     = 2000.0 * CLHEP::MeV;
-  G4double fEVal0       = 2000.0 * CLHEP::MeV;
+  G4double fMaxEVal     = 8000.0 * CLHEP::MeV;
+  G4double fEVal0       = 4000.0 * CLHEP::MeV;
   G4int    fNumMax      = 1000;  // for fE/Msecond etc.
   G4int    fMaxBin      = 100;
+  G4int    fMaxEBin     = 10000;
+  G4int    fStepE       = (fMaxEVal / fMaxBin);
   G4int    fMaxSlices   = 3 * fMaxBin;
   G4int    fNHisto      = 25;
   G4int    fMaxNdx      = 10000;
 
+
+  G4double fNstepEnergy;
   G4double fEdepMax;
   G4double fEdepEvt;
   G4double fEdepEM;
@@ -146,6 +159,8 @@ private:
   G4double fAbsY0;
   G4double fAbsZ0;
   G4double fPrimaryKineticEnergy;
+  G4double fVirtualDia;
+  G4double fVirtVol;
 
   G4int fVerbose;
   G4int fNBinsE;
@@ -176,6 +191,8 @@ private:
   G4int fNstep;
   G4int fLMax;
   G4int fLBin;
+  G4int fProtonIN;
+  G4int fNCountTotal;
 
   G4bool fHistoBooked;
 
@@ -183,6 +200,9 @@ private:
   G4double fNeutronInit,fNeutronSum, fNeutronBreed, fTimeMin, fTimeMax;
   std::vector<std::vector<G4double> > fET;
   std::vector<std::vector<G4double> > fNSpectra;
+  std::vector<std::vector<G4double> > fEdNdE;
+  std::vector<std::vector<G4double> > fFluence;
+  std::vector<std::vector<G4double> > fETVirtual;
 
 
   G4DataVector       fGunParticleX;
@@ -199,6 +219,8 @@ private:
   G4DataVector       fEsecond;
   G4DataVector       fMsecond;
   G4DataVector       fnETsum;
+  G4DataVector       fNEfluxBin;
+
 
 
 

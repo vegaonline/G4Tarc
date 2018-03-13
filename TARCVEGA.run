@@ -2,6 +2,8 @@
 # The code runs TARC simulation with run.mac
 #=============================================
 
+: ${1?"Usage: $0 <macroname: run.mac | vis.mac"}
+
 # export PHYSLIST="FTFP_BERT"
 # export PHYSLIST="FTFP_BERT_HP"
 # export PHYSLIST="QBBC"
@@ -11,10 +13,9 @@
 export G4NEUTRONHP_PRODUCE_FISSION_FRAGMENTS=1
 export G4NEUTRONHP_SKIP_MISSING_ISOTOPES=1 
 export AllowForHeavyElements=1
-#export G4NEUTRONHPDATA=/opt/G4_Master/share/Geant4-10.4.1/data/ENDF.B-VII.0
 
 export PHYSLIST="QGSP_BIC_HP"
-export dateStr=`date +%d_%m_%Y`
+export dateStr="histo"_`date +%d_%m_%Y`
 mkdir -p $dateStr
 
-./tarcVega GeomData/tarc_geometry.gdml -m run.mac
+./tarcVega GeomData/tarc_geometry.gdml -m $1

@@ -78,7 +78,7 @@ void G4TARCPhysicsList::neutronProcess(){
     process = processTable->FindProcess("nFission", neutron);
     if (process) pManager->RemoveProcess(process);
 
-    process->SetVerboseLevel(0);
+    //process->SetVerboseLevel(0);
     // (re) create process: elastic
     //
     G4HadronElasticProcess* process1 = new G4HadronElasticProcess();

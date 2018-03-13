@@ -24,6 +24,9 @@ G4TARCHistoManager::G4TARCHistoManager()
   fPrimaryKineticEnergy ( fEVal0 ),
   fVerbose( 0 ),
   fNBinsE( fMaxBin ),
+  fProtonIN(0),
+  fNCountTotal(0),
+  fVirtVol(0),
   fNSlices( fMaxSlices ) {
     //fDetector = new G4TARCDetectorConstruction();
     fHisto    = new G4TARCHisto();
@@ -92,6 +95,9 @@ void G4TARCHistoManager::BeginOfRun() {
   fNzero      = 0;
   fEdepSum    = 0.0;
   fEdepSum2   = 0.0;
+  fNstepEnergy = fMaxEVal / (G4double)fMaxEBin;  // max 8 GeV considered
+  fVirtualDia = 3300.0*mm;
+  fVirtVol    = (4.0 / 3.0) * CLHEP::pi * (0.5 * fVirtualDia) * (0.5 * fVirtualDia) * (0.5 * fVirtualDia);
   fRange      = fMaxLVal;
   fRho        = 5.0 * mm;  //-------------------------->  Diagnose with GDML file  ********
   fLMax       = fMaxLVal;
@@ -115,12 +121,22 @@ void G4TARCHistoManager::BeginOfRun() {
   fnETsum       = G4DataVector(fNbin * fNbin, 0.0);
 
 
-  for( G4int ii = 0; ii < fNbin; ii++ )
-  {
+  for( G4int ii = 0; ii < fNbin; ii++ )  {
     std::vector<G4double> temp;
     for( G4int jj = 0; jj < fNbin; jj++ ) temp.push_back(0.0);
     fET.push_back(temp);
+    fEdNdE.push_back(temp);
+    //temp.clear();
+    //for (G4int jj = 0; jj < 3; jj++) temp.push_back(0.0);
+    //fETVirtual.push_back(temp);
   }
+
+  for (G4int ii=0; ii < 12; ii ++) {
+    std::vector<G4double> temp;
+    for (G4int jj = 0; jj < fMaxEBin; jj++) temp.push_back(0.0);
+    fFluence.push_back(temp);
+  }
+
   fGunParticleX   = G4DataVector(fLMax, 0.0);
   fGunParticleY   = G4DataVector(fLMax, 0.0);
   fGunParticleZ   = G4DataVector(fLMax, 0.0);
@@ -132,6 +148,7 @@ void G4TARCHistoManager::BeginOfRun() {
   fRangeVector    = G4DataVector(fLMax, 0.0);
   fRhoVector      = G4DataVector(fLMax, 0.0);
   fDeltaVector    = G4DataVector(fLMax, 0.0);
+  fNEfluxBin      = G4DataVector(fMaxBin, 0.0);
   for( G4int ii = 0; ii < fLMax; ii++ ) {
     fRangeVector[ii] = ii * fLBin - 0.5 * fRange; //
     fRhoVector[ii]   = ii * fRho / fLBin;
@@ -236,7 +253,7 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
 
   G4double fEdep = myStep->GetTotalEnergyDeposit();
   if (fVerbose > 1) {
-    G4cout << "TargetSD::ProcessHists: beta1 =" << myStep->GetPreStepPoint()->GetVelocity() / c_light
+    G4cout << "TargetSD::ProcessHits: beta1 =" << myStep->GetPreStepPoint()->GetVelocity() / c_light
            << " beta2 = "                       << myStep->GetPostStepPoint()->GetVelocity() / c_light
            << " weight = "                      <<  myStep->GetTrack()->GetWeight()
            << G4endl;
@@ -492,39 +509,84 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myS
   }
 }
 
+void G4TARCHistoManager::AddEnergyTimeHole(const G4Track* myTrack, const G4Step* myStep) {
+  G4double KE, myTime, myStepLength;
+  size_t ii, jj, kk;
+
+  std::vector<G4double> tmp;
+
+  if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron"){
+    KE = myTrack->GetDynamicParticle()->GetKineticEnergy();
+    myStepLength = myStep->GetStepLength();
+    myTime = myTrack->GetGlobalTime();
+
+    G4TouchableHandle touch1 = myStep->GetPreStepPoint()->GetTouchableHandle();
+    std::string LVname1 = touch1->GetVolume()->GetLogicalVolume()->GetName();
+    std::size_t pos1 = LVname1.find("_");
+    G4int ijk1= std::atoi(LVname1.substr(4, pos1 - 4).c_str());
+    //G4TouchableHandle touch2 = myStep->GetPostStepPoint()->GetTouchableHandle();
+    //std::string LVname2 = touch2->GetVolume()->GetLogicalVolume()->GetName();
+    //std::size_t pos2 = LVname2.find("_");
+    //G4int ijk2= std::atoi(LVname2.substr(4, pos2 - 4).c_str());
+
+    G4double eval = KE / eV;
+    G4int fluxEBin = eval / (fNstepEnergy);
+    G4cout << "stepE " << fNstepEnergy << G4endl;
+    fluxEBin = (fluxEBin >= fMaxEBin) ? fMaxEBin - 1 : fluxEBin;
+
+    // insert LV, time, energy to fETVirtual
+
+    tmp.push_back(G4double(ijk1));
+    tmp.push_back(myTime / microsecond);
+    tmp.push_back(eval);
+
+    fETVirtual.push_back(tmp); // needs sorting on ijk1 first and then on myTime
+    std::sort(fETVirtual.begin(), fETVirtual.end(),
+      [](const std::vector< G4double >& a, const std::vector< G4double >& b){
+        if (a[0] == b[0])
+          return a[1] < b[1];
+        else
+          return a[0] < b[0];
+        } );
+
+    //G4cout << ijk1 << " E= " << eval << " Ebin= " << fluxEBin << " step= " << myStepLength << G4endl;
+
+    std::vector<G4double>().swap(tmp);
+    //fFluence[ijk1][fluxEBin] += myStepLength;
+    //fFluence[ijk1][fluxEBin] /= fTotVolVBox;
+  }
+}
 
 void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myStep) {
   G4double Tkin = 0.0, myTime, myGlobalTime, myStepLength;
-  G4double Qenergy, Qtime;
+  G4double Qenergy, Qtime, eVal;
   size_t ii, jj, eii, tjj;
   std::vector<G4double> tmp;
 
   if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron") {
     Tkin = myTrack->GetDynamicParticle()->GetKineticEnergy();
+    eVal = Tkin / eV;
     myStepLength = myStep->GetStepLength();
     myTime = myTrack->GetProperTime();
     myGlobalTime = myTrack->GetGlobalTime();
 
+    G4int fluxBin = eVal / fStepE;
+    fluxBin = (fluxBin >= fMaxBin) ? fMaxBin - 1 : fluxBin;
+    fNEfluxBin[fluxBin] += eVal;
 
     for (ii = 0; ii < fNbin; ii++) {
       if (Tkin <= fnEsecond.GetLowEdgeEnergy(ii)) {
         eii = (ii == 0) ? ii : ii - 1;
-        Qenergy = (Tkin/eV != 0.0) ? std::log10(Tkin/eV) : -6.0;  // Tkin; //
-        //G4cout << Tkin/eV << "   " << Qenergy << G4endl;
-        //G4cout << "--> " << ii  << " E: "      << fnEsecond.GetLowEdgeEnergy(ii)/eV
-        //                        << " Tkin: "   << Tkin/eV
-        //                        << " eii: "    << eii;
+        //Qenergy = (Tkin/eV != 0.0) ? (Tkin/eV) : 0.0;  // Tkin; //
+        Qenergy = Tkin / eV;
         break;
       }
     }
     if (ii == fNbin) eii = fNbin -1 ;
     for (jj = 0; jj < fNbin; jj++) {
       if (myTime <= fnTsecond.GetLowEdgeEnergy(jj)) {
-        Qtime = std::log10(myGlobalTime/microsecond);
+        Qtime = (myGlobalTime/microsecond);
         tjj = (jj == 0) ?  jj : jj - 1;
-        //G4cout << "--> " << jj << " T: "      << fnTsecond.GetLowEdgeEnergy(jj)/nanosecond
-        //                       << " myTime: " << myTime/nanosecond
-        //                       << " tjj: "    << tjj   << G4endl;
         break;
       }
     }
@@ -664,6 +726,8 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << std::setprecision(4) << "Average Number of leaked Pions "          << xp0          << G4endl;
   trackout <<                                                                                     G4endl;
 
+
+
   G4double kEffective, rho, rat, react, perN=x;
   kEffective = fNeutronSum / fNeutronInit;
   rho        = (kEffective - 1.0) / kEffective;  // reactivity :: deviation from criticality
@@ -682,11 +746,30 @@ void G4TARCHistoManager::TrackRun(G4double x) {
 
 void G4TARCHistoManager::NeutronRun(G4double x) {
   G4double perN = x;
+
+  std::ofstream fETVirt("ETVirtual.dat", std::ios::out);
+  //fETVirt << (fETVirtual.size() * fETVirtual[0].size()) << G4endl;
+  for (std::size_t ii = 0; ii < fETVirtual.size(); ii++){
+    for (std::size_t jj = 0; jj < fETVirtual[0].size(); jj++){
+      fETVirt << fETVirtual[ii][jj] << "  ";
+    }
+    fETVirt<< G4endl;
+  }
+  fETVirt.close();
+
+  std::ofstream fFlu("FluenceData.dat", std::ios::out);
+  std::cout << fFluence.size() << G4endl;
+  for (std::size_t ii = 0; ii < fFluence.size(); ii++){
+    for (std::size_t jj = 0; jj < fMaxEBin; jj++){
+      fFlu << ii << "  " << jj << " " << fFluence[ii][jj] << G4endl;
+    }
+  }
+  fFlu.close();
+
+/*
   G4double ngSum = 0.0;
   std::ofstream nspec("neutronSpectra.dat", std::ios::out);
-
   nspec << fNSecondSum1.size() << G4endl;
-
   for (size_t k = 0; k < fNSecondSum1.size(); k++){
       nspec << fnEsecond.GetLowEdgeEnergy(k)/MeV << "  "  << perN * fNSecondSum1[k]
                                                  << "   " << perN * fNSecondSum2[k]
@@ -694,14 +777,12 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
       ngSum += fNSecondSum1[k];
   }
   G4cout << "integral S-spectrum per event = " << ngSum * perN << G4endl;
-
+*/
 //--------------------------------------------------
   std::ofstream tenspectr("tenspectr.dat",std::ios::out);
   tenspectr<<fnETsum.size()<<G4endl;
-  for( size_t k = 0; k < fNbin; k++ )
-  {
-    for( size_t j = 0; j < fNbin; j++ )
-    {
+  for( size_t k = 0; k < fNbin; k++ ){
+    for( size_t j = 0; j < fNbin; j++ ){
       // tenspectr<<perN*fnETsum[k]<<G4endl;
       if (perN * fET[j][k] != 0.0)
         tenspectr << (G4int)k << "    " << (G4int)j << "    " << perN * fET[j][k] << G4endl;
