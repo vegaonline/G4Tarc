@@ -12,6 +12,7 @@
 #include "G4TARCPrimaryGeneratorAction.hh"
 #include "G4TARCRunAction.hh"
 #include "G4TARCEventAction.hh"
+#include "G4TARCSteppingAction.hh"
 #include "G4TARCStackingAction.hh"
 
 class G4TARCDetectorConstruction;

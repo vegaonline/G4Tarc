@@ -20,7 +20,9 @@ void G4TARCActionInitialization::BuildForMaster() const {
 void G4TARCActionInitialization::Build() const {
   SetUserAction(new G4TARCPrimaryGeneratorAction());
   SetUserAction(new G4TARCRunAction());
-  SetUserAction(new G4TARCEventAction());
-  SetUserAction(new G4TARCStackingAction());
+  auto eventAction = new G4TARCEventAction();
+  SetUserAction(eventAction);
+  SetUserAction(new G4TARCSteppingAction(eventAction));
+  SetUserAction(new G4TARCStackingAction(eventAction));
 
 }

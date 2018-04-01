@@ -9,87 +9,213 @@
 
 G4TARCParallelWorld::G4TARCParallelWorld( G4String& tarcParallelWorld)
 : G4VUserParallelWorld( tarcParallelWorld), fConstructed(false) {
-
 }
 
-G4TARCParallelWorld::~G4TARCParallelWorld() {}
+// Here defining concentric shells of finite thickness
+void G4TARCParallelWorld::DefineShellsBlocks() {
+  fHalfXBlockB           =     0.5 * 300 * mm;
+  fHalfYBlockB           =     0.5 * 300 * mm;
+  fHalfZBlockB           =     0.5 * 600 * mm;
+  fHalfXVBox             =     0.5 * 150 * mm;
+  fHalfYVBox             =     0.5 * 150 * mm;
+  fHalfZVBox             =     0.5 * 300 * mm;
+  fNewHalfZProt          =     0.5 * ((2.0 * fHalfZBlockB) / 3.0);
+  fZposProt              = -fHalfZBlockB + fNewHalfZProt;
+  fDiaMaxSphere          =  3300.0 * mm;
+  fRadMaxSphere          =     0.5 * fDiaMaxSphere;
+  fShellThickness        =     2.0 * mm;
+  fMinInnerRadiusofShell =    10.0 * mm;
+  fMaxOuterRadiusofShell =  1500.0 * mm;
+  fInnerRadProtonShell   =     0.0 * mm;   //
+  fOuterRadProtonShell   =   300.0 * mm;   // These two were thought as a spherical 4Pi measurement for Proton
+  fShellNumber           = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
+  G4double tmp1          = fMaxOuterRadiusofShell;
+  G4double tmp2          =     0.0;
+  for (G4int ii = 0; ii < fShellNumber; ii++) {
+    tmp2 = tmp1 - fShellThickness;
+    fInnerRadiusofShell.push_back(tmp2);
+    fOuterRadiusofShell.push_back(tmp1);
+    tmp1 = tmp2;
+  }
+  std::cout << " Define Blocks initialised." << std::endl;
+}
+
 
 void G4TARCParallelWorld::Construct() {
   if (fConstructed) return;
-  // A dummy material is used to fill the volulmes of the readout geometry.
+  DefineShellsBlocks();
+  // A dummy material is used to fill the volulmes of the readout geometry.  Can we use Pb etc?
   G4Material* dummyMat = nullptr;
+  G4String nameTmp;
+
+  G4Colour col1 (1.0, 0.0, 0.0);  // red
+  G4Colour col2 (1.0, 0.7, 0.0);
+  G4Colour col3 (0.0, 1.0, 1.0);  //cyan
+  G4VisAttributes* fAtt1 = new G4VisAttributes(col1);
+  G4VisAttributes* fAtt2 = new G4VisAttributes(col2);
+  G4VisAttributes* fAtt3 = new G4VisAttributes(col3);
+  fAtt1->SetVisibility(true);
+  fAtt2->SetVisibility(true);
+  fAtt3->SetVisibility(true);
+  fAtt3->SetForceSolid(true);
 
   // declaring the readout world
+  // First the whole World
   ghostWorld = GetWorld();
   ghostWorldLog = ghostWorld->GetLogicalVolume();
-  fConstructed = true;
+  fLVvector.push_back(ghostWorldLog);
+  fPVolumeStore.AddPVolume(G4GeometryCell(*ghostWorld, 0));
 
-  // target block : blockB copy 50 at (0, 0, 0) 30 cms X 30 cms X 60 cms
-  LeadTargetS = new G4Box("LeadTarget", fHalfXblockB, fHalfYblockB, fHalfZblockB);
-  LeadTargetLV = new G4LogicalVolume (LeadTargetS, dummyMat, "target_log", 0, 0, 0);
-  new G4PVPlacement(0, G4ThreeVector(0, 0, 0), LeadTargetLV, "target_phys", ghostWorldLog, false, 0);
+  // Make a rectangular plate for proton hits and spallation point
+  // blockB copy 50 equivalent : Z length is 300 mm for blockB. Here we consider 100 mm.
+  G4Box* fTestBlockB50 = new G4Box("BoxPHit", fHalfXBlockB, fHalfYBlockB, fNewHalfZProt);
+  fVBoxLogProton = new G4LogicalVolume(fTestBlockB50, dummyMat, "VB50Proton_log");
+  fLVvector.push_back(fVBoxLogProton);
+  nameTmp = GetCellName(0);
+  // Here originally copy 50 was at 0,0,0 with zlength 300. Since we reduced to 100 and wish to
+  // stick lowest Z bouondary to be at same position, origin of this block is shifted to -1000
+  // so that
+  fVBoxPVProton = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, fZposProt), nameTmp, fVBoxLogProton, ghostWorld, false, 0);
+  fVBoxLogProton->SetVisAttributes(fAtt1);
+  G4GeometryCell fProtonCell(*fVBoxPVProton, 0);
+  fPVolumeStore.AddPVolume(fProtonCell);
 
-  // Vritual box around holes. Let is place around hole 4 (say)
-  VirtualBoxS =  new G4Box("VBox4holes", fHalfXVBox, fHalfYVBox, fHalfZVBox);
-  VirtualBox1LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox1_log", 0, 0, 0);
-  VB1PV = new G4PVPlacement(0, G4ThreeVector(  1050.0,     0.0, fZposVBox), VirtualBox1LV,  "vbox1_phys", ghostWorldLog, false,  0);
-  VirtualBox2LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox2_log", 0, 0, 0);
-  VB2PV = new G4PVPlacement(0, G4ThreeVector(   600.0,   300.0, fZposVBox), VirtualBox2LV,  "vbox2_phys", ghostWorldLog, false,  0);
-  VirtualBox3LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox3_log", 0, 0, 0);
-  VB3PV = new G4PVPlacement(0, G4ThreeVector(   150.0,     0.0, fZposVBox), VirtualBox3LV,  "vbox3_phys", ghostWorldLog, false,  0);
-  VirtualBox4LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox4_log", 0, 0, 0);
-  VB4PV = new G4PVPlacement(0, G4ThreeVector(     0.0, -1500.0, fZposVBox), VirtualBox4LV,  "vbox4_phys", ghostWorldLog, false,  0);
-  VirtualBox5LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox5_log", 0, 0, 0);
-  VB5PV = new G4PVPlacement(0, G4ThreeVector(     0.0,  -600.0, fZposVBox), VirtualBox5LV,  "vbox5_phys", ghostWorldLog, false,  0);
-  VirtualBox6LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox6_log", 0, 0, 0);
-  VB6PV = new G4PVPlacement(0, G4ThreeVector(     0.0,   600.0, fZposVBox), VirtualBox6LV,  "vbox6_phys", ghostWorldLog, false,  0);
-  VirtualBox7LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox7_log", 0, 0, 0);
-  VB7PV = new G4PVPlacement(0, G4ThreeVector(     0.0,   900.0, fZposVBox), VirtualBox7LV,  "vbox7_phys", ghostWorldLog, false,  0);
-  VirtualBox8LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox8_log", 0, 0, 0);
-  VB8PV = new G4PVPlacement(0, G4ThreeVector(     0.0,  1200.0, fZposVBox), VirtualBox8LV,  "vbox8_phys", ghostWorldLog, false,  0);
-  VirtualBox9LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox9_log", 0, 0, 0);
-  VB9PV = new G4PVPlacement(0, G4ThreeVector(     0.0,  1500.0, fZposVBox), VirtualBox9LV,  "vbox9_phys", ghostWorldLog, false,  0);
-  VirtualBox10LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox10_log", 0, 0, 0);
-  VB10PV = new G4PVPlacement(0, G4ThreeVector( -450.0,     0.0, fZposVBox), VirtualBox10LV,  "vbox10_phys", ghostWorldLog, false, 0);
-  VirtualBox11LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox11_log", 0, 0, 0);
-  VB11PV = new G4PVPlacement(0, G4ThreeVector( -600.0,   300.0, fZposVBox), VirtualBox11LV,  "vbox11_phys", ghostWorldLog, false, 0);
-  VirtualBox12LV = new G4LogicalVolume(VirtualBoxS, dummyMat, "vBox12_log", 0, 0, 0);
-  VB12PV = new G4PVPlacement(0, G4ThreeVector(-1050.0,     0.0, fZposVBox), VirtualBox12LV,  "vbox12_phys", ghostWorldLog, false,  0);
 
-  // Create virtual sphere with max dia for total neutron flux within it
-  // VirtualSphereS = new G4Orb("VirtualSphereS", fRadMaxSphere );
-  // VirtualSphereLV = new G4LogicalVolume(VirtualSphereS, dummyMat, "vsph_log", 0, 0);
-  // new G4PVPlacement(0, G4ThreeVector(0, 0, 0), VirtualSphereLV, "vsph_phys", ghostWorldLog, false, 0);
-
+  // Make the thinner shell bunches
+  for (G4int i = 0; i < fShellNumber; i++) {
+    G4Sphere* radShellSphere = new G4Sphere("shellSphere",
+                            fInnerRadiusofShell[i], fOuterRadiusofShell[i],
+                            0.0*deg, 360.0*deg, 0.0*deg, 180.0*deg);
+    nameTmp = "radial_shell_log_" + std::to_string(i);
+    fShellLog = new G4LogicalVolume(radShellSphere, dummyMat, nameTmp);
+    fLVvector.push_back(fShellLog);
+    nameTmp = GetCellName(i);
+        fShellPhys = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), nameTmp, fShellLog, ghostWorld, false, i);
+        fShellLog->SetVisAttributes(fAtt3);
+        G4GeometryCell radCell(*fShellPhys, i);
+        fPVolumeStore.AddPVolume(radCell);
+      }
+      fConstructed = true;
 }
 
+
+G4String G4TARCParallelWorld::GetCellName(G4int i) {
+  G4String tmp = "";
+  tmp = (i < 10) ? "0" + std::to_string(i) : std::to_string(i);
+  return "cell_" + tmp;
+}
+
+G4GeometryCell G4TARCParallelWorld::GetGeometryCell(G4int i) {
+  G4String name(GetCellName(i));
+  const G4VPhysicalVolume* tmpPV =fPVolumeStore.GetPVolume(name);
+  if (tmpPV) {
+    return G4GeometryCell(*tmpPV, 0);
+  } else {
+    return G4GeometryCell(*ghostWorld, -2);
+  }
+}
+
+
 void G4TARCParallelWorld::ConstructSD() {
-  G4String leadTargetName = "/tarc/leadTargetSD";
-  G4TARCleadTargSD* leadTargSD = new G4TARCleadTargSD(leadTargetName);
-  G4SDManager::GetSDMpointer()->AddNewDetector(leadTargSD);
-  LeadTargetLV->SetSensitiveDetector(leadTargSD);
+  auto SDman = G4SDManager::GetSDMpointer();
+  G4String TARCSDName, fltName, particleName, psName;
+  G4SDParticleFilter* neutronFilter;
+  G4SDParticleFilter* protonFilter;
+
+  // Here first defining two detectors for neutron and proton study
+  //----------------------------- SD 01 Neutron ----------------------------------------
+  // Create a MultiFunction Detector for Neutron study in General
+  TARCSDName = "TARCNeutronSD";
+  fTARCNeutronDet = new G4MultiFunctionalDetector(TARCSDName);
+  SDman->AddNewDetector(fTARCNeutronDet);
+  // Then create filters to study
+  neutronFilter = new G4SDParticleFilter(fltName="neutronFilter", particleName="neutron");
+  fTARCNeutronDet->SetFilter(neutronFilter);
+
+  //----------------------------- SD 02 Proton ----------------------------------------
+  // Create a MultiFunction Detector for Proton study in General
+  TARCSDName = "TARCProtonSD";
+  fTARCProtonDet = new G4MultiFunctionalDetector(TARCSDName);
+  SDman->AddNewDetector(fTARCProtonDet);
+  // Then create filters to study
+  protonFilter = new G4SDParticleFilter(fltName="protonFilter", particleName="proton");
+  fTARCProtonDet->SetFilter(protonFilter);
+
+  //------------- Next we need to add concerned LV to these detectors ----------------------
+    for (std::vector<G4LogicalVolume*>::iterator it = fLVvector.begin(); it != fLVvector.end(); ++it) {
+      if ( (*it)->GetName().find("Proton")!=std::string::npos){
+        SetSensitiveDetector( (*it)->GetName(), fTARCProtonDet);
+      } else{
+        SetSensitiveDetector( (*it)->GetName(), fTARCNeutronDet);
+      }
+    }
+
+    G4PSNofCollision*   scorer0 = new G4PSNofCollision(psName="Collisions");
+    fTARCNeutronDet->RegisterPrimitive(scorer0);
+
+    G4PSNofCollision*   scorer1 = new G4PSNofCollision(psName="CollWeight");
+    scorer1->Weighted(true);
+    fTARCNeutronDet->RegisterPrimitive(scorer1);
 
 
-  G4String vBoxwithHoleName = "VirtualBox";
-  G4TARCVirtualSD* virtSD = new G4TARCVirtualSD(vBoxwithHoleName);
-  G4SDManager::GetSDMpointer()->AddNewDetector(virtSD);
-  VirtualBox1LV->SetSensitiveDetector(virtSD);
-  VirtualBox2LV->SetSensitiveDetector(virtSD);
-  VirtualBox3LV->SetSensitiveDetector(virtSD);
-  VirtualBox4LV->SetSensitiveDetector(virtSD);
-  VirtualBox5LV->SetSensitiveDetector(virtSD);
-  VirtualBox6LV->SetSensitiveDetector(virtSD);
-  VirtualBox7LV->SetSensitiveDetector(virtSD);
-  VirtualBox8LV->SetSensitiveDetector(virtSD);
-  VirtualBox9LV->SetSensitiveDetector(virtSD);
-  VirtualBox10LV->SetSensitiveDetector(virtSD);
-  VirtualBox11LV->SetSensitiveDetector(virtSD);
-  VirtualBox12LV->SetSensitiveDetector(virtSD);
+    G4PSPopulation*   scorer2N = new G4PSPopulation(psName="Population");
+    fTARCNeutronDet->RegisterPrimitive(scorer2N);
 
-/*
-  G4String virtualdetName = "VirtualSphere";
-  G4TARCvirtualSD* virtSD = new G4TARCvirtualSD(virtualdetName);
-  G4SDManager::GetSDMpointer()->AddNewDetector(virtSD);
-  VirtualSphereLV->SetSensitiveDetector(virtSD);
-*/
+    G4PSPopulation*   scorer2P = new G4PSPopulation(psName="Population");
+    fTARCProtonDet->RegisterPrimitive(scorer2P);
+
+    G4PSTrackCounter* scorer3 = new G4PSTrackCounter(psName="Track_Enter",fCurrent_In);
+    fTARCNeutronDet->RegisterPrimitive(scorer3);
+    G4PSTrackLength* scorer4 = new G4PSTrackLength(psName="Track_Length");
+    fTARCNeutronDet->RegisterPrimitive(scorer4);
+
+    G4PSTrackLength* scorer5 = new G4PSTrackLength(psName="Track_Length_Weighted");
+    scorer5->Weighted(true);
+    fTARCNeutronDet->RegisterPrimitive(scorer5);
+
+    G4PSTrackLength* scorer6 = new G4PSTrackLength(psName="Track_Length_Weighted.KE");
+    scorer6->Weighted(true);
+    scorer6->MultiplyKineticEnergy(true);
+    fTARCNeutronDet->RegisterPrimitive(scorer6);
+
+    G4PSTrackLength* scorer7 = new G4PSTrackLength(psName="Track_Length_Weighted_By_Velocity");
+    scorer7->Weighted(true);
+    scorer7->DivideByVelocity(true);
+    fTARCNeutronDet->RegisterPrimitive(scorer7);
+
+    G4PSTrackLength* scorer8 = new G4PSTrackLength(psName="Track_Length_Weighted_KE_By_Velocity");
+    scorer8->Weighted(true);
+    scorer8->MultiplyKineticEnergy(true);
+    scorer8->DivideByVelocity(true);
+    fTARCNeutronDet->RegisterPrimitive(scorer8);
+}
+
+
+G4VIStore* G4TARCParallelWorld::CreateImportanceStore(){
+  G4cout << " G4TARCParallelWorld:: Creating Importance Store " << G4endl;
+  if (!fPVolumeStore.Size())  {
+    G4Exception("G4TARCParallelWorld::CreateImportanceStore"
+               ,"Testing...",RunMustBeAborted
+               ,"no physical volumes created yet!");
+  }
+  // creating and filling the importance store
+  //  G4IStore *istore = new G4IStore(*fWorldVolume);
+  G4IStore *istore = G4IStore::GetInstance(GetName());
+  G4GeometryCell gWorldVolumeCell(GetWorldVolumeAddress(), 0);
+  G4double imp = 1;
+  istore->AddImportanceGeometryCell(1, gWorldVolumeCell);
+  // set importance values and create scorers
+  //  G4int number_shells = analysis->GetNumberShells();
+  // G4int cell(fShellNumber);
+  for (G4int cell = 0; cell < fShellNumber; cell++) {
+    G4GeometryCell gCell = GetGeometryCell(cell);
+    /*
+    G4cout << " adding cell: " << cell << " replica: "
+           << gCell.GetReplicaNumber() << " name: "
+           << gCell.GetPhysicalVolume().GetName() << G4endl;
+    */
+    imp = 1;
+    istore->AddImportanceGeometryCell(imp, gCell.GetPhysicalVolume(), cell);
+  }
+  return istore;
 }

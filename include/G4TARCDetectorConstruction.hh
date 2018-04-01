@@ -11,8 +11,8 @@
 
 #include <algorithm>
 
-#include "G4TARCTargetSD.hh"
-#include "G4TARCCheckVolumeSD.hh"
+//#include "G4TARCTargetSD.hh"
+//#include "G4TARCCheckVolumeSD.hh"
 #include "G4TARCDetectorMessenger.hh"
 
 #include "G4VUserDetectorConstruction.hh"
@@ -56,8 +56,8 @@ class G4VisAttributes;
 
 class G4LogicalVolume;
 class G4TARCDetectorMessenger; //---------------
-class G4TARCCheckVolumeSD; //--------------------------
-class G4TARCTargetSD;      //--------------------------
+//class G4TARCCheckVolumeSD; //--------------------------
+//class G4TARCTargetSD;      //--------------------------
 
 // Detector constructor is loading the GDML geometry
 class G4TARCDetectorConstruction : public G4VUserDetectorConstruction {
@@ -69,9 +69,7 @@ public:
   virtual G4VPhysicalVolume* Construct();
   virtual void ConstructSDandField();
   void SetReadFile( const G4String& );  // GDML file reader
-  void CheckGDMLGeomTree(const G4VPhysicalVolume*);
-  void setBoundsToProtonTarget ( const G4ThreeVector&, const G4ThreeVector&);
-  
+  inline G4VPhysicalVolume* GetWorldVolume() { return fWorldPhysVol; }
   void print_aux(const G4GDMLAuxListType*, G4String );
 
 private:
@@ -84,30 +82,16 @@ private:
   G4String                 fGdmlFileNAME;
   G4GDMLParser             fParser;
   G4VPhysicalVolume*       fWorldPhysVol = 0;
-  G4LogicalVolume*         fLogiWorld;
-  G4LogicalVolume*         fBeamBlock = 0;
-  G4bool                   fLogiBeam = false;
-  G4LogicalVolume*         fABlocks = 0;
-  G4bool                   fLogiA = false;
-  G4LogicalVolume*         fBBlocks = 0;
-  G4bool                   fLogiB = false;
-  G4LogicalVolume*         fCBlocks = 0;
-  G4bool                   fLogiC = false;
-  G4LogicalVolume*         fSampleTubes = 0;
-  G4bool                   fLogiTube = false;
-  G4LogicalVolume*         fSampleSpheres = 0;
-  G4bool                   fLogiSphere = false;
-  //    G4LogicalVolume*         fAllLead;
   G4LogicalVolume*         fLAB = 0;
   G4bool                   fFileLoaded = false;
   G4LogicalVolume*         fTestLogPBeamTest = 0;
   G4bool                   fLogiTestLogPBeamTest = false;
   G4LogicalVolumeStore*    fLVS;
-  G4PhysicalVolumeStore*  fPVS;
+  G4PhysicalVolumeStore*   fPVS;
   std::vector<G4LogicalVolume*>  ::const_iterator fLVciter;
   std::vector<G4VPhysicalVolume*>::const_iterator fPVciter;
-  G4ThreeVector            pbTargetMin;
-  G4ThreeVector            pbTargetMax;
+  //G4ThreeVector            pbTargetMin;
+  //G4ThreeVector            pbTargetMax;
   G4Material*              fTargetMat;
 };
 

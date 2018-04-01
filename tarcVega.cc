@@ -44,8 +44,26 @@
 #include "G4VTrajectoryModel.hh"
 #include "G4Material.hh"
 #include "G4TrajectoryDrawByParticleID.hh"
+#include "G4GeometrySampler.hh"
+#include "G4GeneralParticleSource.hh"
+#include "G4IMportanceBiasing.hh"
+#include "G4IStore.hh"
+#include "G4WeightWindowStore.hh"
+#include "G4WeightWindowAlgorithm.hh"
+
 
 #include "FTFP_BERT.hh"
+#include "FTFP_BERT_HP.hh"
+#include "QGSP_BERT.hh"
+#include "QGSP_BIC_HP.hh"
+#include "QGSP_BIC_AllHP.hh"
+#include "QGSP_BIC.hh"
+#include "QGS_BIC.hh"
+#include "QGSP_INCLXX.hh"
+#include "QGSP_INCLXX_HP.hh"
+#include "QBBC.hh"
+#include "LBE.hh"
+
 
 #include "G4UImanager.hh"
 #include "G4UIcommand.hh"
@@ -81,10 +99,11 @@ int main(int argc, char** argv) {
   G4int nThreads = G4Threading::G4GetNumberOfCores();   //   / 2;
 #endif
   for (G4int i = 2; i < argc; i += 2) {
-    if      (G4String(argv[i]) == "-m") macro = argv[i+1];
-    else if (G4String(argv[i]) == "-u") session = argv[i+1];
+    G4String inArg = G4String(argv[i]);
+    if      (inArg == "-m") macro = argv[i+1];
+    else if (inArg == "-u") session = argv[i+1];
 #ifdef G4MULTITHREADED
-    else if (G4String(argv[i]) == "-t") {
+    else if (inArg == "-t") {
       if (G4String(argv[i+1]) == "NMAX") {
         nThreads = G4Threading::G4GetNumberOfCores();
       } else {
@@ -114,14 +133,19 @@ int main(int argc, char** argv) {
 
   G4String fileName = argv[1];
 
-  //auto gpsHead = new G4GeneralParticleSource();
 
   //  construction of detector geometry setup
-  G4String parallelWorldName = "tarcParallelWorld";                // trying to use it
   auto geomConstruct = new G4TARCDetectorConstruction(fileName);
+  runManager->SetUserInitialization(geomConstruct);    // RUNMANAGER for Geometry
+
+  G4String parallelWorldName = "tarcParallelWorld";                // trying to use it
   auto parallelWorld =  new G4TARCParallelWorld(parallelWorldName);
   geomConstruct->RegisterParallelWorld(parallelWorld);
-  runManager->SetUserInitialization(geomConstruct);    // RUNMANAGER for Geometry
+
+  G4GeometrySampler pgsN(parallelWorld->GetWorldVolume(), "neutron");
+  G4GeometrySampler pgsP(parallelWorld->GetWorldVolume(), "proton");
+  pgsN.SetParallel(true);
+  pgsP.SetParallel(true);
 
   // PhysicsList
   G4PhysListFactory          physFactory;   //= new G4PhysListFactory();
@@ -142,24 +166,17 @@ int main(int argc, char** argv) {
       neutKillMess = new G4NeutronKillerMessenger(neutKiller);
   }
   if (!phys) { phys = new G4TARCPhysicsList(); }
+  phys->RegisterPhysics(new G4IMportanceBiasing(&pgsN, parallelWorldName));
+  phys->RegisterPhysics(new G4IMportanceBiasing(&pgsP, parallelWorldName));
   phys->RegisterPhysics(new G4ParallelWorldPhysics(parallelWorldName, true));
-  //physMess = new G4TARCPhysicsListMessenger(phys);
 
   runManager->SetUserInitialization(phys);      // RUNMANAGER for Physics List
 
   // Action Initialization
-  #ifdef G4MULTITHREADED
-    runManager->SetUserInitialization(new G4TARCActionInitialization());
-  #else
-      runManager->SetUserAction( new G4TARCPrimaryGeneratorAction() );
 
-      runManager->SetUserAction( new G4TARCRunAction() );
+  runManager->SetUserInitialization(new G4TARCActionInitialization());
 
-      runManager->SetUserAction( new G4TARCEventAction() );
-
-      runManager->SetUserAction( new G4TARCStackingAction() );
-
-  #endif
+  runManager->Initialize();
 
   // Create new drawByParticleID model
   G4TrajectoryDrawByParticleID* model = new G4TrajectoryDrawByParticleID;

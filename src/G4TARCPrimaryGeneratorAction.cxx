@@ -30,7 +30,7 @@ void G4TARCPrimaryGeneratorAction::GeneratePrimaries( G4Event* anEvent ){
 
   if (!GetEnergy()){
      SetEnergy(tmp);
-     (G4TARCHistoManager::GetPointer())->SetGPSEnergyIN(tmp);
+     //(G4TARCHistoManager::GetPointer())->SetGPSEnergyIN(tmp);
    }
 
 }

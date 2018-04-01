@@ -15,7 +15,7 @@
 #include "globals.hh"
 
 #include "G4TARCEventActionMessenger.hh"
-#include "G4TARCHistoManager.hh"
+//#include "G4TARCHistoManager.hh"
 
 
 class G4Event;
@@ -43,8 +43,6 @@ private:
   G4bool                             fDebugStarted;
   G4int                              fPrintModulo;
   G4int                              fSelected;
-  //G4TARCHistoManager*                fTARCHisto;
-  //std::vector<std::vector<G4double>> fCalEdep;
 };
 
 #endif
