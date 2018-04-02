@@ -130,13 +130,12 @@ void G4TARCHistoManager::BeginOfRun() {
     //for (G4int jj = 0; jj < 3; jj++) temp.push_back(0.0);
     //fETVirtual.push_back(temp);
   }
-/*
+
   for (G4int ii=0; ii < 12; ii ++) {
     std::vector<G4double> temp;
     for (G4int jj = 0; jj < fMaxEBin; jj++) temp.push_back(0.0);
     fFluence.push_back(temp);
   }
-*/
 
   fGunParticleX   = G4DataVector(fLMax, 0.0);
   fGunParticleY   = G4DataVector(fLMax, 0.0);
@@ -532,7 +531,7 @@ void G4TARCHistoManager::AddEnergyTimeHole(const G4Track* myTrack, const G4Step*
 
     G4double eval = KE / eV;
     G4int fluxEBin = eval / (fNstepEnergy);
-    //G4cout << "stepE " << fNstepEnergy << G4endl;
+    G4cout << "stepE " << fNstepEnergy << G4endl;
     fluxEBin = (fluxEBin >= fMaxEBin) ? fMaxEBin - 1 : fluxEBin;
 
     // insert LV, time, energy to fETVirtual
@@ -542,7 +541,16 @@ void G4TARCHistoManager::AddEnergyTimeHole(const G4Track* myTrack, const G4Step*
     tmp.push_back(eval);
 
     fETVirtual.push_back(tmp); // needs sorting on ijk1 first and then on myTime
-    mySort(fETVirtual);
+    std::sort(fETVirtual.begin(), fETVirtual.end(),
+      [](const std::vector< G4double >& a, const std::vector< G4double >& b){
+        if (a[0] == b[0])
+          return a[1] < b[1];
+        else
+          return a[0] < b[0];
+        } );
+
+    //G4cout << ijk1 << " E= " << eval << " Ebin= " << fluxEBin << " step= " << myStepLength << G4endl;
+
     std::vector<G4double>().swap(tmp);
     //fFluence[ijk1][fluxEBin] += myStepLength;
     //fFluence[ijk1][fluxEBin] /= fTotVolVBox;
@@ -820,11 +828,11 @@ void G4TARCHistoManager::Fill(G4int id, G4double x, G4double w) {
 }
 
 
-void G4TARCHistoManager::mySort( std::vector<std::vector<G4double> >& v) {
-  std::sort(v.begin(), v.end(), [](const std::vector<G4double>& a, const std::vector<G4double>& b){
-        if (a[0] == b[0])
-          return a[1] < b[1];
-        else
-          return a[0] < b[0];
-  });
-}
+  ////////////////////////////////////////////////////////////////////
+/*
+  void G4TARCHistoManager::SetVerbose(G4int val)
+  {
+    fVerbose = val;
+    fHisto->SetVerbose(val);
+  }
+*/

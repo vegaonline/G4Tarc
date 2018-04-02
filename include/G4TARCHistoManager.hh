@@ -10,7 +10,6 @@
 #include <string>
 #include <algorithm>
 #include <vector>
-#include <iterator>
 
 
 #include "G4TARCDetectorConstruction.hh"
@@ -116,8 +115,6 @@ public:
   inline void SetGPSEnergyIN (const G4double value)       { fPrimaryKineticEnergy = value; }
   inline void TotalProtonIn ()                            { fProtonIN++; }
   inline void TotalNCount()                               { fNCountTotal++; }
-
-  void mySort( std::vector<std::vector<G4double> >& ) ;
 
 private:
   G4String                    fRootFileName;
