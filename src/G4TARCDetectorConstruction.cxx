@@ -44,17 +44,6 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
 
 // Sensitive Detectors
 void G4TARCDetectorConstruction::ConstructSDandField() {
-  auto sdManager = G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+  auto sdManager = G4SDManager::GetSDMpointer();
   sdManager->SetVerboseLevel(1);
-}
-
-void G4TARCDetectorConstruction::print_aux(const G4GDMLAuxListType* auxInfoList, G4String prepend="|") {
-	for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin(); iaux != auxInfoList->end(); iaux++ ) {
-		G4String str=iaux->type;
-		G4String val=iaux->value;
-		G4String unit=iaux->unit;
-		G4cout << prepend << str << " : " << val  << " " << unit << G4endl;
-		if (iaux->auxList) print_aux(iaux->auxList, prepend + "|");
-	}
-	return;
 }

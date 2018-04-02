@@ -25,7 +25,17 @@
 #include "G4TARCActionInitialization.hh"
 #include "G4TARCRunAction.hh"
 #include "G4TARCEventAction.hh"
+#include "G4TARCSteppingAction.hh"
 #include "G4TARCStackingAction.hh"
+
+// I am adding all these and later we may be selective to pick effective ones
+#include "G4GeometrySampler.hh"
+#include "G4GeneralParticleSource.hh"
+#include "G4ImportanceBiasing.hh"
+#include "G4IStore.hh"
+#include "G4VWeightWindowStore.hh"
+#include "G4VWeightWindowAlgorithm.hh"
+
 
 // I am adding all these and later we may be selective to pick effective ones
 #include "G4GeneralParticleSource.hh"
@@ -44,13 +54,6 @@
 #include "G4VTrajectoryModel.hh"
 #include "G4Material.hh"
 #include "G4TrajectoryDrawByParticleID.hh"
-#include "G4GeometrySampler.hh"
-#include "G4GeneralParticleSource.hh"
-#include "G4IMportanceBiasing.hh"
-#include "G4IStore.hh"
-#include "G4WeightWindowStore.hh"
-#include "G4WeightWindowAlgorithm.hh"
-
 
 #include "FTFP_BERT.hh"
 #include "FTFP_BERT_HP.hh"
@@ -95,23 +98,18 @@ int main(int argc, char** argv) {
   // Choose the Random Engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
-#ifdef G4MULTITHREADED
-  G4int nThreads = G4Threading::G4GetNumberOfCores();   //   / 2;
-#endif
+  G4int nThreads;
   for (G4int i = 2; i < argc; i += 2) {
     G4String inArg = G4String(argv[i]);
-    if      (inArg == "-m") macro = argv[i+1];
-    else if (inArg == "-u") session = argv[i+1];
+    if (inArg == "-m") macro = argv[i + 1];
+    if (inArg == "-u") session = argv[i + 1];
 #ifdef G4MULTITHREADED
-    else if (inArg == "-t") {
-      if (G4String(argv[i+1]) == "NMAX") {
-        nThreads = G4Threading::G4GetNumberOfCores();
-      } else {
-        nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
-      }
-    }
+    if (inArg == "-t")
+      nThreads = (G4String(argv[i+1]) == "NMAX")
+               ? G4Threading::G4GetNumberOfCores()
+               : G4UIcommand::ConvertToInt(argv[i + 1]);
 #endif
-    else {
+    if (inArg != "-m" && inArg != "-u" && inArg != "-t") {
       PrintUsage();
       return -1;
     }
@@ -148,35 +146,36 @@ int main(int argc, char** argv) {
   pgsP.SetParallel(true);
 
   // PhysicsList
-  G4PhysListFactory          physFactory;   //= new G4PhysListFactory();
-  //G4TARCPhysicsList*          phys        = new G4TARCPhysicsList();
+  G4PhysListFactory           physFactory;
   G4VModularPhysicsList*      phys          = 0;
-  //G4TARCPhysicsListMessenger* physMess      = 0;
   G4NeutronKiller*            neutKiller    = 0;
   G4NeutronKillerMessenger*   neutKillMess  = 0;
   char*                       physnameInput = getenv("PHYSLIST");
   G4String                    physicsName   = "";
   if (physnameInput)          physicsName   = G4String(physnameInput);
+  if (!physicsName.size())    physicsName   = "QGSP_BIX_HP";
 
   if (physicsName.size() && physFactory.IsReferencePhysList(physicsName)){
       phys = physFactory.GetReferencePhysList(physicsName);
       phys->RegisterPhysics(new G4RadioactiveDecayPhysics);
-      //physMess = new G4TARCPhysicsListMessenger(phys);
       neutKiller = new G4NeutronKiller();
       neutKillMess = new G4NeutronKillerMessenger(neutKiller);
   }
   if (!phys) { phys = new G4TARCPhysicsList(); }
-  phys->RegisterPhysics(new G4IMportanceBiasing(&pgsN, parallelWorldName));
-  phys->RegisterPhysics(new G4IMportanceBiasing(&pgsP, parallelWorldName));
-  phys->RegisterPhysics(new G4ParallelWorldPhysics(parallelWorldName, true));
+  phys->RegisterPhysics(new G4ImportanceBiasing(&pgsN, parallelWorldName));
+  phys->RegisterPhysics(new G4ImportanceBiasing(&pgsP, parallelWorldName));
+  phys->RegisterPhysics(new G4ParallelWorldPhysics(parallelWorldName));
 
   runManager->SetUserInitialization(phys);      // RUNMANAGER for Physics List
 
-  // Action Initialization
 
+
+  // Action Initialization
   runManager->SetUserInitialization(new G4TARCActionInitialization());
 
   runManager->Initialize();
+  parallelWorld->CreateImportanceStore();
+
 
   // Create new drawByParticleID model
   G4TrajectoryDrawByParticleID* model = new G4TrajectoryDrawByParticleID;

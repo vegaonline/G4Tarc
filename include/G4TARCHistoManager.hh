@@ -15,6 +15,7 @@
 #include "G4TARCDetectorConstruction.hh"
 #include "G4TARCHisto.hh"
 #include "G4GeneralParticleSource.hh"
+
 // #include "G4TARCAnalysis.hh"
 #include "globals.hh"
 #include "G4Material.hh"
@@ -64,6 +65,8 @@ class G4Track;
 class G4Step;
 class G4ParticleDefinition;
 class G4GeneralParticleSource;
+class G4TARCEventAction;
+
 //class G4TARCDetectorConstruction;
 // class G4AnalysisManager;
 
@@ -113,6 +116,7 @@ public:
   inline void SetMaxEnergyDeposit(G4double val)           { fEdepMax = val;}
   inline void SetVerbose ( G4int val)                     { fVerbose = val;}
   inline void SetGPSEnergyIN (const G4double value)       { fPrimaryKineticEnergy = value; }
+  inline void SetGPSMomentumIN (const G4double value)     { fPrimaryMomentum = value; }
   inline void TotalProtonIn ()                            { fProtonIN++; }
   inline void TotalNCount()                               { fNCountTotal++; }
 
@@ -159,6 +163,7 @@ private:
   G4double fAbsY0;
   G4double fAbsZ0;
   G4double fPrimaryKineticEnergy;
+  G4double fPrimaryMomentum;
   G4double fVirtualDia;
   G4double fVirtVol;
 

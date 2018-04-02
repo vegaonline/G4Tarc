@@ -32,6 +32,7 @@ public:
   G4double GetPrimaryEnergy() { return startEnergy; }
   G4double GetPrimaryTime() { return startTime; }
   void DefineShellsBlocks();
+  // virtual void UserSteppingAction(const G4Step*);
 private:
   G4double startEnergy;
   G4double startTime;
@@ -64,6 +65,6 @@ private:
   std::vector<G4double>                 fOuterRadiusofShell;
   std::vector<G4double>                 fInnerRadiusofShell;
 
-
+};
 
 #endif

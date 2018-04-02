@@ -143,9 +143,9 @@ void G4TARCParallelWorld::ConstructSD() {
 
   //------------- Next we need to add concerned LV to these detectors ----------------------
     for (std::vector<G4LogicalVolume*>::iterator it = fLVvector.begin(); it != fLVvector.end(); ++it) {
-      if ( (*it)->GetName().find("Proton")!=std::string::npos){
+      if ( (*it)->GetName().find("Proton") != std::string::npos){
         SetSensitiveDetector( (*it)->GetName(), fTARCProtonDet);
-      } else{
+      } else {
         SetSensitiveDetector( (*it)->GetName(), fTARCNeutronDet);
       }
     }
@@ -209,11 +209,6 @@ G4VIStore* G4TARCParallelWorld::CreateImportanceStore(){
   // G4int cell(fShellNumber);
   for (G4int cell = 0; cell < fShellNumber; cell++) {
     G4GeometryCell gCell = GetGeometryCell(cell);
-    /*
-    G4cout << " adding cell: " << cell << " replica: "
-           << gCell.GetReplicaNumber() << " name: "
-           << gCell.GetPhysicalVolume().GetName() << G4endl;
-    */
     imp = 1;
     istore->AddImportanceGeometryCell(imp, gCell.GetPhysicalVolume(), cell);
   }

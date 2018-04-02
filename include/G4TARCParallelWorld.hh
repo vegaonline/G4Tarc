@@ -78,7 +78,7 @@ public:
 
 
 private:
-  G4TARCPVolumeStore                fPVolumeStore;
+    G4TARCPVolumeStore                fPVolumeStore;
     G4MultiFunctionalDetector*        fTARCNeutronDet;
     G4MultiFunctionalDetector*        fTARCProtonDet;
     G4int                             fShellNumber;

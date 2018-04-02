@@ -307,7 +307,7 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
     if (ke/MeV > 0){
       G4double enerMean = GetGPSEnergy();
       enerMean = (0.5 * (ke + enerMean));
-      SetGPSEnergyIN(enerMean);
+      //SetGPSEnergyIN(enerMean);  // already set in primaryGenerator from GPS
     }
     //fPrimaryKineticEnergy = ke;
     fPrimaryDef = pd;
@@ -326,54 +326,54 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
                              << "; Dir = "       << myTrack->GetMomentumDirection()
                              << G4endl;
     ke = std::log10(ke/eV);
-    if (pd == G4Gamma::Gamma()){
+    if (pd == G4Gamma::GammaDefinition()){
       fNgam++;
-      fHisto->Fill(1, ke, 1.0);
-    }else if (pd == G4Electron::Electron()){
+      const G4VProcess* procG = myTrack->GetCreatorProcess();         //  check
+      //fHisto->Fill(1, ke, 1.0);
+    }else if (pd == G4Electron::ElectronDefinition()){
       fNelec++;
-      fHisto->Fill(2, ke, 1.0);
-    }else if (pd == G4Positron::Positron()) {
+      // fHisto->Fill(2, ke, 1.0);
+    }else if (pd == G4Positron::PositronDefinition()) {
       fNposit++;
-      fHisto->Fill(3, ke, 1.0);
-    } else if (pd == G4Proton::Proton()){
+      //fHisto->Fill(3, ke, 1.0);
+    } else if (pd == G4Proton::ProtonDefinition()){
       fNproton++;
-      fHisto->Fill(4, ke, 1.0);
-    } else if (pd == fNeutron ){//&& TKin < fTcut){  // <----- CHECK
+      // fHisto->Fill(4, ke, 1.0);
+    } else if (pd == G4Neutron::NeutronDefinition() ){//&& TKin < fTcut){  // <----- CHECK
       fNneutron++;
-      fHisto->Fill(5, ke, 1.0);
-    } else if (pd == G4AntiProton::AntiProton()){
+      // fEventAction->AddNeutronStack();
+      //fHisto->Fill(5, ke, 1.0);
+    } else if (pd == G4AntiProton::AntiProtonDefinition()){
       fNaproton++;
-    } else if ( pd == G4PionPlus::PionPlus() ) {
+    } else if ( pd == G4PionPlus::PionPlusDefinition() ) {
       fNcpions++;
-      fHisto->Fill(6, ke, 1.0);
-      fHisto->Fill(19, ke, 1.0);
-    } else if ( pd == G4PionMinus::PionMinus()) {
+      //fHisto->Fill(6, ke, 1.0);
+      //fHisto->Fill(19, ke, 1.0);
+    } else if ( pd == G4PionMinus::PionMinusDefinition()) {
       fNcpions++;
-      fHisto->Fill(6, ke, 1.0);
-      fHisto->Fill(20, ke, 1.0);
-    } else if ( pd == G4PionZero::PionZero()) {
+      //fHisto->Fill(6, ke, 1.0);
+      //fHisto->Fill(20, ke, 1.0);
+    } else if ( pd == G4PionZero::PionZeroDefinition()) {
       fNpi0++;
-      fHisto->Fill(7, ke, 1.0);
-    } else if ( pd == G4KaonPlus::KaonPlus() ||
-                pd == G4KaonMinus::KaonMinus()) {
+      //fHisto->Fill(7, ke, 1.0);
+    } else if ( pd == G4KaonPlus::KaonPlusDefinition() ||  pd == G4KaonMinus::KaonMinusDefinition()) {
       fNkaons++;
-      fHisto->Fill(8, ke, 1.0);
-    } else if ( pd == G4KaonZeroShort::KaonZeroShort() ||
-                pd == G4KaonZeroLong::KaonZeroLong()) {
+      //fHisto->Fill(8, ke, 1.0);
+    } else if ( pd == G4KaonZeroShort::KaonZeroShortDefinition() ||  pd == G4KaonZeroLong::KaonZeroLongDefinition()) {
       fNkaons++;
-      fHisto->Fill(9, ke, 1.0);
-    } else if (pd == G4Deuteron::Deuteron() || pd == G4Triton::Triton()){
+      //fHisto->Fill(9, ke, 1.0);
+    } else if (pd == G4Deuteron::DeuteronDefinition() || pd == G4Triton::TritonDefinition()){
       fNdeut++;
-      fHisto->Fill(10, ke, 1.0);
+      // fHisto->Fill(10, ke, 1.0);
     } else if (pd == G4He3::He3() || pd == G4Alpha::Alpha()) {
       fNalpha++;
-      fHisto->Fill(11, ke, 1.0);
+      //fHisto->Fill(11, ke, 1.0);
     } else if (pd->GetParticleType() == "nucleus"){
       fNions++;
-      fHisto->Fill(12, ke, 1.0);
-    } else if (pd == G4MuonPlus::MuonPlus() || pd == G4MuonMinus::MuonMinus()){
+      //fHisto->Fill(12, ke, 1.0);
+    } else if (pd == G4MuonPlus::MuonPlusDefinition() || pd == G4MuonMinus::MuonMinusDefinition()){
       fNmuons++;
-      fHisto->Fill(13, ke, 1.0);
+      //fHisto->Fill(13, ke, 1.0);
     }
   }
 }

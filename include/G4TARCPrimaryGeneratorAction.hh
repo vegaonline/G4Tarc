@@ -7,6 +7,7 @@
 #ifndef G4TARC_PRIMARYGENERATORACTION_H
 #define G4TARC_PRIMARYGENERATORACTION_H
 
+#include "G4TARCHistoManager.hh"
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 #include "G4RunManager.hh"
@@ -28,7 +29,7 @@
 class G4GeneralParticleSource;
 class G4Event;
 class G4TARCPrimaryMessenger;
-//class G4TARCHistoManager;
+class G4TARCHistoManager;
 
 
 class G4TARCPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
@@ -48,6 +49,7 @@ private:
   G4TARCPrimaryGeneratorAction & operator=( const G4TARCPrimaryGeneratorAction &right );
   G4TARCPrimaryGeneratorAction( const G4TARCPrimaryGeneratorAction& );
 
+  G4TARCHistoManager*        fHisto;
   G4GeneralParticleSource*   fGPS;
   G4double                   fEnergy;
   G4double                   fMomentum;

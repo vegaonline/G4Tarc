@@ -42,16 +42,21 @@ file (GLOB sources
 #---------------------------------------------------------------
 add_executable(tarcVega tarcVega.cc ${sources} ${headers})
 target_link_libraries(tarcVega ${Geant4_LIBRARIES} ${HBOOK_LIBRARIES} ${ROOT_LIBRARIES})
-#target_link_libraries(tarcVega ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 
 #---------------------------------------------------------------
 # Copy scripts to build directory
 #---------------------------------------------------------------
 set(G4TARC_SCRIPTS
-  GeomData/tarc_geometry.gdml # GeomData/tarc_geometry_lv.gdml 
-  GeomData/schema/gdml_core.xsd GeomData/schema/gdml_define.xsd GeomData/schema/gdml_extensions.xsd
-  GeomData/schema/gdml_materials.xsd GeomData/schema/gdml_parameterised.xsd GeomData/schema/gdml_replicas.xsd
-  GeomData/schema/gdml_solids.xsd GeomData/schema/gdml.xsd
+  Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt
+  Data/GeomData/tarc_geometry.gdml 
+  Data/GeomData/schema/gdml_core.xsd 
+  Data/GeomData/schema/gdml_define.xsd 
+  Data/GeomData/schema/gdml_extensions.xsd
+  Data/GeomData/schema/gdml_materials.xsd 
+  Data/GeomData/schema/gdml_parameterised.xsd 
+  Data/GeomData/schema/gdml_replicas.xsd
+  Data/GeomData/schema/gdml_solids.xsd 
+  Data/GeomData/schema/gdml.xsd
   run.mac 
   vis.mac
   TARCVEGA.run

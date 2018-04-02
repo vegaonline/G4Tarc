@@ -1,11 +1,18 @@
 #include "G4TARCStackingAction.hh"
 
-G4TARCStackingAction::G4TARCStackingAction()
-: G4UserStackingAction(), fHistoManager(0), fStackMessenger(0), fParticle(0) {
-  fStackMessenger = new G4TARCStackingMessenger(this);
-  fHistoManager   = G4TARCHistoManager::GetPointer();
-  fKillSecondary  = false;
-  fParticle       = 0;
+G4TARCStackingAction::G4TARCStackingAction(G4TARCEventAction* thisEvent)
+: G4UserStackingAction(), fHistoManager(0), fStackMessenger(0),
+  fEventAction(thisEvent), fParticle(0) {
+  fStackMessenger   = new G4TARCStackingMessenger(this);
+  fHistoManager     = G4TARCHistoManager::GetPointer();
+  fKillSecondary    = false;
+  fKillGammas       = false;
+  fNumber_newTracks = 0;
+  fNeutron          = 0;
+  fProton           = 0;
+  fDeuteron         = 0;
+  fParticle         = 0;
+  fNavigator        = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
 }
 
 G4TARCStackingAction::~G4TARCStackingAction() {
@@ -15,6 +22,7 @@ G4TARCStackingAction::~G4TARCStackingAction() {
 G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* myTrack) {
   G4ClassificationOfNewTrack status = fUrgent;
 
+  fNumber_newTracks++;
   if (myTrack->GetTrackStatus() == fAlive)
     fHistoManager->ScoreNewTrack(myTrack);
 

@@ -11,8 +11,6 @@
 
 #include <algorithm>
 
-//#include "G4TARCTargetSD.hh"
-//#include "G4TARCCheckVolumeSD.hh"
 #include "G4TARCDetectorMessenger.hh"
 
 #include "G4VUserDetectorConstruction.hh"
@@ -50,14 +48,13 @@
 
 class G4GDMLParser;
 class G4VPhysicalVolume;
+class G4LogicalVolume;
 class G4Material;
 class G4VSensitiveDetector;
 class G4VisAttributes;
-
 class G4LogicalVolume;
 class G4TARCDetectorMessenger; //---------------
-//class G4TARCCheckVolumeSD; //--------------------------
-//class G4TARCTargetSD;      //--------------------------
+
 
 // Detector constructor is loading the GDML geometry
 class G4TARCDetectorConstruction : public G4VUserDetectorConstruction {
@@ -70,7 +67,7 @@ public:
   virtual void ConstructSDandField();
   void SetReadFile( const G4String& );  // GDML file reader
   inline G4VPhysicalVolume* GetWorldVolume() { return fWorldPhysVol; }
-  void print_aux(const G4GDMLAuxListType*, G4String );
+
 
 private:
   G4TARCDetectorConstruction & operator=(const G4TARCDetectorConstruction&);
