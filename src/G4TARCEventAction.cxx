@@ -10,6 +10,7 @@ G4TARCEventAction::G4TARCEventAction()
   fDebugStarted(false) {
     fEventMessenger = new G4TARCEventActionMessenger (this);
     fUITARC = G4UImanager::GetUIpointer();
+    fHisto = G4TARCHistoManager::GetPointer();
 }
 
 G4TARCEventAction::~G4TARCEventAction() {
@@ -32,6 +33,8 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
   if ( G4int( nEvt / fPrintModulo ) * fPrintModulo == nEvt ){
     G4cout << "EventAction: Event # " << nEvt << " started " << G4endl;
   }
+
+  fHisto->BeginOfEvent();
 }
 
 
@@ -41,4 +44,6 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
     fDebugStarted = false;
     G4cout << " EventAction: Event # " << evt->GetEventID() << " ended" << G4endl;
   }
+  fHisto->EndOfEvent();
+  if (fHisto->GetVerbose() > 0) G4cout << "EventAction: Event " << evt->GetEventID() << " ended." <<G4endl;
 }

@@ -15,12 +15,13 @@
 #include "globals.hh"
 
 #include "G4TARCEventActionMessenger.hh"
-//#include "G4TARCHistoManager.hh"
+#include "G4TARCHistoManager.hh"
 
 
 class G4Event;
 class G4UImanager;
 class G4TARCEventActionMessenger;
+class G4TARCHistoManager;
 
 class G4TARCEventAction : public G4UserEventAction {
 public:
@@ -36,7 +37,7 @@ public:
 private:
   G4TARCEventAction& operator=(const G4TARCEventAction& right);
   G4TARCEventAction ( const G4TARCEventAction& );
-
+  G4TARCHistoManager*                fHisto;
   G4TARCEventActionMessenger*        fEventMessenger;
   G4UImanager*                       fUITARC;
   std::vector<G4int>                 fSelectedEvents;

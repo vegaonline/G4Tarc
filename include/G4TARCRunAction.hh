@@ -11,6 +11,7 @@
 #include "G4NuclearLevelData.hh"
 #include "globals.hh"
 #include "G4Run.hh"
+#include "G4UserRunAction.hh"
 #include "G4TARCHistoManager.hh"
 #include "G4TARCEventAction.hh"
 // #include "G4TARCAnalysis.hh"

@@ -16,7 +16,8 @@ G4TARCRunAction::~G4TARCRunAction() {
 }
 
 void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
-  //auto id = aRun->GetRunID();
+  auto id = aRun->GetRunID();
+  G4cout << "Run # " << id << " starts." << G4endl;
   G4NuclearLevelData::GetInstance();
   (G4TARCHistoManager::GetPointer())->BeginOfRun();
 
@@ -30,15 +31,13 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
 }
 
 
-void G4TARCRunAction::EndOfRunAction( const G4Run* ){
+void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
   //auto analysisManager = G4AnalysisManager::Instance();
-  G4cout << " RunAction: End of run actions are started" << G4endl;
+  G4cout << " RunAction: End of run actions for # " << aRun->GetRunID() << " is started" << G4endl;
 
   (G4TARCHistoManager::GetPointer())->EndOfRun();
   #ifdef G4VIS_USE
     if (G4VVisManager::GetConcreteInstance())
       G4UImanager::GetUIpointer()->ApplyCommand("/vis/viewer/update");
   #endif
-  //analysisManager->Write();
-  //analysisManager->CloseFile();
 }

@@ -10,13 +10,17 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <iomanip>
+#include <sstream>
+#include <regex>
+#include <fstream>
 
 
 #include "G4TARCDetectorConstruction.hh"
 #include "G4TARCHisto.hh"
 #include "G4GeneralParticleSource.hh"
+#include "G4TARCAnalysis.hh"
 
-// #include "G4TARCAnalysis.hh"
 #include "globals.hh"
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -52,19 +56,13 @@
 #include "G4TrackStatus.hh"
 #include "G4HadronicProcessType.hh"
 #include "G4VProcess.hh"
-#include "G4GeneralParticleSource.hh"
+#include "G4NuclearLevelData.hh"
 
-#include "g4root.hh"
-
-//#include "TH1D.h"
-//#include "TFile.h"
-//#include "TTFree.h"
 
 class G4TARCHisto;
 class G4Track;
 class G4Step;
 class G4ParticleDefinition;
-class G4GeneralParticleSource;
 class G4TARCEventAction;
 
 //class G4TARCDetectorConstruction;
@@ -78,7 +76,8 @@ public:
 private:
   G4TARCHistoManager ();
 
-  void BookHisto();
+  void BookHistogram();
+  void CreateTuples();
   void save();
   void FillHisto(G4int, G4double, G4double);
   void Normalize(G4int, G4double);
@@ -106,6 +105,13 @@ public:
   void NeutronRun(G4double);
   void GunParticleRun(G4double);
   void Fill(G4int, G4double, G4double);
+
+  void ReadExperimentalDataFromFile(G4String&);
+  void FillRadialExperimentalData();
+  void CreateNeutronFluxHisto();
+  void createRadialFluxHisto();
+
+  void DefineShellBlocks();
 
   inline G4int GetVerbose()               const           { return fVerbose; }
   inline G4double GetLength()             const           { return fLength; }
@@ -139,7 +145,7 @@ private:
   G4int    fMaxEBin     = 10000;
   G4int    fStepE       = (fMaxEVal / fMaxBin);
   G4int    fMaxSlices   = 3 * fMaxBin;
-  G4int    fNHisto      = 25;
+  //G4int    fNHisto      = 25;
   G4int    fMaxNdx      = 10000;
 
 
@@ -226,9 +232,6 @@ private:
   G4DataVector       fnETsum;
   G4DataVector       fNEfluxBin;
 
-
-
-
   G4DataVector       fNSecondSum1;
   G4DataVector       fNSecondSum2;
   G4DataVector       fNSecondSum3;
@@ -242,6 +245,54 @@ private:
   G4PhysicsLogVector fnTsecond;
 
   size_t             fNbin;
+//--------------------------------------------------------
+  G4AnalysisManager*                    analysisManager;
+  G4String                              fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
+  G4String                              fAnalysisFileName = "G4TARC_output";
+  G4TARCEventAction*                    fEventAction;
+  //G4TARCPrimaryGeneratorAction*         fPrimary;
+  //G4TARCRunAction*                      fRun;
+
+  G4int                                 iFluxCountRef;
+
+  G4double                              fTestSphereRadius;
+  G4double                              fTestSphereVolume;
+  G4double                              fTestSphereSurfaceArea;
+
+  G4double                              fHalfXBlockB;
+  G4double                              fHalfYBlockB;
+  G4double                              fHalfZBlockB;
+  G4double                              fHalfXVBox;
+  G4double                              fHalfYVBox;
+  G4double                              fHalfZVBox;
+  G4double                              fNewHalfZProt;
+  G4double                              fZposProt;
+  G4int                                 fShellNumber;
+  G4double                              fShellThickness;
+  G4double                              fMaxOuterRadiusofShell;
+  G4double                              fMinInnerRadiusofShell;
+ G4double                              fInnerRadProtonShell;
+ G4double                              fOuterRadProtonShell;
+ std::vector<G4double>                 fOuterRadiusofShell;
+ std::vector<G4double>                 fInnerRadiusofShell;
+ G4DataVector                          fLocal_Energy_Integral;
+ G4double                              fRadHole;
+ G4double                              fRadCyl;
+ G4double                              fLenCyl;
+
+ G4int                                 fMaxFluxData;
+ G4int                                 fMaxFluenceData;
+ G4int                                 fMaxTestFluxData;
+
+ std::vector< G4double>                ExptEnergyBin;
+ std::vector< std::vector<G4double> >  ExptRadiiTables;
+ std::vector< std::vector<G4double> >  ExptFluenceTables;
+ std::vector< std::vector<G4double> >  ExptErrTables;
+ std::vector< std::vector<G4double> >  ExptEnergyTables;
+ std::vector< std::vector<G4double> >  ExptFluxTables;
+ std::vector< std::vector<G4double> >  ExptFluxErrTables;
+ std::vector<G4int>                    fFluxTableList {36, 38, 40};
+
 };
 
 #endif
