@@ -83,19 +83,18 @@ void G4TARCParallelWorld::Construct() {
 
   // Make the thinner shell bunches
   for (G4int i = 0; i < fShellNumber; i++) {
-    G4Sphere* radShellSphere = new G4Sphere("shellSphere",
-                            fInnerRadiusofShell[i], fOuterRadiusofShell[i],
+    G4Sphere* radShellSphere = new G4Sphere("shellSphere", fInnerRadiusofShell[i], fOuterRadiusofShell[i],
                             0.0*deg, 360.0*deg, 0.0*deg, 180.0*deg);
     nameTmp = "radial_shell_log_" + std::to_string(i);
     fShellLog = new G4LogicalVolume(radShellSphere, dummyMat, nameTmp);
     fLVvector.push_back(fShellLog);
     nameTmp = GetCellName(i);
-        fShellPhys = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), nameTmp, fShellLog, ghostWorld, false, i);
-        fShellLog->SetVisAttributes(fAtt3);
-        G4GeometryCell radCell(*fShellPhys, i);
-        fPVolumeStore.AddPVolume(radCell);
-      }
-      fConstructed = true;
+    fShellPhys = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), nameTmp, fShellLog, ghostWorld, false, i);
+    fShellLog->SetVisAttributes(fAtt3);
+    G4GeometryCell radCell(*fShellPhys, i);
+    fPVolumeStore.AddPVolume(radCell);
+  }
+  fConstructed = true;
 }
 
 

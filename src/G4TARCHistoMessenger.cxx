@@ -73,6 +73,7 @@ G4TARCHistoMessenger::~G4TARCHistoMessenger(){
 
 void G4TARCHistoMessenger::SetNewValue(G4UIcommand* comm, G4String newVal) {
   //G4TARCHistoManager* histo = G4TARCHistoManager::GetPointer();
+  /*
   if (comm == fFactoryCmd) {
     fHisto->SetFileName(newVal);
   } else if (comm == fFileCmd) {
@@ -97,4 +98,5 @@ void G4TARCHistoMessenger::SetNewValue(G4UIcommand* comm, G4String newVal) {
     vUnit = (vUnit <= 0.0) ? 1.0 : vUnit;
     fHisto->SetHisto1D(ih,nbBins,vmin,vmax,vUnit);
   }
+  */
 }

@@ -12,6 +12,8 @@
 #include <algorithm>
 
 #include "G4TARCDetectorMessenger.hh"
+#include "G4TARCTargetSD.hh"
+#include "G4TARCVolumeSD.hh"
 
 #include "G4VUserDetectorConstruction.hh"
 #include "G4VPhysicalVolume.hh"
@@ -54,6 +56,8 @@ class G4VSensitiveDetector;
 class G4VisAttributes;
 class G4LogicalVolume;
 class G4TARCDetectorMessenger; //---------------
+class G4TARCTargetSD;
+class G4TARCVolumeSD;
 
 
 // Detector constructor is loading the GDML geometry
@@ -86,7 +90,8 @@ private:
   G4LogicalVolumeStore*    fLVS;
   G4PhysicalVolumeStore*   fPVS;
   std::vector<G4LogicalVolume*>  ::const_iterator fLVciter;
-  std::vector<G4VPhysicalVolume*>::const_iterator fPVciter;
+  //std::vector<G4VPhysicalVolume*>::const_iterator fPVciter;
+  std::vector<G4LogicalVolume*>     fLVvectorMini;  /// this is to store some LV for SD
   //G4ThreeVector            pbTargetMin;
   //G4ThreeVector            pbTargetMax;
   G4Material*              fTargetMat;

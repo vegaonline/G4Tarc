@@ -7,11 +7,9 @@
 #include "G4TARCPhysicsList.hh"
 
 G4TARCPhysicsList::G4TARCPhysicsList()
-: G4VModularPhysicsList(), fEmPhysicsList(0), fThermal(true),
-  fParticleList(0)
-{
-    verboseLevel           = 0;
-    fThermal = true;
+: G4VModularPhysicsList(), fEmPhysicsList(0), fThermal(true), fParticleList(0) {
+    verboseLevel     = 1;
+    fThermal         = true;
 
     G4LossTableManager::Instance();
     fCut4Gamma       = defCutValue;
@@ -22,9 +20,9 @@ G4TARCPhysicsList::G4TARCPhysicsList()
     // Radioactive Decay Physics
     RegisterPhysics(new G4RadioactiveDecayPhysics);
     // Particles
-    fParticleList          = new G4DecayPhysics("decays");   //"Decay");
+    fParticleList    = new G4DecayPhysics("decays");   //"Decay");
     // EM Physics
-    fEmPhysicsList         = new G4EmStandardPhysics(verboseLevel);
+    fEmPhysicsList   = new G4EmStandardPhysics(verboseLevel);
 }
 
 G4TARCPhysicsList::~G4TARCPhysicsList() {
@@ -42,10 +40,8 @@ void G4TARCPhysicsList::ConstructParticle() {
   G4BosonConstructor::ConstructParticle();
   G4IonConstructor::ConstructParticle();
   G4ShortLivedConstructor::ConstructParticle();
-
   fParticleList->ConstructParticle();
 }
-
 
 void G4TARCPhysicsList::ConstructProcess() {
   AddTransportation();
@@ -54,94 +50,94 @@ void G4TARCPhysicsList::ConstructProcess() {
   neutronProcess();
   for ( size_t i = 0; i < fHadronPhys.size(); i++ ){
     fHadronPhys[i]->ConstructProcess();
-    fHadronPhys[i]->SetVerboseLevel(0);
+    fHadronPhys[i]->SetVerboseLevel(1);
   }
 }
 
 void G4TARCPhysicsList::neutronProcess(){
-    G4ParticleDefinition* neutron = G4Neutron::Neutron();
-    G4ProcessManager* pManager = neutron->GetProcessManager();
+  G4ParticleDefinition* neutron = G4Neutron::Neutron();
+  G4ProcessManager* pManager = neutron->GetProcessManager();
 
-    // delete all neutron processes if already registered
-    //
-    G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
-    G4VProcess* process = 0;
-    process = processTable->FindProcess("hadElastic", neutron);
-    if (process) pManager->RemoveProcess(process);
-    //
-    process = processTable->FindProcess("neutronInelastic", neutron);
-    if (process) pManager->RemoveProcess(process);
-    //
-    process = processTable->FindProcess("nCapture", neutron);
-    if (process) pManager->RemoveProcess(process);
-    //
-    process = processTable->FindProcess("nFission", neutron);
-    if (process) pManager->RemoveProcess(process);
+  // delete all neutron processes if already registered
+  //
+  G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
+  G4VProcess* process = 0;
+  process = processTable->FindProcess("hadElastic", neutron);
+  if (process) pManager->RemoveProcess(process);
+  //
+  process = processTable->FindProcess("neutronInelastic", neutron);
+  if (process) pManager->RemoveProcess(process);
+  //
+  process = processTable->FindProcess("nCapture", neutron);
+  if (process) pManager->RemoveProcess(process);
+  //
+  process = processTable->FindProcess("nFission", neutron);
+  if (process) pManager->RemoveProcess(process);
 
-    //process->SetVerboseLevel(0);
-    // (re) create process: elastic
-    //
-    G4HadronElasticProcess* process1 = new G4HadronElasticProcess();
-    process1->SetVerboseLevel(0);
-    pManager->AddDiscreteProcess(process1);
-    //
-    // model1a
-    G4ParticleHPElastic*  model1a = new G4ParticleHPElastic();
-    process1->RegisterMe(model1a);
-    process1->AddDataSet(new G4ParticleHPElasticData());
-    //
-    // model1b
-    if (fThermal) {
-      model1a->SetMinEnergy(4*eV);
-      G4ParticleHPThermalScattering* model1b = new G4ParticleHPThermalScattering();
-      process1->RegisterMe(model1b);
-      process1->AddDataSet(new G4ParticleHPThermalScatteringData());
-    }
-    // (re) create process: inelastic
-    //
-    G4NeutronInelasticProcess* process2 = new G4NeutronInelasticProcess();
-    process2->SetVerboseLevel(0);
-    pManager->AddDiscreteProcess(process2);
-    //
-    // cross section data set
-    G4ParticleHPInelasticData* dataSet2 = new G4ParticleHPInelasticData();
-    process2->AddDataSet(dataSet2);
-    //
-    // models
-    G4ParticleHPInelastic* model2 = new G4ParticleHPInelastic();
-    process2->RegisterMe(model2);
+  //process->SetVerboseLevel(0);
+  // (re) create process: elastic
+  //
+  G4HadronElasticProcess* process1 = new G4HadronElasticProcess();
+  process1->SetVerboseLevel(1);
+  pManager->AddDiscreteProcess(process1);
+  //
+  // model1a
+  G4ParticleHPElastic*  model1a = new G4ParticleHPElastic();
+  process1->RegisterMe(model1a);
+  process1->AddDataSet(new G4ParticleHPElasticData());
+  //
+  // model1b
+  if (fThermal) {
+    model1a->SetMinEnergy(4.0*eV);
+    G4ParticleHPThermalScattering* model1b = new G4ParticleHPThermalScattering();
+    process1->RegisterMe(model1b);
+    process1->AddDataSet(new G4ParticleHPThermalScatteringData());
+  }
+  // (re) create process: inelastic
+  //
+  G4NeutronInelasticProcess* process2 = new G4NeutronInelasticProcess();
+  process2->SetVerboseLevel(1);
+  pManager->AddDiscreteProcess(process2);
+  //
+  // cross section data set
+  G4ParticleHPInelasticData* dataSet2 = new G4ParticleHPInelasticData();
+  process2->AddDataSet(dataSet2);
+  //
+  // models
+  G4ParticleHPInelastic* model2 = new G4ParticleHPInelastic();
+  process2->RegisterMe(model2);
 
-    // (re) create process: nCapture
-    //
-    G4HadronCaptureProcess* process3 = new G4HadronCaptureProcess();
-    process3->SetVerboseLevel(0);
-    pManager->AddDiscreteProcess(process3);
-    //
-    // cross section data set
-    G4ParticleHPCaptureData* dataSet3 = new G4ParticleHPCaptureData();
-    process3->AddDataSet(dataSet3);
-    //
-    // models
-    G4ParticleHPCapture* model3 = new G4ParticleHPCapture();
-    process3->RegisterMe(model3);
-    // (re) create process: nFission
-    //
-    G4HadronFissionProcess* process4 = new G4HadronFissionProcess();
-    process4->SetVerboseLevel(0);
-    pManager->AddDiscreteProcess(process4);
-    //
-    // cross section data set
-    G4ParticleHPFissionData* dataSet4 = new G4ParticleHPFissionData();
-    process4->AddDataSet(dataSet4);
-    //
-    // models
-    G4ParticleHPFission* model4 = new G4ParticleHPFission();
-    process4->RegisterMe(model4);
+  // (re) create process: nCapture
+  //
+  G4HadronCaptureProcess* process3 = new G4HadronCaptureProcess();
+  process3->SetVerboseLevel(1);
+  pManager->AddDiscreteProcess(process3);
+  //
+  // cross section data set
+  G4ParticleHPCaptureData* dataSet3 = new G4ParticleHPCaptureData();
+  process3->AddDataSet(dataSet3);
+  //
+  // models
+  G4ParticleHPCapture* model3 = new G4ParticleHPCapture();
+  process3->RegisterMe(model3);
+  // (re) create process: nFission
+  //
+  G4HadronFissionProcess* process4 = new G4HadronFissionProcess();
+  process4->SetVerboseLevel(1);
+  pManager->AddDiscreteProcess(process4);
+  //
+  // cross section data set
+  G4ParticleHPFissionData* dataSet4 = new G4ParticleHPFissionData();
+  process4->AddDataSet(dataSet4);
+  //
+  // models
+  G4ParticleHPFission* model4 = new G4ParticleHPFission();
+  process4->RegisterMe(model4);
 }
 
 
 void G4TARCPhysicsList::AddPhysicsList(const G4String& name) {
-  if ( verboseLevel > 2 ) {
+  if ( verboseLevel > 1 ) {
     G4cout << "PhysicsList::AddPhysicsList: <" << name << ">" << G4endl;
   }
 
@@ -170,16 +166,16 @@ void G4TARCPhysicsList::AddPhysicsList(const G4String& name) {
     AddPhysicsList("emstandard_opt4");
     AddPhysicsList("FTFP_BERT");
   } else if (name == "FTFP_BERT") {
-    SetBuilderList1();
+    //SetBuilderList1();
     fHadronPhys.push_back( new G4HadronPhysicsFTFP_BERT() );
   } else if (name == "FTFPlowBERT") {
-    SetBuilderList1();
+    //SetBuilderList1();
     //fHadronPhys.push_back( new G4HadronInFTFPlowBERT() );
   } else if (name == "FTFP_BERT_TRV") {
     SetBuilderList3();
     fHadronPhys.push_back( new G4HadronPhysicsFTFP_BERT());
   } else if (name == "FTF_BIC") {
-    SetBuilderList0();
+    //SetBuilderList0();
     fHadronPhys.push_back( new G4HadronPhysicsFTF_BIC());
     fHadronPhys.push_back( new G4NeutronCrossSectionXS(verboseLevel));
   } else if (name == "QBBC") {
@@ -211,7 +207,7 @@ void G4TARCPhysicsList::AddPhysicsList(const G4String& name) {
     AddPhysicsList("emstandard_opt3");
     SetBuilderList0();
     fHadronPhys.push_back( new G4HadronPhysicsQGSP_BIC());
-  } else if (name == "QGS_BIC") {
+  } else if (name == "QGSP_BIC") {
     SetBuilderList0();
     fHadronPhys.push_back( new G4HadronPhysicsQGS_BIC());
     fHadronPhys.push_back( new G4NeutronCrossSectionXS(verboseLevel));
@@ -231,7 +227,6 @@ void G4TARCPhysicsList::AddPhysicsList(const G4String& name) {
     G4cout << "PhysicsList::AddPhysicsList: <" << name << ">"
           << " is not defined"
           << G4endl;
-          exit(0);
   }
 }
 
@@ -249,19 +244,15 @@ void G4TARCPhysicsList::SetBuilderList0( G4bool flagHP) {
 
 // Neutron tracking cut
   RegisterPhysics( new G4NeutronTrackingCut(verboseLevel) );
-
 }
 
 void G4TARCPhysicsList::SetBuilderList1( G4bool flagHP) {
   fHadronPhys.push_back( new G4EmExtraPhysics(verboseLevel));
-
-  if(flagHP)   {
+  if(flagHP) {
     fHadronPhys.push_back( new G4HadronElasticPhysicsHP(verboseLevel) );
   } else  {
     fHadronPhys.push_back( new G4HadronElasticPhysics(verboseLevel) );
-
     // activate G4LMsdGenerator:
-
     // fHadronPhys.push_back( new G4HadronHElasticPhysics(verboseLevel,true) );
   }
   fHadronPhys.push_back( new G4StoppingPhysics(verboseLevel));
@@ -281,14 +272,11 @@ void G4TARCPhysicsList::SetBuilderList2() {
 
 void G4TARCPhysicsList::SetBuilderList3( G4bool flagHP) {
   fHadronPhys.push_back( new G4EmExtraPhysics(verboseLevel));
-
   if(flagHP) {
     fHadronPhys.push_back( new G4HadronElasticPhysicsHP(verboseLevel) );
   }  else  {
     //  fHadronPhys.push_back( new G4HadronElasticPhysics(verboseLevel) );
-
     // activate G4LMsdGenerator:
-
     fHadronPhys.push_back( new G4HadronHElasticPhysics(verboseLevel,true) );
   }
   fHadronPhys.push_back( new G4StoppingPhysics(verboseLevel));
@@ -299,14 +287,11 @@ void G4TARCPhysicsList::SetBuilderList3( G4bool flagHP) {
 
 void G4TARCPhysicsList::SetBuilderList4( G4bool flagHP) {
   fHadronPhys.push_back( new G4EmExtraPhysics(verboseLevel));
-
   if(flagHP) {
     fHadronPhys.push_back( new G4HadronElasticPhysicsHP(verboseLevel) );
   } else   {
     //  fHadronPhys.push_back( new G4HadronElasticPhysics(verboseLevel) );
-
     // activate G4LMsdGenerator:
-
     // fHadronPhys.push_back( new G4QqElasticPhysics(verboseLevel,true) );
   }
   fHadronPhys.push_back( new G4StoppingPhysics(verboseLevel));
@@ -316,20 +301,16 @@ void G4TARCPhysicsList::SetBuilderList4( G4bool flagHP) {
 
 
 void G4TARCPhysicsList::SetCuts()  {
-
-  if ( verboseLevel > 1 )   {
+  if ( verboseLevel > 0 )   {
     G4cout << "PhysicsList::SetCuts:";
     G4cout << "CutLength : " << G4BestUnit(defaultCutValue,"Length") << G4endl;
   }
-
   // set cut values for gamma at first and for e- second and next for e+,
   // because some processes for e+/e- need cut values for gamma
-
   SetCutValue(fCut4Gamma, "gamma");
   SetCutValue(fCut4Electron, "e-");
   SetCutValue(fCut4Positron, "e+");
   SetCutValue(fCut4Proton, "proton");
-
   //                    if ( verboseLevel > 0 ) { DumpCutValuesTable(); }
 }
 

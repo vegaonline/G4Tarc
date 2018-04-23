@@ -28,7 +28,6 @@ G4TARCHistoManager::G4TARCHistoManager()
   fNCountTotal(0),
   fVirtVol(0),
   fNSlices( fMaxSlices ) {
-    //fDetector = new G4TARCDetectorConstruction();
     fHisto    = new G4TARCHisto();
     fHisto->SetVerbose(fVerbose);
     //fNeutron = G4Neutron::Neutron();
@@ -36,14 +35,14 @@ G4TARCHistoManager::G4TARCHistoManager()
 }
 
 G4TARCHistoManager::~G4TARCHistoManager() {
-  delete fHisto;
-  std::vector<G4double>().swap(ExptEnergyBin);
-  std::vector<std::vector<G4double> >().swap(ExptRadiiTables);
-  std::vector<std::vector<G4double> >().swap(ExptFluenceTables);
-  std::vector<std::vector<G4double> >().swap(ExptErrTables);
-  std::vector<std::vector<G4double> >().swap(ExptEnergyTables);
-  std::vector<std::vector<G4double> >().swap(ExptFluxTables);
-  std::vector<std::vector<G4double> >().swap(ExptFluxErrTables);
+  // delete fHisto;
+  std::vector<G4double>().swap(fExptEnergyBin);
+  std::vector<std::vector<G4double> >().swap(fExptRadiiTables);
+  std::vector<std::vector<G4double> >().swap(fExptFluenceTables);
+  std::vector<std::vector<G4double> >().swap(fExptErrTables);
+  std::vector<std::vector<G4double> >().swap(fExptEnergyTables);
+  std::vector<std::vector<G4double> >().swap(fExptFluxTables);
+  std::vector<std::vector<G4double> >().swap(fExptFluxErrTables);
   std::vector<G4double>().swap(fOuterRadiusofShell);
   std::vector<G4double>().swap(fInnerRadiusofShell);
 
@@ -82,147 +81,157 @@ void G4TARCHistoManager::DefineShellBlocks() {
 
 void G4TARCHistoManager::BookHistogram() {
   fHistoBooked = true;
-  analysisManager->CreateH1("1", "Protons/event", 50, 0.0, 100.0);
-  analysisManager->CreateH1("2", "Neutrons/evernt", 50, 0.0, 100.0);
-  analysisManager->CreateH1("3", "Neutron Energy vs 1/mom /eV", 100000, 0.0, 1000000.0);
-  analysisManager->CreateH1("4", "Proton Energy Deposition/keV", 1000, 0.0, 1000.0 * keV);
-  analysisManager->CreateH1("5", " Particle Stack", 12, 0.5, 12.5);
-  analysisManager->CreateH2("1", "Neutron Energy vs Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
+  fAnalysisManager->CreateH1("1", "Protons/event", 50, 0.0, 100.0);
+  fAnalysisManager->CreateH1("2", "Neutrons/evernt", 50, 0.0, 100.0);
+  fAnalysisManager->CreateH1("3", "Neutron Energy vs 1/mom /eV", 100000, 0.0, 1000000.0);
+  fAnalysisManager->CreateH1("4", "Proton Energy Deposition/keV", 1000, 0.0, 1000.0 * keV);
+  fAnalysisManager->CreateH1("5", "Particle Stack", 12, 0.5, 12.5);
+  fAnalysisManager->CreateH1("6", "Log10 Energy (eV) of neutron", 100, -2.0, 9.0);
+  fAnalysisManager->CreateH2("1", "Neutron Energy vs Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
 }
+
 
 void G4TARCHistoManager::CreateTuples(){
-  analysisManager->CreateNtuple("G4TARC_Secondaries", "Secondary Particle Info");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("time");
-  analysisManager->CreateNtupleIColumn("particle");
-  analysisManager->CreateNtupleDColumn("momentum");
-  analysisManager->CreateNtupleIColumn("parentid");
-  analysisManager->CreateNtupleDColumn("e_prim");
-  analysisManager->CreateNtupleIColumn("parent");
-  analysisManager->CreateNtupleDColumn("e_parent");
-  analysisManager->CreateNtupleIColumn("numgen");
-  analysisManager->CreateNtupleIColumn("event");
-  analysisManager->FinishNtuple(); // ntupleID: 0 - filled
+  fAnalysisManager->CreateNtuple("G4TARC_Secondaries", "Secondary Particle Info");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleIColumn("particle");
+  fAnalysisManager->CreateNtupleDColumn("momentum");
+  fAnalysisManager->CreateNtupleIColumn("parentid");
+  fAnalysisManager->CreateNtupleDColumn("e_prim");
+  fAnalysisManager->CreateNtupleIColumn("parent");
+  fAnalysisManager->CreateNtupleDColumn("e_parent");
+  fAnalysisManager->CreateNtupleIColumn("numgen");
+  fAnalysisManager->CreateNtupleIColumn("event");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 0 - filled
 
-  analysisManager->CreateNtuple("G4TARC Energy Time", "Neutron Time");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("time");
-  analysisManager->CreateNtupleDColumn("primary");
-  analysisManager->FinishNtuple(); // ntupleID: 1
+  fAnalysisManager->CreateNtuple("G4TARC_Energy_Time", "Neutron Time");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleDColumn("primary");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 1
 
-  analysisManager->CreateNtuple("G4TARC Exiting", "Neutrons Exiting");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->FinishNtuple(); // ntupleID: 2 - filled
+  fAnalysisManager->CreateNtuple("G4TARC_Exiting", "Neutrons Exiting");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 2 - filled
 
-  analysisManager->CreateNtuple("G4TARC Flux 4002", "Neutrons G4TARC flux");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("tarcflux");
-  analysisManager->CreateNtupleDColumn("errstat");
-  analysisManager->CreateNtupleDColumn("g4flux");
-  analysisManager->CreateNtupleDColumn("g4perp");
-  analysisManager->CreateNtupleDColumn("gfluence");
-  analysisManager->CreateNtupleDColumn("g4err");
-  analysisManager->CreateNtupleDColumn("rawflux");
-  analysisManager->CreateNtupleDColumn("trceflux");
-  analysisManager->CreateNtupleDColumn("g4eflux");
-  analysisManager->CreateNtupleDColumn("gstep");
-  analysisManager->CreateNtupleDColumn("gfl_cyl");
-  analysisManager->CreateNtupleDColumn("g4front");
-  // analysisManager->CreateNtupleDColumn("g4_shell");
-  analysisManager->FinishNtuple(); // ntupleID: 3
+  fAnalysisManager->CreateNtuple("G4TARC_Flux_4002", "Neutrons G4TARC flux");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("tarcflux");
+  fAnalysisManager->CreateNtupleDColumn("errstat");
+  fAnalysisManager->CreateNtupleDColumn("g4flux");
+  fAnalysisManager->CreateNtupleDColumn("g4perp");
+  fAnalysisManager->CreateNtupleDColumn("gfluence");
+  fAnalysisManager->CreateNtupleDColumn("g4err");
+  fAnalysisManager->CreateNtupleDColumn("rawflux");
+  fAnalysisManager->CreateNtupleDColumn("trceflux");
+  fAnalysisManager->CreateNtupleDColumn("g4eflux");
+  fAnalysisManager->CreateNtupleDColumn("gstep");
+  fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
+  fAnalysisManager->CreateNtupleDColumn("g4front");
+  // fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 3
 
-  analysisManager->CreateNtuple("G4TARC Flux 4004", "Neutrons G4TARC flux");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("tarcflux");
-  analysisManager->CreateNtupleDColumn("errstat");
-  analysisManager->CreateNtupleDColumn("g4flux");
-  analysisManager->CreateNtupleDColumn("g4perp");
-  analysisManager->CreateNtupleDColumn("gfluence");
-  analysisManager->CreateNtupleDColumn("g4err");
-  analysisManager->CreateNtupleDColumn("rawflux");
-  analysisManager->CreateNtupleDColumn("gstep");
-  analysisManager->CreateNtupleDColumn("gfl_cyl");
-  analysisManager->CreateNtupleDColumn("g4front");
-  // analysisManager->CreateNtupleDColumn("g4_shell");
-  analysisManager->FinishNtuple(); // ntupleID: 4
+  fAnalysisManager->CreateNtuple("G4TARC_Flux_4004", "Neutrons G4TARC flux");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("tarcflux");
+  fAnalysisManager->CreateNtupleDColumn("errstat");
+  fAnalysisManager->CreateNtupleDColumn("g4flux");
+  fAnalysisManager->CreateNtupleDColumn("g4perp");
+  fAnalysisManager->CreateNtupleDColumn("gfluence");
+  fAnalysisManager->CreateNtupleDColumn("g4err");
+  fAnalysisManager->CreateNtupleDColumn("rawflux");
+  fAnalysisManager->CreateNtupleDColumn("gstep");
+  fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
+  fAnalysisManager->CreateNtupleDColumn("g4front");
+  // fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 4
 
-  analysisManager->CreateNtuple("G4TARC Created Neutrons", "Created Neutrons");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("time");
-  analysisManager->CreateNtupleIColumn("particle");
-  analysisManager->CreateNtupleDColumn("momentum");
-  analysisManager->CreateNtupleDColumn("zmom");
-  analysisManager->FinishNtuple(); // ntupleID: 5
+  fAnalysisManager->CreateNtuple("G4TARC_Created_Neutrons", "Created Neutrons");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleIColumn("particle");
+  fAnalysisManager->CreateNtupleDColumn("momentum");
+  fAnalysisManager->CreateNtupleDColumn("zmom");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 5
 
-  analysisManager->CreateNtuple("G4TARC Created Neutrons", "Created Neutrons");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("time");
-  analysisManager->CreateNtupleDColumn("starte");
-  analysisManager->CreateNtupleIColumn("trackid");
-  analysisManager->CreateNtupleIColumn("parentid");
-  analysisManager->CreateNtupleDColumn("fluxe");
-  analysisManager->CreateNtupleDColumn("fluxidx");
-  analysisManager->CreateNtupleDColumn("zmom");
-  analysisManager->CreateNtupleDColumn("startt");
-  analysisManager->CreateNtupleDColumn("radius");
-  analysisManager->CreateNtupleDColumn("e_parent");
-  analysisManager->CreateNtupleIColumn("parent");
-  analysisManager->CreateNtupleIColumn("step");
-  analysisManager->CreateNtupleIColumn("dupli");
-  analysisManager->FinishNtuple(); // ntupleID: 6
+  fAnalysisManager->CreateNtuple("G4TARC_Created_Neutrons", "Created Neutrons");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleDColumn("starte");
+  fAnalysisManager->CreateNtupleIColumn("trackid");
+  fAnalysisManager->CreateNtupleIColumn("parentid");
+  fAnalysisManager->CreateNtupleDColumn("fluxe");
+  fAnalysisManager->CreateNtupleDColumn("fluxidx");
+  fAnalysisManager->CreateNtupleDColumn("zmom");
+  fAnalysisManager->CreateNtupleDColumn("startt");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("e_parent");
+  fAnalysisManager->CreateNtupleIColumn("parent");
+  fAnalysisManager->CreateNtupleIColumn("step");
+  fAnalysisManager->CreateNtupleIColumn("dupli");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 6
 
-  analysisManager->CreateNtuple("G4TARC Radial Shell Fluence", "Radial Shell Fluence");
-  analysisManager->CreateNtupleDColumn("radius");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("fluence");
-  analysisManager->CreateNtupleDColumn("true_e");
-  analysisManager->CreateNtupleDColumn("true_f");
-  analysisManager->FinishNtuple(); // ntupleID: 7
+  fAnalysisManager->CreateNtuple("G4TARC_Radial_Shell_Fluence", "Radial Shell Fluence");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("fluence");
+  fAnalysisManager->CreateNtupleDColumn("true_e");
+  fAnalysisManager->CreateNtupleDColumn("true_f");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 7
 
-  analysisManager->CreateNtuple("G4TARC Radial Fluence Exptl Data", "Radial Fluence Expt. Data");
-  analysisManager->CreateNtupleDColumn("radius");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("data");
-  analysisManager->CreateNtupleDColumn("error");
-  analysisManager->FinishNtuple(); // ntupleID: 8
+  //fAnalysisManager->CreateNtuple("G4TARC_Radial_Fluence_Exptl_Data", "Radial Fluence Expt. Data");
+  fAnalysisManager->CreateNtuple("h8", "Radial Fluence Expt. Data");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("error");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 8
 
-  analysisManager->CreateNtuple("G4TARC Radial Fluence He3", "Radial Fluence He3");
-  analysisManager->CreateNtupleDColumn("radius");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("data");
-  analysisManager->CreateNtupleDColumn("error");
-  analysisManager->FinishNtuple(); // ntupleID: 9
+  fAnalysisManager->CreateNtuple("G4TARC_Radial_Fluence_He3", "Radial Fluence He3");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("error");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 9
 
 
-  analysisManager->CreateNtuple("G4TARC 3.5GeV He3 Expt. Data", "Radial Fluence He3 Expt Data");
-  analysisManager->CreateNtupleDColumn("radius");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("data");
-  analysisManager->CreateNtupleDColumn("stat_err");
-  analysisManager->CreateNtupleDColumn("syst_err");
-  analysisManager->FinishNtuple(); // ntupleID: 10
+  fAnalysisManager->CreateNtuple("G4TARC_3.5GeV_He3_Expt_Data", "Radial Fluence He3 Expt Data");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("stat_err");
+  fAnalysisManager->CreateNtupleDColumn("syst_err");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 10
 
-  analysisManager->CreateNtuple("G4TARC Radial Fluence Li", "Radial Fluence Li");
-  analysisManager->CreateNtupleDColumn("radius");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("data");
-  analysisManager->CreateNtupleDColumn("stat_err");
-  analysisManager->CreateNtupleDColumn("syst_err");
-  analysisManager->FinishNtuple(); // ntupleID: 11
+  fAnalysisManager->CreateNtuple("G4TARC_Radial_Fluence_Li", "Radial Fluence Li");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("stat_err");
+  fAnalysisManager->CreateNtupleDColumn("syst_err");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 11
 
-  analysisManager->CreateNtuple("G4TARC Radial Fluence", "Radial Fluence");
-  analysisManager->CreateNtupleDColumn("radius");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("fluence");
-  analysisManager->CreateNtupleDColumn("he_data");
-  analysisManager->FinishNtuple(); // ntupleID: 12
+  fAnalysisManager->CreateNtuple("G4TARC_Radial_Fluence", "Radial Fluence");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("fluence");
+  fAnalysisManager->CreateNtupleDColumn("he_data");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 12
 
-  analysisManager->CreateNtuple("G4TARC Energy Time", "OTHER Time");
-  analysisManager->CreateNtupleDColumn("energy");
-  analysisManager->CreateNtupleDColumn("time");
-  analysisManager->CreateNtupleDColumn("primary");
-  analysisManager->FinishNtuple(); // ntupleID: 13
+  fAnalysisManager->CreateNtuple("G4TARC_Energy_Time", "OTHER Time");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleDColumn("primary");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 13
+
+  fAnalysisManager->CreateNtuple("G4TARC_log10(Neutron_Energy)", "log10(E_n)");
+  fAnalysisManager->CreateNtupleDColumn("log10(energy)");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 14 for neutron
+
+  G4cout << "Ntuples created." << G4endl;
 }
+
 
 void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   std::ifstream exptIN(exptFileName, std::ios::in);
@@ -237,41 +246,41 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   fMaxFluxData = -999999.99;
   fMaxFluenceData = -999999.99;
   fMaxTestFluxData = -999999.99;
-  std::cout << " TARC Experimentsl data file reading report:-" << std::endl;
+  std::cout << " TARC Experimental data file reading report:-" << std::endl;
   while (getline(exptIN, lineIN)){
     lineIN = std::regex_replace(lineIN, std::regex("^ +| +$|( ) +"), "$1");
-    if (lineIN.find("#", 0, 1) != std::string::npos){  // if the line starts with # sign
+    if (lineIN.size() > 1 && lineIN.find("#", 0, 1) != std::string::npos){  // if the line starts with # sign
       std::size_t found1 = lineIN.find("Table");
+      readPara = false;
+      G4String tableNum = (lineIN.substr(found1 + 5, 3));
+      tableNum = std::regex_replace(tableNum, std::regex("^ +| +$|( ) +"), "$1"); // stripping extra spaces
+      iTableNum = std::atoi(tableNum);
+      isFlux = (std::find( fFluxTableList.begin(), fFluxTableList.end(), iTableNum) != fFluxTableList.end());
       if (found1 != std::string::npos){
-        readPara = false;
-        G4String tableNum = (lineIN.substr(found1 + 5, 3));
-        tableNum = std::regex_replace(tableNum, std::regex("^ +| +$|( ) +"), "$1"); // stripping extra spaces
-        iTableNum = std::atoi(tableNum);
-        isFlux = (std::find( fFluxTableList.begin(), fFluxTableList.end(), iTableNum) != fFluxTableList.end());
         file0 = (iTableNum == 0) ? 1 : 0;
       }
     } else {   // the line does not start with # symbol
       if (lineIN.find(";", 0, 1) != std::string::npos){
-       NCount = atoi(lineIN.substr(1, lineIN.size()).c_str());
-       iFluxCountRef = (iTableNum == 40) ? NCount : 0;
-       restCount = NCount;
-       readPara = true;
-       if (!isFlux) fMaxFluenceData = (std::max(fMaxFluenceData, (signed)NCount));
-       if (isFlux && !iFluxCountRef) fMaxFluxData = (std::max(fMaxFluxData, (signed)NCount));
-       fMaxTestFluxData = iFluxCountRef;
-       std::cout << "Table->" << iTableNum << " Data-> " << NCount << std::endl;
-       continue;
-     }
-     if ( file0 && readPara){
-       std::stringstream ss (lineIN);
-       ss >> v1 >> v2 >> v3 >> v4 >> v5 >> v6 >> v7 >> v8 >> v9 >> v10;
-       ExptEnergyBin.push_back(v1); ExptEnergyBin.push_back(v2); ExptEnergyBin.push_back(v3); ExptEnergyBin.push_back(v4);
-       ExptEnergyBin.push_back(v5); ExptEnergyBin.push_back(v6); ExptEnergyBin.push_back(v7); ExptEnergyBin.push_back(v8);
-       ExptEnergyBin.push_back(v9); ExptEnergyBin.push_back(v10);
-       for (unsigned ijk = 0 ; ijk < ExptEnergyBin.size(); ijk++) std::cout << ExptEnergyBin[ijk] << "  ";
-       std::cout << std::endl;
-     }
-     if (!file0 && readPara){
+        NCount = atoi(lineIN.substr(1, lineIN.size()).c_str());
+        fIFluxCountRef = (iTableNum == 40) ? NCount : 0;
+        restCount = NCount;
+        readPara = true;
+        if (!isFlux) fMaxFluenceData = (std::max(fMaxFluenceData, (signed)NCount));
+        if (isFlux && !fIFluxCountRef) fMaxFluxData = (std::max(fMaxFluxData, (signed)NCount));
+        fMaxTestFluxData = fIFluxCountRef;
+        // std::cout << "Table->" << iTableNum << " Data-> " << NCount << std::endl;
+        continue;
+      }
+      if ( file0 && readPara){
+        std::stringstream ss (lineIN);
+        ss >> v1 >> v2 >> v3 >> v4 >> v5 >> v6 >> v7 >> v8 >> v9 >> v10;
+        fExptEnergyBin.push_back(v1); fExptEnergyBin.push_back(v2); fExptEnergyBin.push_back(v3); fExptEnergyBin.push_back(v4);
+        fExptEnergyBin.push_back(v5); fExptEnergyBin.push_back(v6); fExptEnergyBin.push_back(v7); fExptEnergyBin.push_back(v8);
+        fExptEnergyBin.push_back(v9); fExptEnergyBin.push_back(v10);
+        //for (unsigned ijk = 0 ; ijk < fExptEnergyBin.size(); ijk++) std::cout << fExptEnergyBin[ijk] << "  ";
+        //std::cout << std::endl;
+      }
+      if (!file0 && readPara){
         std::istringstream sdummy;
         std::stringstream ss;
         sdummy.str(lineIN); // sdummy is used for number of components which deletes sdumy. So ss is required
@@ -296,16 +305,16 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
         }
       }
       if (!isFlux && (tmpV1.size()) == NCount){
-        ExptRadiiTables.push_back(tmpV1);
-        ExptFluenceTables.push_back(tmpV2);
-        ExptErrTables.push_back(tmpV3);
+        fExptRadiiTables.push_back(tmpV1);
+        fExptFluenceTables.push_back(tmpV2);
+        fExptErrTables.push_back(tmpV3);
         std::vector<G4double>().swap(tmpV2);
         std::vector<G4double>().swap(tmpV1);
         std::vector<G4double>().swap(tmpV3);
       } else if (isFlux && (tmpV1.size()) == NCount){
-        ExptEnergyTables.push_back(tmpV1);
-        ExptFluxTables.push_back(tmpV2);
-        ExptFluxErrTables.push_back(tmpV3);
+        fExptEnergyTables.push_back(tmpV1);
+        fExptFluxTables.push_back(tmpV2);
+        fExptFluxErrTables.push_back(tmpV3);
         std::vector<G4double>().swap(tmpV1);
         std::vector<G4double>().swap(tmpV2);
         std::vector<G4double>().swap(tmpV3);
@@ -320,35 +329,41 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
 }
 
 void G4TARCHistoManager::FillRadialExperimentalData(){
-  for (G4int jj = 0; jj < 8; jj++){
-   for (unsigned ii = 0; ii < ExptRadiiTables[jj].size(); ii++){
-     analysisManager->FillNtupleDColumn(8, 0, ExptRadiiTables[jj][ii]);
-     analysisManager->FillNtupleDColumn(8, 1, ExptEnergyBin[jj]);
-     analysisManager->FillNtupleDColumn(8, 2, ExptFluenceTables[jj][ii]);
-     analysisManager->FillNtupleDColumn(8, 3, ExptErrTables[jj][ii]);
-     analysisManager->AddNtupleRow(8);
-   }
- }
- for (G4int jj = 8; jj < 17; jj++){
-   for (unsigned ii = 0; ii < ExptRadiiTables[jj].size(); ii++){
-     analysisManager->FillNtupleDColumn(9, 0, ExptRadiiTables[jj][ii]);
-     analysisManager->FillNtupleDColumn(9, 1, ExptEnergyBin[jj]);
-     analysisManager->FillNtupleDColumn(9, 2, ExptFluenceTables[jj][ii]);
-     analysisManager->FillNtupleDColumn(9, 3, ExptErrTables[jj][ii]);
-     analysisManager->AddNtupleRow(9);
-   }
- }
+  for (G4int jj = 0; jj < 8; jj++){   // this is the row of 2D vector for read Data
+    //G4cout << jj << "   " << fExptRadiiTables[jj].size() << G4endl;
+    for (unsigned ii = 0; ii < fExptRadiiTables[jj].size(); ii++){
+      fAnalysisManager->FillNtupleDColumn(8, 0, fExptRadiiTables[jj][ii]);
+      fAnalysisManager->FillNtupleDColumn(8, 1, fExptEnergyBin[jj]);
+      fAnalysisManager->FillNtupleDColumn(8, 2, fExptFluenceTables[jj][ii]);
+      fAnalysisManager->FillNtupleDColumn(8, 3, fExptErrTables[jj][ii]);
+      fAnalysisManager->AddNtupleRow(8);
+    }
+  }
+  for (G4int jj = 8; jj < 17; jj++){
+    //G4cout << jj << "   " << fExptRadiiTables[jj].size() << G4endl;
+    for (unsigned ii = 0; ii < fExptRadiiTables[jj].size(); ii++){
+      fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[jj][ii]);
+      fAnalysisManager->FillNtupleDColumn(9, 1, fExptEnergyBin[jj]);
+      fAnalysisManager->FillNtupleDColumn(9, 2, fExptFluenceTables[jj][ii]);
+      fAnalysisManager->FillNtupleDColumn(9, 3, fExptErrTables[jj][ii]);
+      fAnalysisManager->AddNtupleRow(9);
+    }
+  }
+  G4cout << "Experimental data filling complete." << G4endl;
 }
 
-
 void G4TARCHistoManager::BeginOfRun() {
-  analysisManager = G4AnalysisManager::Instance();
+  fAnalysisManager = G4AnalysisManager::Instance();
   G4String path = getenv("dateStr");
   fAnalysisFileName = path + "/" + fAnalysisFileName;
-  analysisManager->OpenFile(fAnalysisFileName);
+  fAnalysisManager->OpenFile(fAnalysisFileName);
+  if (!fHistoBooked) {
+    BookHistogram();
+    CreateTuples();
+  }
+
   DefineShellBlocks();
-  if (!fHistoBooked) BookHistogram();
-  CreateTuples();
+
   fAbsX0 = fAbsY0 = fAbsZ0 = 0.0; // 0.5 * fLength;
   fNevt       = 0;
   fNelec      = 0;
@@ -389,12 +404,15 @@ void G4TARCHistoManager::BeginOfRun() {
   fTimeMin   = 1.0 * nanosecond;
   fTimeMax   = 1.0 * second;   //1.0 * millisecond;
   fNbin      = fMaxBin; // fNumMax; // 60; // 100;  // 1000; // 10; //
-  fnEsecond  = G4PhysicsLogVector(fTmin,fTmax,fNbin);
-  fnTsecond  = G4PhysicsLogVector(fTimeMin,fTimeMax,fNbin);
+
+  fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0; fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
+
+  fNEsecond  = G4PhysicsLogVector(fTmin,fTmax,fNbin);
+  fNTsecond  = G4PhysicsLogVector(fTimeMin,fTimeMax,fNbin);
   fNSecondSum1  = G4DataVector(fNbin, 0.0);
   fNSecondSum2  = G4DataVector(fNbin, 0.0);
   fNSecondSum3  = G4DataVector(fNbin, 0.0);
-  fnETsum       = G4DataVector(fNbin * fNbin, 0.0);
+  fNETsum       = G4DataVector(fNbin * fNbin, 0.0);
 
 
   for( G4int ii = 0; ii < fNbin; ii++ )  {
@@ -435,18 +453,20 @@ void G4TARCHistoManager::BeginOfRun() {
   for( G4int ii = 0; ii < fMaxBin; ii++ )
   {
     fEsecond[ii]  = ii * EDelta;
-    // fnEsecond[ii] = ii * fEbin;
+    // fNEsecond[ii] = ii * fEbin;
     fMsecond[ii]  = ii * MDelta;
   }
-
-
-
-  fHisto->Book();
   if( fVerbose > 0 )
     G4cout << "G4TARCHistoManager: Histograms are booked and run has been started"
-           <<G4endl;
+           << G4endl;
 }
 
+
+void G4TARCHistoManager::CreateNeutronFluxHisto(){
+  fAbsolute_TotalFlux = (fHisto->fTotal_flux * 1.0e9 / (G4double)fNevt) / fTestSphereSurfaceArea;
+  G4cout << "Total absolute flux = " << fAbsolute_TotalFlux << G4endl;
+
+}
 
 void G4TARCHistoManager::EndOfRun() {
   G4cout << "G4TARCHistoManager ; End of run actions are started" << G4endl;
@@ -454,8 +474,16 @@ void G4TARCHistoManager::EndOfRun() {
   G4cout << "EndOfRun(), fEdepSum = " << fEdepSum << G4endl;
   G4cout << "======================================================================" << G4endl;
 
+  G4cout << " File is being read from Data file" << G4endl;
   ReadExperimentalDataFromFile(fExptlDataFileName);
   FillRadialExperimentalData();
+
+  fHisto->SetGeomParam(fShellNumber, fShellThickness, fInnerRadiusofShell, fOuterRadiusofShell);
+  fHisto->SetExptDataParam(fMaxFluxData, fMaxFluenceData, fMaxTestFluxData, fExptEnergyBin,
+                                fExptEnergyTables, fExptFluxTables, fExptFluxErrTables);
+  //fHisto->StartProcessing(fAnalysisManager);
+
+  //CreateNeutronFluxHisto();
 
   G4double x = ( G4double )fNevt;
   G4double perN = 1.0;
@@ -475,6 +503,8 @@ void G4TARCHistoManager::EndOfRun() {
 
   fHisto->Save();
   */
+  fAnalysisManager->Write();
+  fAnalysisManager->CloseFile();
 }
 
 void G4TARCHistoManager::BeginOfEvent() {
@@ -493,10 +523,10 @@ void G4TARCHistoManager::EndOfEvent() {
   fEdepSum2 += fEdepEvt * fEdepEvt;
   fNevt ++;
   if (fNsecondary > 0) fNinelastic++;
-  fHisto->Fill(21,fEdepEvt/fPrimaryKineticEnergy,1.0);
-  fHisto->Fill(22,fEdepEM/fPrimaryKineticEnergy,1.0);
-  fHisto->Fill(23,fEdepPI/fPrimaryKineticEnergy,1.0);
-  fHisto->Fill(24,fEdepProton/fPrimaryKineticEnergy,1.0);
+  //  fHisto->Fill(21,fEdepEvt/fPrimaryKineticEnergy,1.0);
+  //  fHisto->Fill(22,fEdepEM/fPrimaryKineticEnergy,1.0);
+  //  fHisto->Fill(23,fEdepPI/fPrimaryKineticEnergy,1.0);
+  //  fHisto->Fill(24,fEdepProton/fPrimaryKineticEnergy,1.0);
 
   WriteEventRange( fRangeSum, fStepSum, fDeltaSum );
 }
@@ -530,6 +560,7 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
   fNstep++;
 
   G4double fEdep = myStep->GetTotalEnergyDeposit();
+
   if (fVerbose > 1) {
     G4cout << "TargetSD::ProcessHits: beta1 =" << myStep->GetPreStepPoint()->GetVelocity() / c_light
            << " beta2 = "                       << myStep->GetPostStepPoint()->GetVelocity() / c_light
@@ -537,35 +568,35 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
            << G4endl;
   }
   //if (fEdep >= DBL_MIN) {
-    const G4Track* myTrack = myStep->GetTrack();
-    G4ThreeVector pos = 0.5 * ( myStep->GetPreStepPoint()->GetPosition()
-                              + myStep->GetPostStepPoint()->GetPosition()
-                              );
+  const G4Track* myTrack = myStep->GetTrack();
+  G4ThreeVector pos = 0.5 * ( myStep->GetPreStepPoint()->GetPosition()
+                          + myStep->GetPostStepPoint()->GetPosition()
+                          );
 
-    G4double x = pos.x(); //- fAbsX0;
-    G4double y = pos.y(); //- fAbsY0;
-    G4double z = pos.z();// - fAbsZ0;
+  G4double x = pos.x(); //- fAbsX0;
+  G4double y = pos.y(); //- fAbsY0;
+  G4double z = pos.z();// - fAbsZ0;
 
-    //Scoring.
-    fEdepEvt += fEdep;
+  //Scoring.
+  fEdepEvt += fEdep;
 
-    //G4cout << " Energy for histogram-> " << fEdep/keV << " keV" << G4endl;
-    fHisto->Fill(0, z, fEdep/MeV);
-    const G4ParticleDefinition* pd = myTrack->GetDefinition();
+  //G4cout << " Energy for histogram-> " << fEdep/keV << " keV" << G4endl;
+  //  fHisto->Fill(0, z, fEdep/MeV);
+  const G4ParticleDefinition* pd = myTrack->GetDefinition();
 
   if (pd == G4Gamma::Gamma() || pd == G4Electron::Electron() || pd == G4Positron::Positron()) {
     fEdepEM += fEdep;
   } else if (pd == G4Proton::Proton() || pd == G4AntiProton::AntiProton()){
-    fEdepProton +=fEdep;
+    fEdepProton += fEdep;
   } else if (pd == G4PionPlus::PionPlus() || pd == G4PionMinus::PionMinus()){
-    fEdepPI +=fEdep;
+    fEdepPI += fEdep;
   }
 
   if (fVerbose > 1) G4cout << "HistoManager::AddEnergy: E(keV) = " << fEdep / keV
                            << "; z(mm) = " << z / mm
                            << "; step(mm) = " << myStep->GetStepLength() / mm
                            << " by " << pd->GetParticleName()
-                           << " E(MeV) = " << myTrack->GetKineticEnergy()/MeV
+                           << " E(MeV) = " << myTrack->GetKineticEnergy() / MeV
                            << G4endl;
   //}
 }
@@ -603,55 +634,55 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
                              << "; Pos(mm) = "   << myTrack->GetPosition() / mm
                              << "; Dir = "       << myTrack->GetMomentumDirection()
                              << G4endl;
-    ke = std::log10(ke/eV);
+    ke = std::log10(ke / eV);
     if (pd == G4Gamma::GammaDefinition()){
       fNgam++;
-      const G4VProcess* procG = myTrack->GetCreatorProcess();         //  check
-      //fHisto->Fill(1, ke, 1.0);
+      //const G4VProcess* procG = myTrack->GetCreatorProcess();         //  check
+      //  fHisto->Fill(1, ke, 1.0);
     }else if (pd == G4Electron::ElectronDefinition()){
       fNelec++;
-      // fHisto->Fill(2, ke, 1.0);
+      // // fHisto->Fill(2, ke, 1.0);
     }else if (pd == G4Positron::PositronDefinition()) {
       fNposit++;
-      //fHisto->Fill(3, ke, 1.0);
+      //  fHisto->Fill(3, ke, 1.0);
     } else if (pd == G4Proton::ProtonDefinition()){
       fNproton++;
-      // fHisto->Fill(4, ke, 1.0);
+      // // fHisto->Fill(4, ke, 1.0);
     } else if (pd == G4Neutron::NeutronDefinition() ){//&& TKin < fTcut){  // <----- CHECK
       fNneutron++;
       // fEventAction->AddNeutronStack();
-      //fHisto->Fill(5, ke, 1.0);
+      //  fHisto->Fill(5, ke, 1.0);
     } else if (pd == G4AntiProton::AntiProtonDefinition()){
       fNaproton++;
     } else if ( pd == G4PionPlus::PionPlusDefinition() ) {
       fNcpions++;
-      //fHisto->Fill(6, ke, 1.0);
-      //fHisto->Fill(19, ke, 1.0);
+      //  fHisto->Fill(6, ke, 1.0);
+      //  fHisto->Fill(19, ke, 1.0);
     } else if ( pd == G4PionMinus::PionMinusDefinition()) {
       fNcpions++;
-      //fHisto->Fill(6, ke, 1.0);
-      //fHisto->Fill(20, ke, 1.0);
+      //  fHisto->Fill(6, ke, 1.0);
+      //  fHisto->Fill(20, ke, 1.0);
     } else if ( pd == G4PionZero::PionZeroDefinition()) {
       fNpi0++;
-      //fHisto->Fill(7, ke, 1.0);
+      //  fHisto->Fill(7, ke, 1.0);
     } else if ( pd == G4KaonPlus::KaonPlusDefinition() ||  pd == G4KaonMinus::KaonMinusDefinition()) {
       fNkaons++;
-      //fHisto->Fill(8, ke, 1.0);
+      //  fHisto->Fill(8, ke, 1.0);
     } else if ( pd == G4KaonZeroShort::KaonZeroShortDefinition() ||  pd == G4KaonZeroLong::KaonZeroLongDefinition()) {
       fNkaons++;
-      //fHisto->Fill(9, ke, 1.0);
+      //  fHisto->Fill(9, ke, 1.0);
     } else if (pd == G4Deuteron::DeuteronDefinition() || pd == G4Triton::TritonDefinition()){
       fNdeut++;
-      // fHisto->Fill(10, ke, 1.0);
+      // // fHisto->Fill(10, ke, 1.0);
     } else if (pd == G4He3::He3() || pd == G4Alpha::Alpha()) {
       fNalpha++;
-      //fHisto->Fill(11, ke, 1.0);
+      //  fHisto->Fill(11, ke, 1.0);
     } else if (pd->GetParticleType() == "nucleus"){
       fNions++;
-      //fHisto->Fill(12, ke, 1.0);
+      //  fHisto->Fill(12, ke, 1.0);
     } else if (pd == G4MuonPlus::MuonPlusDefinition() || pd == G4MuonMinus::MuonMinusDefinition()){
       fNmuons++;
-      //fHisto->Fill(13, ke, 1.0);
+      //  fHisto->Fill(13, ke, 1.0);
     }
   }
 }
@@ -686,7 +717,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
       isLeaking = true;
       if (pd == fNeutron) { // && Tkin < fTcut) {
         ++fNneu_forw;
-        fHisto->Fill(15, en,  1.0);
+        //  fHisto->Fill(15, en,  1.0);
       }
   }
   if ( (
@@ -699,7 +730,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
     isLeaking = true;
     if (pd == fNeutron) { // && Tkin < fTcut)   {
        ++fNneu_back;
-       fHisto->Fill(16, en,  1.0);
+       //  fHisto->Fill(16, en,  1.0);
      }
   }
   if ( (
@@ -715,18 +746,18 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
     if (pd == fNeutron){ // && Tkin < fTcut)  {
       ++fNneu_leak;
       G4cout << "-------------------->   side " << fNneu_leak << G4endl;
-      fHisto->Fill(14, en,  1.0);
+      // fHisto->Fill(14, en,  1.0);
     }
   }
 
   if (isLeaking) {
     if (pd == G4Proton::Proton()) { // && myTrack->GetTrackID() == 1){
        ++fNprot_leak;
-       fHisto->Fill(17, en,  1.0);
+       // fHisto->Fill(17, en,  1.0);
      }
     if (pd == G4PionPlus::PionPlus() || pd == G4PionMinus::PionMinus()) {
       ++fNPionleak;
-      fHisto->Fill(18, en,  1.0);
+      // fHisto->Fill(18, en,  1.0);
     }
   }
 }
@@ -746,7 +777,7 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack, const G4Step* my
     stepLen = myStep->GetStepLength();
     time = myTrack->GetGlobalTime();
     for (ii = 0; ii < fNbin; ii++) {
-      if (TKin <= fnEsecond.GetLowEdgeEnergy(ii)){
+      if (TKin <= fNEsecond.GetLowEdgeEnergy(ii)){
         jj = (ii == 0) ? ii : ii - 1;
         break;
       }
@@ -853,7 +884,7 @@ void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myS
     fNEfluxBin[fluxBin] += eVal;
 
     for (ii = 0; ii < fNbin; ii++) {
-      if (Tkin <= fnEsecond.GetLowEdgeEnergy(ii)) {
+      if (Tkin <= fNEsecond.GetLowEdgeEnergy(ii)) {
         eii = (ii == 0) ? ii : ii - 1;
         //Qenergy = (Tkin/eV != 0.0) ? (Tkin/eV) : 0.0;  // Tkin; //
         Qenergy = Tkin / eV;
@@ -862,7 +893,7 @@ void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myS
     }
     if (ii == fNbin) eii = fNbin -1 ;
     for (jj = 0; jj < fNbin; jj++) {
-      if (myTime <= fnTsecond.GetLowEdgeEnergy(jj)) {
+      if (myTime <= fNTsecond.GetLowEdgeEnergy(jj)) {
         Qtime = (myGlobalTime/microsecond);
         tjj = (jj == 0) ?  jj : jj - 1;
         break;
@@ -1024,7 +1055,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
 
 void G4TARCHistoManager::NeutronRun(G4double x) {
   G4double perN = x;
-
+/*
   std::ofstream fETVirt("ETVirtual.dat", std::ios::out);
   //fETVirt << (fETVirtual.size() * fETVirtual[0].size()) << G4endl;
   for (std::size_t ii = 0; ii < fETVirtual.size(); ii++){
@@ -1035,6 +1066,7 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
   }
   fETVirt.close();
 
+
   std::ofstream fFlu("FluenceData.dat", std::ios::out);
   std::cout << fFluence.size() << G4endl;
   for (std::size_t ii = 0; ii < fFluence.size(); ii++){
@@ -1043,25 +1075,26 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
     }
   }
   fFlu.close();
+*/
 
 /*
   G4double ngSum = 0.0;
   std::ofstream nspec("neutronSpectra.dat", std::ios::out);
   nspec << fNSecondSum1.size() << G4endl;
   for (size_t k = 0; k < fNSecondSum1.size(); k++){
-      nspec << fnEsecond.GetLowEdgeEnergy(k)/MeV << "  "  << perN * fNSecondSum1[k]
+      nspec << fNEsecond.GetLowEdgeEnergy(k)/MeV << "  "  << perN * fNSecondSum1[k]
                                                  << "   " << perN * fNSecondSum2[k]
                                                  << "  "  << perN * fNSecondSum3[k] << G4endl;
       ngSum += fNSecondSum1[k];
   }
   G4cout << "integral S-spectrum per event = " << ngSum * perN << G4endl;
-*/
+
 //--------------------------------------------------
   std::ofstream tenspectr("tenspectr.dat",std::ios::out);
-  tenspectr<<fnETsum.size()<<G4endl;
+  tenspectr<<fNETsum.size()<<G4endl;
   for( size_t k = 0; k < fNbin; k++ ){
     for( size_t j = 0; j < fNbin; j++ ){
-      // tenspectr<<perN*fnETsum[k]<<G4endl;
+      // tenspectr<<perN*fNETsum[k]<<G4endl;
       if (perN * fET[j][k] != 0.0)
         tenspectr << (G4int)k << "    " << (G4int)j << "    " << perN * fET[j][k] << G4endl;
     }
@@ -1074,11 +1107,12 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
   neutSpec.close();
 //-------------------------------------------------
   std::ofstream teaxis("teaxis.dat",std::ios::out);
-  teaxis << fnEsecond.GetVectorLength() << G4endl;
-  for( size_t k = 0; k < fnEsecond.GetVectorLength(); k++ )
+  teaxis << fNEsecond.GetVectorLength() << G4endl;
+  for( size_t k = 0; k < fNEsecond.GetVectorLength(); k++ )
   {
-    teaxis << fnEsecond.GetLowEdgeEnergy(k) << "        " << fnTsecond.GetLowEdgeEnergy(k) << G4endl;
+    teaxis << fNEsecond.GetLowEdgeEnergy(k) << "        " << fNTsecond.GetLowEdgeEnergy(k) << G4endl;
   }
+  */
 }
 
 
@@ -1102,11 +1136,11 @@ void G4TARCHistoManager::GunParticleRun(G4double x) {
 }
 
 void G4TARCHistoManager::Fill(G4int id, G4double x, G4double w) {
-  fHisto->Fill(id, x, w);
+  // fHisto->Fill(id, x, w);
 }
 
 
-  ////////////////////////////////////////////////////////////////////
+  // // // // // // // // // // // // // // // // //
 /*
   void G4TARCHistoManager::SetVerbose(G4int val)
   {

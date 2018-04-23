@@ -4,6 +4,7 @@ G4TARCEventAction::G4TARCEventAction()
 : G4UserEventAction(),
   fEventMessenger(0),
   fUITARC(0),
+  fHisto(0),
   fSelectedEvents(0),
   fPrintModulo(1),
   fSelected(0),
@@ -33,7 +34,6 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
   if ( G4int( nEvt / fPrintModulo ) * fPrintModulo == nEvt ){
     G4cout << "EventAction: Event # " << nEvt << " started " << G4endl;
   }
-
   fHisto->BeginOfEvent();
 }
 

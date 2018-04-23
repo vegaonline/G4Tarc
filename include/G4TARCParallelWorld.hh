@@ -16,6 +16,7 @@
 
 #include "G4TARCDetectorConstruction.hh"
 #include "G4TARCPVolumeStore.hh"
+#include "G4TARCVolumeSD.hh"
 
 // primitive scorers related
 #include "G4SDManager.hh"
@@ -32,8 +33,8 @@
 #include "G4GeometryCell.hh"
 
 #include "G4VUserParallelWorld.hh"
-#include "G4LogicalVolume.hh"
-#include "G4VPhysicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4PhysicalVolumeStore.hh"
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4Orb.hh"
@@ -59,6 +60,7 @@
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4VIStore;
+class G4TARCVolumeSD;
 
 class G4TARCParallelWorld : public G4VUserParallelWorld {
 public:
@@ -68,6 +70,7 @@ public:
 public:
   virtual void Construct();
   virtual void ConstructSD();
+  virtual void ConstructSDandField(){};
   void DefineShellsBlocks();
   inline G4VPhysicalVolume& GetShellVolumeAddress() const { return *fShellPhys; }
   inline G4VPhysicalVolume& GetWorldVolumeAddress() const { return *ghostWorld; }
@@ -112,6 +115,7 @@ private:
     G4LogicalVolumeStore*             fLVS;
     G4PhysicalVolumeStore*            fPVS;
     std::vector<G4VPhysicalVolume*>::const_iterator fPVciter;
+    std::vector<G4LogicalVolume*>  ::const_iterator fLVciter;
 };
 
 #endif

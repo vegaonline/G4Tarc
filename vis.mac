@@ -13,8 +13,8 @@
 #/control/manual /tarc
 
 /vis/scene/create
-/vis/open HepRepFile
-# /vis/open OGL 1020x980-0+0
+#/vis/open HepRepFile
+/vis/open OGL 1020x980-0+0
 /vis/drawVolume   # ---> working for full volume
 
 #/vis/open OGL
@@ -94,9 +94,9 @@
 
 
 ####
-/tarc/beam/DefaultBeamPosition false
-/tarc/histo/fileName Hadro
-/tarc/histo/setHisto 0 10  0 1500 MeV
+#/tarc/beam/DefaultBeamPosition false
+#/tarc/histo/fileName Hadro
+#/tarc/histo/setHisto 0 10  0 1500 MeV
 
 
 /run/beamOn 2
