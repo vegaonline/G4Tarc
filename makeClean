@@ -1,4 +1,5 @@
 #!/bin/sh
 rm -rf *.dat 
 rm -rf histo*
+rm -rf tarcVega
 

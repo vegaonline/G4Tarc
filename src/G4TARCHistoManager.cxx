@@ -81,13 +81,14 @@ void G4TARCHistoManager::DefineShellBlocks() {
 
 void G4TARCHistoManager::BookHistogram() {
   fHistoBooked = true;
-  fAnalysisManager->CreateH1("1", "Protons/event", 50, 0.0, 100.0);
-  fAnalysisManager->CreateH1("2", "Neutrons/evernt", 50, 0.0, 100.0);
-  fAnalysisManager->CreateH1("3", "Neutron Energy vs 1/mom /eV", 100000, 0.0, 1000000.0);
-  fAnalysisManager->CreateH1("4", "Proton Energy Deposition/keV", 1000, 0.0, 1000.0 * keV);
-  fAnalysisManager->CreateH1("5", "Particle Stack", 12, 0.5, 12.5);
-  fAnalysisManager->CreateH1("6", "Log10 Energy (eV) of neutron", 100, -2.0, 9.0);
-  fAnalysisManager->CreateH2("1", "Neutron Energy vs Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
+  fAnalysisManager->SetFirstHistoId(1);
+  fAnalysisManager->CreateH1("Protons_per_Event", "Protons/event", 50, 0.0, 100.0);
+  fAnalysisManager->CreateH1("Neutrons_per_Event", "Neutrons/event", 50, 0.0, 100.0);
+  fAnalysisManager->CreateH1("Neutron_Energy", "Neutron Energy vs 1/mom /eV", 100000, 0.0, 1000000.0);
+  fAnalysisManager->CreateH1("proton_Energy", "Proton Energy Deposition/keV", 1000, 0.0, 1000.0 * keV);
+  fAnalysisManager->CreateH1("Particle_Stack", "Particle Stack", 12, 0.5, 12.5);
+  fAnalysisManager->CreateH1("log10En", "Log10 Energy (eV) of neutron", 100, -9.0, 9.0);
+  fAnalysisManager->CreateH2("Neutron_Energy_Time", "Neutron Energy vs Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
 }
 
 
@@ -225,8 +226,8 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("primary");
   fAnalysisManager->FinishNtuple(); // ntupleID: 13
 
-  fAnalysisManager->CreateNtuple("G4TARC_log10(Neutron_Energy)", "log10(E_n)");
-  fAnalysisManager->CreateNtupleDColumn("log10(energy)");
+  fAnalysisManager->CreateNtuple("log10(En)", "log10(En)");
+  fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->FinishNtuple(); // ntupleID: 14 for neutron
 
   G4cout << "Ntuples created." << G4endl;
@@ -268,7 +269,8 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
         if (!isFlux) fMaxFluenceData = (std::max(fMaxFluenceData, (signed)NCount));
         if (isFlux && !fIFluxCountRef) fMaxFluxData = (std::max(fMaxFluxData, (signed)NCount));
         fMaxTestFluxData = fIFluxCountRef;
-        // std::cout << "Table->" << iTableNum << " Data-> " << NCount << std::endl;
+        //std::cout << "Table->" << iTableNum << " Data-> " << NCount
+        //<< " Flux: " << isFlux << " Fluence: " << !(isFlux) << std::endl;
         continue;
       }
       if ( file0 && readPara){
@@ -305,6 +307,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
         }
       }
       if (!isFlux && (tmpV1.size()) == NCount){
+        if (iTableNum!=0) ++fMaxFluenceTable;
         fExptRadiiTables.push_back(tmpV1);
         fExptFluenceTables.push_back(tmpV2);
         fExptErrTables.push_back(tmpV3);
@@ -363,6 +366,8 @@ void G4TARCHistoManager::BeginOfRun() {
   }
 
   DefineShellBlocks();
+  G4cout << " File is being read from Data file" << G4endl;
+  ReadExperimentalDataFromFile(fExptlDataFileName);
 
   fAbsX0 = fAbsY0 = fAbsZ0 = 0.0; // 0.5 * fLength;
   fNevt       = 0;
@@ -422,7 +427,7 @@ void G4TARCHistoManager::BeginOfRun() {
     fEdNdE.push_back(temp);
   }
 
-  for (G4int ii=0; ii < 12; ii ++) {
+  for (G4int ii=0; ii < fMaxFluenceTable; ii ++) {
     std::vector<G4double> temp;
     for (G4int jj = 0; jj < fMaxEBin; jj++) temp.push_back(0.0);
     fFluence.push_back(temp);
@@ -474,8 +479,6 @@ void G4TARCHistoManager::EndOfRun() {
   G4cout << "EndOfRun(), fEdepSum = " << fEdepSum << G4endl;
   G4cout << "======================================================================" << G4endl;
 
-  G4cout << " File is being read from Data file" << G4endl;
-  ReadExperimentalDataFromFile(fExptlDataFileName);
   FillRadialExperimentalData();
 
   fHisto->SetGeomParam(fShellNumber, fShellThickness, fInnerRadiusofShell, fOuterRadiusofShell);
@@ -648,15 +651,19 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
     } else if (pd == G4Proton::ProtonDefinition()){
       fNproton++;
       // // fHisto->Fill(4, ke, 1.0);
-    } else if (pd == G4Neutron::NeutronDefinition() ){//&& TKin < fTcut){  // <----- CHECK
+    } else if (pd == G4Neutron::NeutronDefinition()){//&& TKin < fTcut){  // <----- CHECK
       fNneutron++;
       // fEventAction->AddNeutronStack();
-      //  fHisto->Fill(5, ke, 1.0);
+      //fHisto->Fill(5, ke, 1.0);
+      //G4cout << ke << G4endl;
+
+      fAnalysisManager->FillNtupleDColumn(14, 0, log10(ke));
+      fAnalysisManager->AddNtupleRow(14);
     } else if (pd == G4AntiProton::AntiProtonDefinition()){
       fNaproton++;
     } else if ( pd == G4PionPlus::PionPlusDefinition() ) {
       fNcpions++;
-      //  fHisto->Fill(6, ke, 1.0);
+      // fHisto->Fill(6, ke, 1.0);
       //  fHisto->Fill(19, ke, 1.0);
     } else if ( pd == G4PionMinus::PionMinusDefinition()) {
       fNcpions++;
@@ -774,7 +781,7 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack, const G4Step* my
     fNeutronSum+= 1.0;
     // future plan for neutron breed at breeder with X
     TKin = myTrack->GetDynamicParticle()->GetKineticEnergy();
-    stepLen = myStep->GetStepLength();
+    //stepLen = myStep->GetStepLength();
     time = myTrack->GetGlobalTime();
     for (ii = 0; ii < fNbin; ii++) {
       if (TKin <= fNEsecond.GetLowEdgeEnergy(ii)){
@@ -783,7 +790,6 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack, const G4Step* my
       }
     }
     jj = (ii == fNbin) ? fNbin-1 : jj;
-
   }
 }
 
@@ -997,7 +1003,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
         trackout << "beam Energy = " << fPrimaryKineticEnergy/MeV  << " MeV"         << G4endl;
     }
   }
-  trackout << "Number of Events "             << fNevt                                    << G4endl;
+  trackout << "Number of Events = "             << fNevt                                    << G4endl;
   trackout << "                                                                        "  << G4endl;
 
   trackout << " Production in Target:"        << "                                     "  << G4endl;
@@ -1008,45 +1014,45 @@ void G4TARCHistoManager::TrackRun(G4double x) {
              << " RMS " << fEdepSum2/MeV << " MeV" "    "<< G4endl;
   }else {
     trackout << std::setprecision(4) << "Mean Energy deposited = " << fEdepSum/MeV  << " MeV "
-             << " RMS " << fEdepSum2/MeV << " MeV" "    "<< G4endl;
+             << " RMS = " << fEdepSum2/MeV << " MeV" "    "<< G4endl;
   }
 
-  trackout << std::setprecision(4) << "Average Number of steps "       << xStep             << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Gammas "      << xGamma            << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Electrons "   << xElectron         << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Positrons "   << xPositron         << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Protons "     << xProton           << G4endl;
-  trackout << std::setprecision(4) << "Average Number of AntiProton "  << xAntiProton       << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Neutrons "    << xNeutron          << G4endl;
-  trackout << std::setprecision(4) << "Average Number of Muons "       << xMuons            << G4endl;
-  trackout << std::setprecision(4) << "Average Number of D + T "       << xDeut             << G4endl;
-  trackout << std::setprecision(4) << "Average Number of He3 + alpha " << xAlpha            << G4endl;
-  trackout << std::setprecision(4) << "Average Number of ions "        << xIons             << G4endl;
+  trackout << std::setprecision(4) << "Average Number of steps: "       << xStep             << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Gammas: "      << xGamma            << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Electrons: "   << xElectron         << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Positrons: "   << xPositron         << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Protons: "     << xProton           << G4endl;
+  trackout << std::setprecision(4) << "Average Number of AntiProton: "  << xAntiProton       << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Neutrons: "    << xNeutron          << G4endl;
+  trackout << std::setprecision(4) << "Average Number of Muons: "       << xMuons            << G4endl;
+  trackout << std::setprecision(4) << "Average Number of D + T: "       << xDeut             << G4endl;
+  trackout << std::setprecision(4) << "Average Number of He3 + alpha: " << xAlpha            << G4endl;
+  trackout << std::setprecision(4) << "Average Number of ions: "        << xIons             << G4endl;
   trackout << "                                                      " << "              "  << G4endl;
 
   trackout << " Leakage from the system: "                                                       << G4endl;
-  trackout << std::setprecision(4) << "Average Number of forward Neutrons "      << xneuF        << G4endl;
-  trackout << std::setprecision(4) << "Average Number of reflected Neutrons "    << xneuB        << G4endl;
+  trackout << std::setprecision(4) << "Average Number of forward Neutrons: "      << xneuF        << G4endl;
+  trackout << std::setprecision(4) << "Average Number of reflected Neutrons: "    << xneuB        << G4endl;
   //trackout << std::setprecision(4) << "Average Number of other leaked Neutrons " << xNeutronLeak << G4endl;
-  trackout << std::setprecision(4) << "Average Number of total leaked Neutrons " <<  xNeutronLeak
+  trackout << std::setprecision(4) << "Average Number of total leaked Neutrons: " <<  xNeutronLeak
                                                                                     + xneuF
                                                                                     + xneuB      << G4endl;
-  trackout << std::setprecision(4) << "Average Number of leaked Protons "        << xProtonLeak  << G4endl;
-  trackout << std::setprecision(4) << "Average Number of leaked Pions "          << xp0          << G4endl;
+  trackout << std::setprecision(4) << "Average Number of leaked Protons: "        << xProtonLeak  << G4endl;
+  trackout << std::setprecision(4) << "Average Number of leaked Pions: "          << xp0          << G4endl;
   trackout <<                                                                                     G4endl;
 
 
 
   G4double kEffective, rho, rat, react, perN=x;
-  kEffective = fNeutronSum / fNeutronInit;
-  rho        = (kEffective - 1.0) / kEffective;  // reactivity :: deviation from criticality
-  rat        = std::log(kEffective);
+  kEffective = (fNeutronInit!= 0.0) ? fNeutronSum / fNeutronInit : 0.0;
+  rho        =  (kEffective != 0.0) ? (kEffective - 1.0) / kEffective : 0.0;  // reactivity :: deviation from criticality
+  rat        = (kEffective != 0.0) ? std::log(kEffective) : 0.0;
   react      = rat / (1.0 + rat);
 
   trackout << " IMP Parameters : "    << G4endl;
   trackout << " Neutron_Init/p = "    << fNeutronInit* perN << ",  Neutron_Sum/p = " << fNeutronSum * perN << G4endl;
   trackout << " kEffective = "        << kEffective         << ", Rho = "            << rho                << G4endl;
-  trackout << "Estimated reactivity " << react                                       << G4endl             << G4endl;
+  trackout << " Estimated reactivity = " << react                                       << G4endl             << G4endl;
   trackout << "==========================================================================================" << G4endl;
   trackout << G4endl;
 
@@ -1055,7 +1061,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
 
 void G4TARCHistoManager::NeutronRun(G4double x) {
   G4double perN = x;
-/*
+
   std::ofstream fETVirt("ETVirtual.dat", std::ios::out);
   //fETVirt << (fETVirtual.size() * fETVirtual[0].size()) << G4endl;
   for (std::size_t ii = 0; ii < fETVirtual.size(); ii++){
@@ -1075,9 +1081,7 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
     }
   }
   fFlu.close();
-*/
 
-/*
   G4double ngSum = 0.0;
   std::ofstream nspec("neutronSpectra.dat", std::ios::out);
   nspec << fNSecondSum1.size() << G4endl;
@@ -1112,7 +1116,7 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
   {
     teaxis << fNEsecond.GetLowEdgeEnergy(k) << "        " << fNTsecond.GetLowEdgeEnergy(k) << G4endl;
   }
-  */
+
 }
 
 

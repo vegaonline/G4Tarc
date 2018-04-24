@@ -147,6 +147,7 @@ private:
   G4int    fMaxSlices   = 3 * fMaxBin;
   //G4int    fNHisto      = 25;
   G4int    fMaxNdx      = 10000;
+  G4int    fMaxFluenceTable = 0;
 
 
   G4double fNstepEnergy;
