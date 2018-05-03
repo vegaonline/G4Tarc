@@ -34,7 +34,7 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
   if ( G4int( nEvt / fPrintModulo ) * fPrintModulo == nEvt ){
     G4cout << "EventAction: Event # " << nEvt << " started " << G4endl;
   }
-  fHisto->BeginOfEvent();
+  fHisto->BeginOfEvent(nEvt);
 }
 
 

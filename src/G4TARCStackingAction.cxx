@@ -20,7 +20,7 @@ G4TARCStackingAction::~G4TARCStackingAction() {
 }
 
 G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* myTrack) {
-  G4ClassificationOfNewTrack status = fUrgent;
+  G4ClassificationOfNewTrack status = fWaiting;     //fUrgent;
 
   fNumber_newTracks++;
   if (myTrack->GetTrackStatus() == fAlive)

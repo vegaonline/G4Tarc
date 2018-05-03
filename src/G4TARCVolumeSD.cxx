@@ -11,6 +11,7 @@ G4bool G4TARCVolumeSD::ProcessHits(G4Step* myStep, G4TouchableHistory*){
   fHisto->AddLeakingParticle(myTrack);
   if (myTrack->GetTrackID() > 1) {
     fHisto->AddNzero(myTrack, myStep);
+    fHisto->AddEnergyTime(myTrack, myStep);
   } else {
     fHisto->NeutFinalState(myTrack, myStep);
     fHisto->TargetProfile(myTrack, myStep);

@@ -12,9 +12,9 @@
 #include "globals.hh"
 #include <sstream>
 #include "G4TARCHistoManager.hh"
-#include "G4TARCHisto.hh"
+//#include "G4TARCHisto.hh"
 
-class G4TARCHisto;
+//class G4TARCHisto;
 class G4TARCHistoManager;
 class G4UIdirectory;
 class G4UIcommand;
