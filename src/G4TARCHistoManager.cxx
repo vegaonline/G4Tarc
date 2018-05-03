@@ -83,6 +83,7 @@ void G4TARCHistoManager::DefineShellBlocks() {
 
 void G4TARCHistoManager::BookHistogram() {
   fHistoBooked = true;
+  fAnalysisManager->SetFirstHistoId(1);
   fAnalysisManager->CreateH1("1","Gamma Edep /keV", 1000, 0., 1000*keV);
   fAnalysisManager->CreateH1("2","Neutron ener vs. 1/mom /eV", 100000, 0., 1000000.);
   fAnalysisManager->CreateH1("3","Electron Edep /keV", 1000, 0., 1000*keV);
@@ -97,7 +98,6 @@ void G4TARCHistoManager::BookHistogram() {
 
 
   /*
-  fAnalysisManager->SetFirstHistoId(1);
   fAnalysisManager->CreateH1("Protons_per_Event", "Protons/event", 50, 0.0, 100.0);
   fAnalysisManager->CreateH1("Neutrons_per_Event", "Neutrons/event", 50, 0.0, 100.0);
   fAnalysisManager->CreateH1("Neutron_Energy", "Neutron Energy vs 1/mom /eV", 100000, 0.0, 1000000.0);
