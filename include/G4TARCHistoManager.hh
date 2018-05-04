@@ -115,6 +115,7 @@ public:
   void CreateRadialFluxHisto();
   void StartProcessing();
   void ProcessStepping(const G4Step*);
+  void analysePS(G4double, G4String, G4double, G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4double, G4int);
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronFlux(G4double, G4double, G4double, G4int, G4int, G4double, G4double, G4double, G4double,
@@ -127,7 +128,7 @@ public:
   void DefineShellBlocks();
 
   inline void exitingTallyCheck(G4bool exiting_flag_check){if(exiting_flag_check) fExiting_check_Flux++; }
-  inline void AddExitingFlux(G4double exitingE)           { fExiting_Flux++;   fExiting_Energy = exitingE;}
+  inline void AddExitingFlux(G4double exitingE)           { fExiting_Flux++;   fExiting_Energy += exitingE;}
   inline G4int GetVerbose()               const           { return fVerbose; }
   inline G4double GetLength()             const           { return fLength; }
   inline G4double GetGPSEnergy()          const           { return fPrimaryKineticEnergy; }
@@ -368,6 +369,8 @@ private:
   std::vector<G4double>                  fEflux_Data;
   std::vector<G4double>                  fFine_Energy;
 
+  std::vector<G4double>                  fENflux;
+  std::vector<G4double>                  fNeutflux;
 
   std::vector<G4double>                  fFluence_Spectrum;
   std::vector<G4double>                  fLithium_Radial_Energy_Lower;

@@ -32,7 +32,7 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
     }
   }
   if ( G4int( nEvt / fPrintModulo ) * fPrintModulo == nEvt ){
-    G4cout << "EventAction: Event # " << nEvt << " started " << G4endl;
+    G4cout << "EventAction: Event # " << nEvt << " started " ;
   }
   fHisto->BeginOfEvent(nEvt);
 }
@@ -45,5 +45,5 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
     G4cout << " EventAction: Event # " << evt->GetEventID() << " ended" << G4endl;
   }
   fHisto->EndOfEvent();
-  if (fHisto->GetVerbose() > 0) G4cout << "EventAction: Event " << evt->GetEventID() << " ended." <<G4endl;
+  if (fHisto->GetVerbose() > 0) G4cout << "   EventAction: Event # " << evt->GetEventID() << " ended." <<G4endl;
 }
