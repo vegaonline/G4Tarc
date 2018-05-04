@@ -1590,12 +1590,12 @@ if (PreVol == "lab_phys" || PostVol == "world_log_PV") {
   G4cout << PreVol << "   " << PostVol << G4endl;
 }
 
-      if (PreVol == "lab_phys" && PostVol == "world"){
+      if (PreVol == "lab_phys" && PostVol == "world_log_PV"){
         G4cout << PostVol << G4endl;
         //G4TARCHistoManager::exitingTally(true, partEnergy);
         exitingTally(true, partEnergy);
       }
-      if (PostVol == "world"){
+      if (PostVol == "world_log_PV"){
         // G4TARCHistoManager::exitingTallyCheck(true);
         exitingTallyCheck(true);
       }
