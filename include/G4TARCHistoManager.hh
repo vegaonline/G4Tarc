@@ -222,7 +222,7 @@ private:
   G4int fNneu_leak;
   G4int fNneu_back;
   G4int fNeutronStack;
-  G4int fNcpions;
+  G4int fNpions;
   G4int fNpi0;
   G4int fNkaons;
   G4int fNstep;

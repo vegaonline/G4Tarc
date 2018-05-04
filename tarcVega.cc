@@ -98,7 +98,8 @@ int main(int argc, char** argv) {
   // Choose the Random Engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
-  G4int nThreads;
+  G4int nThreads = G4Threading::G4GetNumberOfCores();;
+  g
   for (G4int i = 2; i < argc; i += 2) {
     G4String inArg = G4String(argv[i]);
     if (inArg == "-m") macro = argv[i + 1];
@@ -147,9 +148,9 @@ int main(int argc, char** argv) {
 
   // PhysicsList
   G4PhysListFactory           physFactory;
-  G4VModularPhysicsList*      phys          = 0;
-  G4NeutronKiller*            neutKiller    = 0;
-  G4NeutronKillerMessenger*   neutKillMess  = 0;
+  G4VModularPhysicsList*      phys          = nullptr;
+  G4NeutronKiller*            neutKiller    = nullptr;
+  G4NeutronKillerMessenger*   neutKillMess  = nullptr;
   char*                       physnameInput = getenv("PHYSLIST");
   G4String                    physicsName   = "";
   if (physnameInput)          physicsName   = G4String(physnameInput);

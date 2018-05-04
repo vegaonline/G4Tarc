@@ -73,9 +73,9 @@ void G4TARCHistoManager::DefineShellBlocks() {
     tmp1 = tmp2;
   }
   fTestSphereRadius = 45.6 * cm;
-  fTestSphereVolume = (4.0 / 3.0) * pi * (fTestSphereRadius * fTestSphereRadius * fTestSphereRadius);
-  fTestSphereSurfaceArea = 4.0 * pi * (fTestSphereRadius * fTestSphereRadius);
-  fTestShellVol          = (4.0 / 3.0) * pi * (std::pow(fMaxOuterRadiusofShell, 3.0) - std::pow(fMinInnerRadiusofShell, 3.0));
+  fTestSphereVolume = (4.0 / 3.0) * CLHEP::pi * (fTestSphereRadius * fTestSphereRadius * fTestSphereRadius);
+  fTestSphereSurfaceArea = 4.0 * CLHEP::pi * (fTestSphereRadius * fTestSphereRadius);
+  fTestShellVol          = (4.0 / 3.0) * CLHEP::pi * (std::pow(fMaxOuterRadiusofShell, 3.0) - std::pow(fMinInnerRadiusofShell, 3.0));
   fRadHole = 32.0 * mm;
   fLenCyl  = 150.0 * mm;
 }
@@ -288,20 +288,20 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   fMaxFluenceData = -999999.99;
   fMaxTestFluxData = -999999.99;
   G4int fileCount = 0;
-  std::cout << " TARC Experimental data file reading report:-" << std::endl;
   while (getline(exptIN, lineIN)){
     lineIN = std::regex_replace(lineIN, std::regex("^ +| +$|( ) +"), "$1");
     if (lineIN.size() > 1 && lineIN.find("#", 0, 1) != std::string::npos){  // if the line starts with # sign
       std::size_t found1 = lineIN.find("Table");
       readPara = false;
       G4String tableNum = (lineIN.substr(found1 + 5, 3));
-      tableNum = std::regex_replace(tableNum, std::regex("^ +| +$|( ) +"), "$1"); // stripping extra spaces
+      tableNum = std::regex_replace(tableNum, std::regex("^ +| +$|( ) +"), "$1"); // stripCLHEP::ping extra spaces
       iTableNum = std::atoi(tableNum);
       isFlux = (std::find( fFluxTableList.begin(), fFluxTableList.end(), iTableNum) != fFluxTableList.end());
       if (found1 != std::string::npos){
         file0 = (iTableNum == 0) ? 1 : 0;
       }
-    } else {   // the line does not start with # symbol
+      lineIN="";
+    } else if (lineIN.size() > 1 && lineIN.find("#", 0, 1) == std::string::npos){   // the line does not start with # symbol
       if (lineIN.find(";", 0, 1) != std::string::npos){
         NCount = atoi(lineIN.substr(1, lineIN.size()).c_str());
         fIFluxCountRef = (iTableNum == 40) ? NCount : 0;
@@ -324,6 +324,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
         //for (unsigned ijk = 0 ; ijk < fExptEnergyBin.size(); ijk++) std::cout << fExptEnergyBin[ijk] << "  ";
         //std::cout << std::endl;
         file0 = 0;
+        readPara = false;
       }
       if (!file0 && readPara){
         std::istringstream sdummy;
@@ -378,7 +379,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   //  fMaxRadCount = 10  fMaxTestFluxData = 21;
   //  fMaxFluxData  = 95 fMaxFluenceData  = 102
 
-  for (std::size_t ii = 0; ii < fMaxRadCount; ii++){
+  for (G4int ii = 0; ii < fMaxRadCount; ii++){
     fFluxRadTables.push_back(fExptRadiiTables[10][ii]);
   }
 
@@ -419,6 +420,31 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
 
 
 void G4TARCHistoManager::FillRadialExperimentalData(){
+  for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  fExptRadiiTables.size(); ij1++){  0~ 41 to 7 ~ 48
+    for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
+      fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[ij1][ij2]);
+      fAnalysisManager->FillNtupleDColumn(9, 1, fExptEnergyBin[ij1]);
+      fAnalysisManager->FillNtupleDColumn(9, 2, fExptFluenceTables[ij1][ij2]);
+      fAnalysisManager->FillNtupleDColumn(9, 3, fExptErrTables[ij1][ij2]);
+    }
+  }
+  fAnalysisManager->AddNtupleRow(9);
+
+  for (std::size_t ij1 = 8; ij1 < fExptRadiiTables.size(); ij1++){ // 0~ 41 to 7 ~ 48
+    G4int ijE = ij1 - 7;
+    for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
+      fAnalysisManager->FillNtupleDColumn(10, 0, fExptRadiiTables[ij1][ij2]);
+      fAnalysisManager->FillNtupleDColumn(10, 1, fExptEnergyBin[ijE]);
+      fAnalysisManager->FillNtupleDColumn(10, 2, fExptFluenceTables[ij1][ij2]);
+      fAnalysisManager->FillNtupleDColumn(10, 3, fExptErrTables[ij1][ij2]);
+    }
+  }
+  fAnalysisManager->AddNtupleRow(10);
+
+
+
+
+  /*
   for (G4int jj = 0; jj < 8; jj++){   // this is the row of 2D vector for read Data
     for (unsigned ii = 0; ii < fExptRadiiTables[jj].size(); ii++){
       fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[jj][ii]);
@@ -428,6 +454,7 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
       fAnalysisManager->AddNtupleRow(9);
     }
   }
+
   for (G4int jj = 8; jj < 17; jj++){
     //G4cout << jj << "   " << fExptRadiiTables[jj].size() << G4endl;
     for (unsigned ii = 0; ii < fExptRadiiTables[jj].size(); ii++){
@@ -438,6 +465,7 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
       fAnalysisManager->AddNtupleRow(10);
     }
   }
+  */
   G4cout << "Experimental data filling complete." << G4endl;
 }
 
@@ -454,6 +482,7 @@ void G4TARCHistoManager::BeginOfRun() {
   DefineShellBlocks();
   G4cout << " File is being read from Data file" << G4endl;
   ReadExperimentalDataFromFile(fExptlDataFileName);
+
   FillRadialExperimentalData();
 
   fNtuple_full = false;
@@ -591,7 +620,7 @@ void G4TARCHistoManager::BeginOfRun() {
 void G4TARCHistoManager::CreateNeutronFluxHisto(){
   fAbsolute_TotalFlux = (fTotal_flux * 1.0e9 / (G4double)fNevt) / fTestSphereSurfaceArea;
 
-  for (std::size_t ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
+  for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
     G4double mean_energy   = 0.5 * (fFlux_Energy[ij1 + 1] + fFlux_Energy[ij1]);
     G4double abs_flux      = (fFlux[ij1] * ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea;
     G4double bin_tmp_width = (fFlux_Energy[ij1 + 1] - fFlux_Energy[ij1]);
@@ -689,7 +718,7 @@ void G4TARCHistoManager::CreateNeutronFluxHisto(){
 
 void G4TARCHistoManager::CreateRadialFluxHisto(){
   for (G4int ijk1 = 0; ijk1 < fMaxTestFluxData; ijk1++) {  // ijk1 < fMaxTestFluxData; ijk1++){
-    G4double shellVol = (4.0 / 3.0) * pi * (std::pow(fOuterRadiusofShell[ijk1], 3.0) - std::pow(fInnerRadiusofShell[ijk1], 3.0));
+    G4double shellVol = (4.0 / 3.0) * CLHEP::pi * (std::pow(fOuterRadiusofShell[ijk1], 3.0) - std::pow(fInnerRadiusofShell[ijk1], 3.0));
     G4double radL = 0.5 * (fOuterRadiusofShell[ijk1] + fInnerRadiusofShell[ijk1]);
     for (G4int ijk2 = 0; ijk2 < fMaxRadCount; ijk2++){
       G4double bin_tmp_width = fLithium_Radial_Energy_Upper[ijk2] - fLithium_Radial_Energy_Lower[ijk2];
@@ -896,11 +925,11 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
     } else if (pd == G4AntiProton::AntiProtonDefinition()){
       fNaproton++;
     } else if ( pd == G4PionPlus::PionPlusDefinition() ) {
-      fNcpions++;
+      fNpions++;
       // fHisto->Fill(6, ke, 1.0);
       //  fHisto->Fill(19, ke, 1.0);
     } else if ( pd == G4PionMinus::PionMinusDefinition()) {
-      fNcpions++;
+      fNpions++;
       //  fHisto->Fill(6, ke, 1.0);
       //  fHisto->Fill(20, ke, 1.0);
     } else if ( pd == G4PionZero::PionZeroDefinition()) {
@@ -1035,7 +1064,7 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myS
   if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron") {
     if (
            (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log")
-           && (  myTrack->GetVertexPosition().x() >= -35.0 && myTrack->GetVertexPosition().x() <= 35.0
+           && (  (myTrack->GetVertexPosition().x() >= -35.0 && myTrack->GetVertexPosition().x() <= 35.0)
            || myTrack->GetVertexPosition().y() >= -35.0 && myTrack->GetVertexPosition().y() <= 35.0
            || myTrack->GetVertexPosition().z() >= -1500.0 && myTrack->GetVertexPosition().z() <= -299.0
            )
@@ -1599,13 +1628,13 @@ void G4TARCHistoManager::analyseSecondaries(G4double energyL, G4String nameL, G4
     fElectron_flux++;
     Iparticle = 3;
     //    return;
-  } else if(nameL == "pi-") {
+  } else if(nameL == "CLHEP::pi-") {
     fPiminus_flux++;
     Iparticle = 4;
-  } else if(nameL == "pi+") {
+  } else if(nameL == "CLHEP::pi+") {
     fPiPlus_flux++;
     Iparticle = 5;
-  } else if(nameL == "pi0") {
+  } else if(nameL == "CLHEP::pi0") {
     fPizero_flux++;
     Iparticle = 6;
   } else if(nameL == "e+") {
@@ -1630,9 +1659,9 @@ void G4TARCHistoManager::analyseSecondaries(G4double energyL, G4String nameL, G4
   else if (parentParticleL == "neutron") iParent = 2;
   else if(reduced_fluxL)                 iParent = -2;
   else if (parentParticleL == "e-")      iParent = 3;
-  else if (parentParticleL == "pi-")     iParent = 4;
-  else if (parentParticleL == "pi+")     iParent = 5;
-  else if (parentParticleL == "pi0")     iParent = 6;
+  else if (parentParticleL == "CLHEP::pi-")     iParent = 4;
+  else if (parentParticleL == "CLHEP::pi+")     iParent = 5;
+  else if (parentParticleL == "CLHEP::pi0")     iParent = 6;
   else if (parentParticleL == "e+")      iParent = 7;
   else if (parentParticleL == "proton")  iParent = 8;
   else if (parentParticleL == "proton")  iParent = 8;
@@ -1640,7 +1669,7 @@ void G4TARCHistoManager::analyseSecondaries(G4double energyL, G4String nameL, G4
   else if (parentParticleL == "mu+")     iParent = 10;
 
 
-  if(fNtuple_full) {
+  //if(fNtuple_full) {
     fAnalysisManager->FillNtupleDColumn(0,0, temp_energy);
     fAnalysisManager->FillNtupleDColumn(0,1, temp_time);
     fAnalysisManager->FillNtupleIColumn(0,2, Iparticle);
@@ -1652,7 +1681,7 @@ void G4TARCHistoManager::analyseSecondaries(G4double energyL, G4String nameL, G4
     fAnalysisManager->FillNtupleIColumn(0,8, number_generationsL);
     fAnalysisManager->FillNtupleIColumn(0,9, fNevent_id);
     fAnalysisManager->AddNtupleRow(0);
-  }
+  //}
 }
 
 
