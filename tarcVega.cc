@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
   G4int nThreads = G4Threading::G4GetNumberOfCores();;
-  g
+  
   for (G4int i = 2; i < argc; i += 2) {
     G4String inArg = G4String(argv[i]);
     if (inArg == "-m") macro = argv[i + 1];
