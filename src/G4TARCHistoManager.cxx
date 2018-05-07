@@ -1462,7 +1462,7 @@ void G4TARCHistoManager::otherEnergyTime(G4double thisE, G4double thisT, G4doubl
 }
 
 void G4TARCHistoManager::exitingTally(G4bool exiting_flag, G4double energyL){
-  G4cout << exiting_flag << "  energyL:  " << energyL << " exitingF: " << fExiting_Flux << "  exitingE: " << fExiting_Energy << G4endl;
+  //G4cout << exiting_flag << "  energyL:  " << energyL << " exitingF: " << fExiting_Flux << "  exitingE: " << fExiting_Energy << G4endl;
   if(exiting_flag) {
     G4TARCHistoManager::AddExitingFlux(energyL);
     fAnalysisManager->FillNtupleDColumn(2, 0, energyL / MeV);
@@ -1585,15 +1585,10 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
     if (myStep->GetTrack()->GetNextVolume()){
       G4String PreVol = thePreTouchable->GetVolume()->GetName();
       G4String PostVol = thePostTouchable->GetVolume()->GetName();
-
-if (PreVol == "lab_phys" || PostVol == "world_log_PV") {
-  G4cout << PreVol << "   " << PostVol << G4endl;
-}
-
       if (PreVol == "lab_phys" && PostVol == "world_log_PV"){
-        G4cout << PostVol << G4endl;
+        //G4cout << PostVol << G4endl;
         //G4TARCHistoManager::exitingTally(true, partEnergy);
-        exitingTally(true, partEnergy);
+        exitingTally(true, partEnergy/eV);
       }
       if (PostVol == "world_log_PV"){
         // G4TARCHistoManager::exitingTallyCheck(true);
