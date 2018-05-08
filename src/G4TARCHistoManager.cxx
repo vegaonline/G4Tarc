@@ -11,24 +11,33 @@ G4TARCHistoManager *  G4TARCHistoManager::GetPointer() {
 }
 
 G4TARCHistoManager::G4TARCHistoManager()
-:
-  fHisto( 0 ),
-  fHistoBooked(false),
-  fPrimaryDef( 0 ),
-  fProton( 0 ),
-  //fNHisto( 25 ),
-  fNeutron( 0 ),
-  fEdepMax( fMaxEVal ),
-  fLength( fMaxLVal ),
-  fHLength(0.5 * fMaxLVal),
-  fPrimaryKineticEnergy ( fEVal0 ),
-  fVerbose( 1 ),
-  fNtuple_full(false),
-  fNBinsE( fMaxBin ),
-  fProtonIN(0),
-  fNCountTotal(0),
-  fVirtVol(0),
-  fNSlices( fMaxSlices ) {
+//  fHisto( 0 ),
+//  fHistoBooked(false),
+//  fPrimaryDef( 0 ),
+//  fProton( 0 ),
+// fNHisto( 25 ),
+//  fNeutron( 0 ),
+//  fEdepMax( fMaxEVal ),
+//  fLength( fMaxLVal ),
+//  fHLength(0.5 * fMaxLVal),
+//  fPrimaryKineticEnergy ( fEVal0 ),
+//  fVerbose( 1 ),
+//  fNtuple_full(false),
+//  fNBinsE( fMaxBin ),
+//  fProtonIN(0),
+//  fNCountTotal(0),
+//  fVirtVol(0),
+//  fNSlices( fMaxSlices )
+{
+    fHistoBooked = false;
+    fEdepMax = fMaxEVal;
+    fLength = fMaxLVal;
+    fHLength = 0.5 * fMaxLVal;
+    fPrimaryKineticEnergy = fEVal0;
+    fVerbose = 1;
+    fNtuple_full = false;
+    fNBinsE = fMaxBin;
+    fNSlices = fMaxSlices;
     //fHisto    = new G4TARCHisto();
     //fHisto->SetVerbose(fVerbose);
     //fNeutron = G4Neutron::Neutron();
@@ -37,15 +46,69 @@ G4TARCHistoManager::G4TARCHistoManager()
 
 G4TARCHistoManager::~G4TARCHistoManager() {
   // delete fHisto;
+  std::vector<G4int>().swap(fFluxTableList);
   std::vector<G4double>().swap(fExptEnergyBin);
+  std::vector<G4double>().swap(fFluxRadTables);
+  std::vector<G4double>().swap(fRadList);
+  std::vector<G4double>().swap(fOuterRadiusofShell);
+  std::vector<G4double>().swap(fInnerRadiusofShell);
+  std::vector<G4double>().swap(fFlux);
+  std::vector<G4double>().swap(fFlux_Energy);
+  std::vector<G4double>().swap(fFlux_Data);
+  std::vector<G4double>().swap(fFlux_Syst_Err);
+  std::vector<G4double>().swap(fFlux_Energy_in);
+  std::vector<G4double>().swap(fFlux_Data_in);
+  std::vector<G4double>().swap(fFlux_Syst_Err_in);
+  std::vector<G4double>().swap(fFlux_Low);
+  std::vector<G4double>().swap(fFlux_Low_Radius);
+  std::vector<G4double>().swap(fFlux_Low_Energy);
+  std::vector<G4double>().swap(fFlux_Low_Energy_in);
+  std::vector<G4double>().swap(fFlux_Low_Data);
+  std::vector<G4double>().swap(fFlux_Low_Syst_Err);
+  std::vector<G4double>().swap(fFlux_Lithium);
+
+  std::vector<G4double>().swap(fFlux_Lithium_Radius);
+  std::vector<G4double>().swap(fFlux_Lithium_Energy);
+  std::vector<G4double>().swap(fFlux_Lithium_Energy_in);
+  std::vector<G4double>().swap(fFlux_Lithium_Data);
+  std::vector<G4double>().swap(fFlux_Lithium_Syst_Err);
+  std::vector<G4double>().swap(fFluence1D);
+  std::vector<G4double>().swap(fFluence_Radius);
+  std::vector<G4double>().swap(fFluence_Energy);
+  std::vector<G4double>().swap(fFluence_Data);
+  std::vector<G4double>().swap(fFluence_Syst_Err);
+  std::vector<G4double>().swap(fEflux_Data);
+  std::vector<G4double>().swap(fFine_Energy);
+  std::vector<G4double>().swap(fENflux);
+  std::vector<G4double>().swap(fNeutflux);
+  std::vector<G4double>().swap(fFluence_Spectrum);
+  std::vector<G4double>().swap(fLithium_Radial_Energy_Lower);
+  std::vector<G4double>().swap(fLithium_Radial_Energy_Upper);
+
+  std::vector<G4double>().swap(fLithium_Radial_Mean);
+  std::vector<G4double>().swap(fLithium_Fluence_Step_Shell);
+  std::vector<G4double>().swap(fLithium_Fluence_Step);
+  std::vector<G4double>().swap(fLow_Fluence_Step_Shell);
+  std::vector<G4double>().swap(fFluence_Step_Shell);
+  std::vector<G4double>().swap(fLithium_Flux);
+  std::vector<G4double>().swap(fCos_Lithium_Flux);
+  std::vector<G4double>().swap(fLow_Flux);
+  std::vector<G4double>().swap(fCos_Low_Flux);
+  std::vector<G4double>().swap(fCos_Flux);
+  std::vector<G4double>().swap(fEFlux);
+  std::vector<G4double>().swap(fFluence_Cyl);
+  std::vector<G4double>().swap(fFluence_step);
+  std::vector<G4double>().swap(fLow_Fluence_step);
+
+  std::vector<std::vector<G4double> >().swap(fRadial_Fluence_Step);
   std::vector<std::vector<G4double> >().swap(fExptRadiiTables);
   std::vector<std::vector<G4double> >().swap(fExptFluenceTables);
   std::vector<std::vector<G4double> >().swap(fExptErrTables);
   std::vector<std::vector<G4double> >().swap(fExptEnergyTables);
   std::vector<std::vector<G4double> >().swap(fExptFluxTables);
   std::vector<std::vector<G4double> >().swap(fExptFluxErrTables);
-  std::vector<G4double>().swap(fOuterRadiusofShell);
-  std::vector<G4double>().swap(fInnerRadiusofShell);
+  std::vector<std::vector<G4double> >().swap(fFlux_Radius);
+
 
 }
 
@@ -286,7 +349,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   fMaxFluxData = -999999.99;
   fMaxFluenceData = -999999.99;
   fMaxTestFluxData = -999999.99;
-  G4int fileCount = 0;
+  //G4int fileCount = 0;
   while (getline(exptIN, lineIN)){
     lineIN = std::regex_replace(lineIN, std::regex("^ +| +$|( ) +"), "$1");
     if (lineIN.size() > 1 && lineIN.find("#", 0, 1) != std::string::npos){  // if the line starts with # sign
@@ -428,9 +491,10 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
       fAnalysisManager->FillNtupleDColumn(9, 3, fExptErrTables[ij1][ij2]);
       //G4cout << "9 " << fExptRadiiTables[ij1][ij2] << "  " << fExptEnergyBin[ij1] << "   "
       //       << fExptFluenceTables[ij1][ij2] << "   " << fExptErrTables[ij1][ij2] << G4endl;
+      fAnalysisManager->AddNtupleRow(9);
     }
   }
-  fAnalysisManager->AddNtupleRow(9);
+
 
   for (std::size_t ij1 = 8; ij1 < 16; ij1++){ // 8 ~ 49 to 16 ~ 57
     G4int ijE = ij1 - 7;
@@ -441,9 +505,10 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
       fAnalysisManager->FillNtupleDColumn(10, 3, fExptErrTables[ij1][ij2]);
       //G4cout << "10 " << fExptRadiiTables[ij1][ij2] << "  " << fExptEnergyBin[ij1] << "   "
       //       << fExptFluenceTables[ij1][ij2] << "   " << fExptErrTables[ij1][ij2] << G4endl;
+      fAnalysisManager->AddNtupleRow(10);
     }
   }
-  fAnalysisManager->AddNtupleRow(10);
+
   G4cout << "Experimental data filling complete." << G4endl;
 }
 
@@ -674,8 +739,8 @@ void G4TARCHistoManager::CreateNeutronFluxHisto(){
     G4double abs_lithium_flux_perp = mean_lithium_energy * (((fCos_Lithium_Flux[ij1] * (1.0e9 / (G4double)fNevt))
       / fTestSphereSurfaceArea) / bin_tmp_width_lithium);
     G4double abs_lithium_fluence   = 100.0 * (1.0e9 / (G4double)fNevt) * ((fLithium_Fluence_Step[ij1]) / fTestSphereVolume);
-    G4double abs_lithium_fluence_shell = mean_lithium_energy * (100.0 * (1.0e9 / (G4double)fNevt)
-      * ((fLithium_Fluence_Step_Shell[ij1]) / fTestShellVol) / bin_tmp_width_lithium);
+    //G4double abs_lithium_fluence_shell = mean_lithium_energy * (100.0 * (1.0e9 / (G4double)fNevt)
+    //  * ((fLithium_Fluence_Step_Shell[ij1]) / fTestShellVol) / bin_tmp_width_lithium);
 
     G4double abs_error_li = 0.0;
     if (fFlux_Low_Data[ij1] != 0.0) abs_error_li = (std::pow(fFlux_Lithium_Data[ij1], 0.5) / fFlux_Lithium_Data[ij1]) * abs_lithium_flux;
@@ -776,7 +841,7 @@ void G4TARCHistoManager::EndOfEvent() {
 
 
 // Normalization for no hadron interaction in the target. EM and hadron elastic shuld be inactivated
-void G4TARCHistoManager::AddNzero(const G4Track* myTrack, const G4Step* myStep ) {
+void G4TARCHistoManager::AddNzero(const G4Track* myTrack) {
   G4double cosTheta = myTrack->GetDynamicParticle()->GetMomentumDirection().x();
   // change x, y z
   if (cosTheta > 0.999) {
@@ -787,7 +852,7 @@ void G4TARCHistoManager::AddNzero(const G4Track* myTrack, const G4Step* myStep )
 }
 
 
-void G4TARCHistoManager::GunParticleDistribution( const G4Track* myTrack, const G4Step* myStep) {
+void G4TARCHistoManager::GunParticleDistribution( const G4Step* myStep) {
   G4double length = myStep->GetStepLength();
   G4double dEdx   = myStep->GetTotalEnergyDeposit();
 
@@ -816,8 +881,8 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
                           + myStep->GetPostStepPoint()->GetPosition()
                           );
 
-  G4double x = pos.x(); //- fAbsX0;
-  G4double y = pos.y(); //- fAbsY0;
+  //G4double x = pos.x(); //- fAbsX0;
+  //G4double y = pos.y(); //- fAbsY0;
   G4double z = pos.z();// - fAbsZ0;
 
   //Scoring.
@@ -850,7 +915,7 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
   const G4ParticleDefinition* pd = myTrack->GetDefinition();
   G4String name = pd->GetParticleName();
   G4double ke = myTrack->GetKineticEnergy();
-  G4double TKin = myTrack->GetKineticEnergy();
+  //G4double TKin = myTrack->GetKineticEnergy();
   //if (myTrack->GetTrackID() == 1)
   //  G4cout << name << "  energy = " << ke << "  ID---> " << myTrack->GetTrackID() << G4endl;
 
@@ -938,16 +1003,16 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
 
 void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   const G4ParticleDefinition* pd           = myTrack->GetDefinition();
-  const G4DynamicParticle*    dynSecondary = myTrack->GetDynamicParticle();
-  G4double                    Tkin         = dynSecondary->GetKineticEnergy();
+  //const G4DynamicParticle*    dynSecondary = myTrack->GetDynamicParticle();
+  //G4double                    Tkin         = dynSecondary->GetKineticEnergy();
 
   if (myTrack->GetKineticEnergy()/MeV <= 0.0) {
     G4String pname  = pd->GetParticleName();
-    G4double mass   = pd->GetPDGMass();
+    //G4double mass   = pd->GetPDGMass();
     return;
   }
 
-  G4double en       = std::log10(myTrack->GetKineticEnergy()/eV);
+  //G4double en       = std::log10(myTrack->GetKineticEnergy()/eV);
   G4ThreeVector pos = myTrack->GetPosition();
   G4ThreeVector dir = myTrack->GetMomentumDirection();
 
@@ -955,6 +1020,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   G4double yy       = pos.y();
   G4double zz       = pos.z();
   G4bool isLeaking  = false;
+
 
   if ( (
          // (xx > -fAbsX0 && dir.x() > 0.0) // - was added later originally > +fAbsX0
@@ -965,6 +1031,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   ) { // forward
       isLeaking = true;
       if (pd == fNeutron) { // && Tkin < fTcut) {
+        G4cout << "Neutron forward lost" << G4endl;
         ++fNneu_forw;
         //  fHisto->Fill(15, en,  1.0);
       }
@@ -978,6 +1045,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   ) { // backward
     isLeaking = true;
     if (pd == fNeutron) { // && Tkin < fTcut)   {
+      G4cout << "Neutron backward lost" << G4endl;
        ++fNneu_back;
        //  fHisto->Fill(16, en,  1.0);
      }
@@ -993,6 +1061,7 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   ) { // side
     isLeaking = true;
     if (pd == fNeutron){ // && Tkin < fTcut)  {
+      G4cout << "Neutron side lost" << G4endl;
       ++fNneu_leak;
       G4cout << "-------------------->   side " << fNneu_leak << G4endl;
       // fHisto->Fill(14, en,  1.0);
@@ -1013,18 +1082,18 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
 
 
 // pA->nX low energy data neutron final state
-void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack, const G4Step* myStep) {
+void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack){   //}, const G4Step* myStep) {
   fNsecondary++;
-  G4double TKin = 0.0, Tspectra = 0.0, stepLen, time;
-  G4int ix;
-  size_t ii, jj;
+  G4double TKin = 0.0; //, Tspectra = 0.0, stepLen, time;
+  //G4int ix;
+  G4int ii, jj;
 
   if (myTrack->GetDynamicParticle()->GetDefinition()->GetParticleName() == "neutron"){
     fNeutronSum+= 1.0;
     // future plan for neutron breed at breeder with X
     TKin = myTrack->GetDynamicParticle()->GetKineticEnergy();
     //stepLen = myStep->GetStepLength();
-    time = myTrack->GetGlobalTime();
+    //time = myTrack->GetGlobalTime();
     for (ii = 0; ii < fNbin; ii++) {
       if (TKin <= fNEsecond.GetLowEdgeEnergy(ii)){
         jj = (ii == 0) ? ii : ii - 1;
@@ -1036,16 +1105,17 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack, const G4Step* my
 }
 
 
-void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myStep) {
-  G4double TKinE = 0.0, TSpectr = 0.0, stepLen, time, xn;
+void G4TARCHistoManager::TargetProfile(const G4Track* myTrack){ //}, const G4Step* myStep) {
+  //G4double TKinE = 0.0, TSpectr = 0.0, stepLen, time, xn;
+  G4double xn;
   G4int ix = 0;
 
   if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron") {
     if (
            (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log")
            && (  (myTrack->GetVertexPosition().x() >= -35.0 && myTrack->GetVertexPosition().x() <= 35.0)
-           || myTrack->GetVertexPosition().y() >= -35.0 && myTrack->GetVertexPosition().y() <= 35.0
-           || myTrack->GetVertexPosition().z() >= -1500.0 && myTrack->GetVertexPosition().z() <= -299.0
+           || (myTrack->GetVertexPosition().y() >= -35.0 && myTrack->GetVertexPosition().y() <= 35.0)
+           || (myTrack->GetVertexPosition().z() >= -1500.0 && myTrack->GetVertexPosition().z() <= -299.0)
            )
            && (myTrack->GetGlobalTime()/nanosecond <= 10.0)
            && (myTrack->GetParentID() == 1)
@@ -1067,14 +1137,14 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack, const G4Step* myS
 }
 
 void G4TARCHistoManager::AddEnergyTimeHole(const G4Track* myTrack, const G4Step* myStep) {
-  G4double KE, myTime, myStepLength;
-  size_t ii, jj, kk;
+  G4double KE, myTime;//, myStepLength;
+  //size_t ii, jj, kk;
 
   std::vector<G4double> tmp;
 
   if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron"){
     KE = myTrack->GetDynamicParticle()->GetKineticEnergy();
-    myStepLength = myStep->GetStepLength();
+    //myStepLength = myStep->GetStepLength();
     myTime = myTrack->GetGlobalTime();
 
     G4TouchableHandle touch1 = myStep->GetPreStepPoint()->GetTouchableHandle();
@@ -1114,16 +1184,18 @@ void G4TARCHistoManager::AddEnergyTimeHole(const G4Track* myTrack, const G4Step*
   }
 }
 
-void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myStep) {
-  G4double Tkin = 0.0, myTime, myGlobalTime, myStepLength;
-  G4double Qenergy, Qtime, eVal;
-  G4int ii, jj, eii, tjj;
+void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack){ //, const G4Step* myStep) {
+  G4double Tkin = 0.0, myTime, myGlobalTime;   //, myStepLength;
+  G4double Qenergy, Qtime; // , eVal;
+  G4int ii, jj, eii = 0, tjj = 0;
   std::vector<G4double> tmp;
+
+  Tkin = myTrack->GetDynamicParticle()->GetKineticEnergy();
+  //eVal = Tkin / eV;
+//  myStepLength = myStep->GetStepLength();
+
   if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron") {
     fTrackID = myTrack->GetTrackID();
-    Tkin = myTrack->GetDynamicParticle()->GetKineticEnergy();
-    eVal = Tkin / eV;
-    myStepLength = myStep->GetStepLength();
     myTime = myTrack->GetProperTime();
     myGlobalTime = myTrack->GetGlobalTime();
     for (ii = 0; ii < fNbin; ii++) {
@@ -1157,7 +1229,7 @@ void G4TARCHistoManager::AddEnergyTime(const G4Track* myTrack, const G4Step* myS
 
 void G4TARCHistoManager::WriteEventRange(G4ThreeVector rsum, G4double lsum, G4double dsum) {
   G4int ix;
-  G4double x, y, z, rho, xbin, ybin, zbin, rbin, dbin, dEdx, length;
+  G4double x, y, z, rho, xbin, ybin, zbin, rbin, dbin;    //, dEdx, length;
 
   x = rsum.x();
   y = rsum.y();
@@ -1194,6 +1266,27 @@ void G4TARCHistoManager::WriteEventRange(G4ThreeVector rsum, G4double lsum, G4do
   if (ix > 0 && ix < fMaxBin) fGunParticleRho[ix] += 1.0;
 }
 
+
+template <typename T>
+G4int G4TARCHistoManager::Check10s(T inVal){
+  div_t divresult = div((inVal / MeV), 1000);
+  if (divresult.quot >= 1){
+    return 9;  // unit = Giga
+  } else {
+    divresult = div((inVal / keV), 1000);
+    if (divresult.quot >=1){
+      return 6;   // Mega
+    } else {
+      divresult = div((inVal / eV), 1000);
+      if (divresult.quot >= 1) {
+        return 3;   // kilo
+      } else {
+        return 1;
+      }
+    }
+  }
+}
+
 void G4TARCHistoManager::TrackRun(G4double x) {
   std::ofstream trackout("track.dat", std::ios::out);
   G4double xStep         = x * (G4double)fNstep;
@@ -1213,12 +1306,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   G4double xDeut         = x * (G4double)fNdeut;
   G4double xp0           = x * (G4double)fNPionleak;
 
-  div_t divresult = div((fEdepSum/MeV),1000);
-  if (divresult.quot >= 1){
-      trackout << " Total Eenergy Deposited = " << fEdepSum/GeV << " GeV"<< G4endl;
-  } else {
-      trackout << " Total Eenergy Deposited = " << fEdepSum/MeV << " MeV"<< G4endl;
-  }
+
 
   fEdepSum  *= x;
   fEdepSum2 *= x;
@@ -1227,13 +1315,28 @@ void G4TARCHistoManager::TrackRun(G4double x) {
 
   trackout << "x = 1/fNevt = "               << x                                          << G4endl;
 
-  divresult = div((fEdepSum/MeV),1000);
-  if (divresult.quot >= 1){
-      trackout << "x * Total Energy deposited = " << fEdepSum/GeV  << " GeV"         << G4endl;
-  }else {
-      trackout << "x * Total Energy deposited = " << fEdepSum/MeV  << " MeV"         << G4endl;
+  //div_t divresult = div((fEdepSum/MeV),1000);
+  G4int fixEdepUnit1, fixEdepUnit2;
+  G4String enerUnit1, enerUnit2;
+  fixEdepUnit1 = Check10s(fEdepSum);
+  fixEdepUnit2 = Check10s(fEdepSum2);
+  G4double enerdep, enerdepmean;
+  switch(fixEdepUnit1){
+    case 9: enerdep = fEdepSum / GeV; enerUnit1 = "GeV"; break;
+    case 6: enerdep = fEdepSum / MeV; enerUnit1 = "MeV"; break;
+    case 3: enerdep = fEdepSum / keV; enerUnit1 = "keV"; break;
+    case 1: enerdep = fEdepSum; enerUnit1 = "eV"; break;
+  }
+  switch(fixEdepUnit2){
+    case 9: enerdepmean = fEdepSum2 / GeV; enerUnit2 = "GeV"; break;
+    case 6: enerdepmean = fEdepSum2 / MeV; enerUnit2 = "MeV"; break;
+    case 3: enerdepmean = fEdepSum2 / keV; enerUnit2 = "keV"; break;
+    case 1: enerdepmean = fEdepSum2; enerUnit2 = "eV"; break;
   }
 
+  trackout << " Total Eenergy Deposited = " << enerdep << " " << enerUnit1 << G4endl;
+
+  div_t divresult;
   if (fPrimaryDef){
     trackout << "Beam Particle "                << fPrimaryDef->GetParticleName()    << " having ";
     divresult = div((fPrimaryKineticEnergy/MeV),1000);
@@ -1248,14 +1351,9 @@ void G4TARCHistoManager::TrackRun(G4double x) {
 
   trackout << " Production in Target:"        << "                                     "  << G4endl;
 
-  divresult = div((fEdepSum/MeV),1000);
-  if (divresult.quot >= 1){
-    trackout << std::setprecision(4) << "Mean Energy deposited = " << fEdepSum/GeV  << " GeV "
-             << " RMS " << fEdepSum2/MeV << " MeV" "    "<< G4endl;
-  }else {
-    trackout << std::setprecision(4) << "Mean Energy deposited = " << fEdepSum/MeV  << " MeV "
-             << " RMS = " << fEdepSum2/MeV << " MeV" "    "<< G4endl;
-  }
+
+      trackout << std::setprecision(4) << " Total Eenergy Deposited <mean> " << enerdep << "  " <<
+      enerUnit1 << " <rms> " << enerdepmean << "  " << enerUnit2 <<  G4endl;
 
   trackout << std::setprecision(4) << "Average Number of steps: "       << xStep             << G4endl;
   trackout << std::setprecision(4) << "Average Number of Gammas: "      << xGamma            << G4endl;
@@ -1285,7 +1383,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << "==========================================================" << G4endl;
   trackout << "Exiting flux : " << fExiting_Flux << G4endl;
   trackout << "Total Exiting Energy : " << fExiting_Energy << G4endl;
-  trackout << " Gamma Edep <mean> : " << fAnalysisManager->GetH1(1)->mean() << " rms: " << fAnalysisManager->GetH1(1)->rms() << G4endl;
+  trackout << " Gamma Edep <mean> : " << fAnalysisManager->GetH1(1)->mean() << "keV  rms: " << fAnalysisManager->GetH1(1)->rms() << G4endl;
   trackout << "Neutron Lethargy <mean> : " << fAnalysisManager->GetH1(2)->mean() << " rms: " << fAnalysisManager->GetH1(2)->rms() << G4endl;
   trackout << "==========================================================" << G4endl;
 
@@ -1343,8 +1441,8 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
 //--------------------------------------------------
   std::ofstream tenspectr("tenspectr.dat",std::ios::out);
   tenspectr<<fNETsum.size()<<G4endl;
-  for( size_t k = 0; k < fNbin; k++ ){
-    for( size_t j = 0; j < fNbin; j++ ){
+  for( G4int k = 0; k < fNbin; k++ ){
+    for( G4int j = 0; j < fNbin; j++ ){
       // tenspectr<<perN*fNETsum[k]<<G4endl;
       if (perN * fET[j][k] != 0.0)
         tenspectr << (G4int)k << "    " << (G4int)j << "    " << perN * fET[j][k] << G4endl;
@@ -1404,19 +1502,18 @@ void G4TARCHistoManager::StartProcessing(){
   //for (G4int k = 0; k < ArrayDim; k++){G4cout << " Flux Energy: " << fFine_Energy[k] << G4endl;  }
 
   G4double bin_width = (std::log(1.0e5) - std::log(0.01)) / 100.0;
-  G4double energy_start = 0.01;
+  //G4double energy_start = 0.01;
 
   //fFlux_Low_Energy[0] = energy_start;        //
   //fFlux_Lithium_Energy[0] = energy_start;    //  C H E CK   as data has been read from the file
 
   G4int radial_index = 0;
 
-
   for(G4int ii1 = 0; ii1 < fMaxFluenceData; ii1++){
     fFlux_Low_Energy[ii1 + 1] = std::exp(bin_width + std::log(fFlux_Low_Energy[ii1]));
     fFlux_Lithium_Energy[ii1 + 1] = std::exp(bin_width + std::log(fFlux_Lithium_Energy[ii1]));
     mean_energy = std::exp(0.5 * (std::log(fFlux_Low_Energy[ii1 + 1]) + std::log(fFlux_Low_Energy[ii1])));
-    G4double Lithium_Mean_Energy = std::exp(0.5 * (std::log(fFlux_Lithium_Energy[ii1 + 1]) + std::log(fFlux_Lithium_Energy[ii1])));
+    //G4double Lithium_Mean_Energy = std::exp(0.5 * (std::log(fFlux_Lithium_Energy[ii1 + 1]) + std::log(fFlux_Lithium_Energy[ii1])));
     //G4cout << " Lithium Energy: " << fFlux_Lithium_Energy[ii1] << "  radila index: " << radial_index << G4endl;
     //G4cout << " Energy (rindex): " << fExptEnergyBin[radial_index] << G4endl;
 
@@ -1470,17 +1567,21 @@ void G4TARCHistoManager::exitingTally(G4bool exiting_flag, G4double energyL){
   }
 }
 
-void G4TARCHistoManager::analysePS(G4double partEnergy, G4String particleName, G4double partTime, G4double partMomentum, G4double zMomentum){
-  G4int Iparticle = -9;
+void G4TARCHistoManager::analysePS(G4double partEnergy, G4String particleName
+  //, G4double partTime
+  , G4double partMomentum
+  //, G4double zMomentum
+){
+  //G4int Iparticle = -9;
   if(particleName == "gamma") {
     fAnalysisManager->FillH1(1, partEnergy / keV);
   // hGammaEdep->fill(energy/keV);
-    Iparticle = 1;
+    //Iparticle = 1;
   }else if(particleName == "neutron") {
     //G4cout << " filling neutron lethargy with: energy = " << partEnergy / eV << " and momentum = " << 1.0 / partMomentum << G4endl;
     fAnalysisManager->FillH1(2, partEnergy / eV, 1.0 / partMomentum);
     // hNeutronEdep->fill(energy/eV,1/momentum);  // fill(x,weight)
-    Iparticle = 2;
+    //Iparticle = 2;
     if(partEnergy / MeV < 2.0) {
       fNeutflux[0]++;
       fENflux[0] += partEnergy;
@@ -1499,17 +1600,17 @@ void G4TARCHistoManager::analysePS(G4double partEnergy, G4String particleName, G
   if(particleName == "e-") {
     fAnalysisManager->FillH1(3, partEnergy / keV);
     // hElectronEdep->fill(energy/keV);  // fill(x,weight)
-    Iparticle = 3;
+    //Iparticle = 3;
   }
   if(particleName == "e+") {
     fAnalysisManager->FillH1(4, partEnergy / keV);
     // hPositronEdep->fill(energy/keV);  // fill(x,weight)
-    Iparticle = 4;
+    //Iparticle = 4;
   }
   if(particleName == "other") {
     fAnalysisManager->FillH1(5, partEnergy / keV);
     // hOtherEdep->fill(energy/keV);  // fill(x,weight)
-    Iparticle = 5;
+    //Iparticle = 5;
   }
 }
 
@@ -1527,8 +1628,8 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
   G4String particleName = particleType->GetParticleName();
   G4double primEnergy = 0.0;
 
+  analysePS(partEnergy, particleName, partMomentum);      //  , partTime, partMomentum, zMomentum);
   if (StepNo == 1 && particleName == "neutron"){
-    analysePS(partEnergy, particleName, partTime, partMomentum, zMomentum);
     startEnergy = partEnergy;
     startTime = partTime;
     flag = true;
@@ -1599,7 +1700,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
 
   G4bool pre_inside = false;
   G4bool post_inside = false;
-  G4double radius = -999999.9;
+  //G4double radius = -999999.9;
   if  ((radiusPre <= (fMaxOuterRadiusofShell + fMyTol))
    &&  (radiusPre >= (fMinInnerRadiusofShell - fMyTol)) && particleName == "neutron") pre_inside = true;
   if  ((radiusPost <= (fMaxOuterRadiusofShell + fMyTol))

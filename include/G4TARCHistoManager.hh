@@ -92,13 +92,13 @@ public:
   void AddTargetStep(const G4Step*);
   void ScoreNewTrack(const G4Track*);
   void AddLeakingParticle(const G4Track*);
-  void NeutFinalState(const G4Track*, const G4Step*);
+  void NeutFinalState(const G4Track*);   // , const G4Step*);
 
-  void TargetProfile(const G4Track*, const G4Step*);
-  void AddEnergyTime(const G4Track*, const G4Step*);
+  void TargetProfile(const G4Track*);   // , const G4Step*);
+  void AddEnergyTime(const G4Track*);   //, const G4Step*);
   void AddEnergyTimeHole(const G4Track*, const G4Step*);
-  void AddNzero( const G4Track*, const G4Step*);
-  void GunParticleDistribution ( const G4Track*, const G4Step* );
+  void AddNzero( const G4Track*);
+  void GunParticleDistribution ( const G4Step* );
   void WriteEventRange(G4ThreeVector, G4double, G4double);
   G4double GetPrimaryEnergy() { return startEnergy; }
   G4double GetPrimaryTime() { return startTime; }
@@ -115,7 +115,7 @@ public:
   void CreateRadialFluxHisto();
   void StartProcessing();
   void ProcessStepping(const G4Step*);
-  void analysePS(G4double, G4String, G4double, G4double, G4double);
+  void analysePS(G4double, G4String, G4double); // , G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4double, G4int);
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronFlux(G4double, G4double, G4double, G4int, G4int, G4double, G4double, G4double, G4double,
@@ -126,6 +126,8 @@ public:
   void exitingTally(G4bool, G4double);
 
   void DefineShellBlocks();
+
+  template <typename T>  G4int Check10s(T inVal);
 
   inline void exitingTallyCheck(G4bool exiting_flag_check){if(exiting_flag_check) fExiting_check_Flux++; }
   inline void AddExitingFlux(G4double exitingE)           { fExiting_Flux++;   fExiting_Energy += exitingE;}
@@ -274,7 +276,7 @@ private:
   G4PhysicsLogVector fNEsecond;
   G4PhysicsLogVector fNTsecond;
 
-  size_t             fNbin;
+  G4int             fNbin;
 //--------------------------------------------------------
   G4AnalysisManager*                    fAnalysisManager;
   G4String                              fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";

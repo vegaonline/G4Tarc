@@ -1,7 +1,9 @@
 #include "G4TARCSteppingAction.hh"
 
 G4TARCSteppingAction::G4TARCSteppingAction(G4TARCEventAction* anEvent)
-: G4UserSteppingAction(), fEventAction(anEvent), fHisto(0){
+: G4UserSteppingAction()//, fEventAction(anEvent), fHisto(0)
+{
+  fEventAction = anEvent;
   fHisto = G4TARCHistoManager::GetPointer();
 }
 

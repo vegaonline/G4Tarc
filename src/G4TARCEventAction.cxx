@@ -1,17 +1,21 @@
 #include "G4TARCEventAction.hh"
 
 G4TARCEventAction::G4TARCEventAction()
-: G4UserEventAction(),
-  fEventMessenger(0),
-  fUITARC(0),
-  fHisto(0),
-  fSelectedEvents(0),
-  fPrintModulo(1),
-  fSelected(0),
-  fDebugStarted(false) {
+: G4UserEventAction()
+//  ,fEventMessenger(0),
+//  fUITARC(0),
+//  fHisto(0),
+//  fSelectedEvents(0),
+//  fPrintModulo(1),
+//  fSelected(0),
+//  fDebugStarted(false)
+  {
+    fDebugStarted = false;
     fEventMessenger = new G4TARCEventActionMessenger (this);
     fUITARC = G4UImanager::GetUIpointer();
     fHisto = G4TARCHistoManager::GetPointer();
+    fSelected = 0;
+    SetPrintModulo(1);
 }
 
 G4TARCEventAction::~G4TARCEventAction() {

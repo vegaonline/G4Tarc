@@ -7,7 +7,9 @@
 #include "G4TARCPhysicsList.hh"
 
 G4TARCPhysicsList::G4TARCPhysicsList()
-: G4VModularPhysicsList(), fEmPhysicsList(0), fThermal(true), fParticleList(0) {
+: G4VModularPhysicsList()
+//, fEmPhysicsList(0), fThermal(true), fParticleList(0) 
+{
     verboseLevel     = 1;
     fThermal         = true;
 

@@ -4,7 +4,7 @@
 /control/verbose 0
 /tracking/verbose 0
 /event/verbose 0
-/run/verbose 2
+/run/verbose 0
 /gps/verbose 0 #2
 
 /run/initialize

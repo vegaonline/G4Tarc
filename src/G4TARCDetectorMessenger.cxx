@@ -1,8 +1,9 @@
 #include "G4TARCDetectorMessenger.hh"
 
 G4TARCDetectorMessenger::G4TARCDetectorMessenger(G4TARCDetectorConstruction* det)
-: G4UImessenger(), fTestDir(0), fDetector(det)//,
-  ,fPhysListCmd(0), fListCmd(0), fThermalCmd(0), fPhysDir(0)
+: //G4UImessenger(), fTestDir(0),
+  fDetector(det)//,
+  //,fPhysListCmd(0), fListCmd(0), fThermalCmd(0), fPhysDir(0)
  //fBeamCmd(0), fCurrentCmd(0), fEdepCmd(0), fBinCmd(0), fVerbCmd(0)
  {
   fTestDir = new G4UIdirectory("/tarc/");
@@ -36,8 +37,6 @@ G4TARCDetectorMessenger::~G4TARCDetectorMessenger() {
 
 
 void G4TARCDetectorMessenger::SetNewValue(G4UIcommand* comm, G4String newValue) {
-  G4TARCHistoManager* histo = G4TARCHistoManager::GetPointer();
-
   if (comm == fThermalCmd){
     G4cout << "here in thermalCmd\n";
     fPhysList->SetThermalPhysics(fThermalCmd->GetNewBoolValue(newValue));

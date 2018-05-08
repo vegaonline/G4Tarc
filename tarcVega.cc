@@ -98,8 +98,11 @@ int main(int argc, char** argv) {
   // Choose the Random Engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
-  G4int nThreads = G4Threading::G4GetNumberOfCores();;
-  
+#ifdef G4MULTITHREADED
+  G4int nThreads = G4Threading::G4GetNumberOfCores();
+#endif
+
+
   for (G4int i = 2; i < argc; i += 2) {
     G4String inArg = G4String(argv[i]);
     if (inArg == "-m") macro = argv[i + 1];
@@ -142,15 +145,15 @@ int main(int argc, char** argv) {
   geomConstruct->RegisterParallelWorld(parallelWorld);
 
   G4GeometrySampler pgsN(parallelWorld->GetWorldVolume(), "neutron");
-  G4GeometrySampler pgsP(parallelWorld->GetWorldVolume(), "proton");
+  //G4GeometrySampler pgsP(parallelWorld->GetWorldVolume(), "proton");
   pgsN.SetParallel(true);
-  pgsP.SetParallel(true);
+  //pgsP.SetParallel(true);
 
   // PhysicsList
   G4PhysListFactory           physFactory;
   G4VModularPhysicsList*      phys          = nullptr;
-  G4NeutronKiller*            neutKiller    = nullptr;
-  G4NeutronKillerMessenger*   neutKillMess  = nullptr;
+  //G4NeutronKiller*            neutKiller    = nullptr;
+  //G4NeutronKillerMessenger*   neutKillMess  = nullptr;
   char*                       physnameInput = getenv("PHYSLIST");
   G4String                    physicsName   = "";
   if (physnameInput)          physicsName   = G4String(physnameInput);
@@ -159,12 +162,12 @@ int main(int argc, char** argv) {
   if (physicsName.size() && physFactory.IsReferencePhysList(physicsName)){
       phys = physFactory.GetReferencePhysList(physicsName);
       phys->RegisterPhysics(new G4RadioactiveDecayPhysics);
-      neutKiller = new G4NeutronKiller();
-      neutKillMess = new G4NeutronKillerMessenger(neutKiller);
+    //  neutKiller = new G4NeutronKiller();
+    //  neutKillMess = new G4NeutronKillerMessenger(neutKiller);
   }
   if (!phys) { phys = new G4TARCPhysicsList(); }
   phys->RegisterPhysics(new G4ImportanceBiasing(&pgsN, parallelWorldName));
-  phys->RegisterPhysics(new G4ImportanceBiasing(&pgsP, parallelWorldName));
+  //phys->RegisterPhysics(new G4ImportanceBiasing(&pgsP, parallelWorldName));
   phys->RegisterPhysics(new G4ParallelWorldPhysics(parallelWorldName));
 
   runManager->SetUserInitialization(phys);      // RUNMANAGER for Physics List
