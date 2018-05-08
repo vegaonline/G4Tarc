@@ -1003,11 +1003,11 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
 
 void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   const G4ParticleDefinition* pd           = myTrack->GetDefinition();
+  G4String pname  = pd->GetParticleName();
   //const G4DynamicParticle*    dynSecondary = myTrack->GetDynamicParticle();
   //G4double                    Tkin         = dynSecondary->GetKineticEnergy();
 
   if (myTrack->GetKineticEnergy()/MeV <= 0.0) {
-    G4String pname  = pd->GetParticleName();
     //G4double mass   = pd->GetPDGMass();
     return;
   }
@@ -1026,12 +1026,11 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
          // (xx > -fAbsX0 && dir.x() > 0.0) // - was added later originally > +fAbsX0
          // ||   (yy > -fAbsY0 && dir.y() > 0.0)
          // ||
-         (zz > -fHLength && dir.z() > 0.0)
+         (zz > fAbsZ0 && dir.z() > 0.0)     //  (zz > -fHLength && dir.z() > 0.0)
        )
   ) { // forward
       isLeaking = true;
-      if (pd == fNeutron) { // && Tkin < fTcut) {
-        G4cout << "Neutron forward lost" << G4endl;
+      if (pname == "neutron") { // && Tkin < fTcut) {
         ++fNneu_forw;
         //  fHisto->Fill(15, en,  1.0);
       }
@@ -1040,12 +1039,11 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
          // (xx < fAbsX0 && dir.x() < 0.0)
          // ||   (yy < fAbsY0 && dir.y() < 0.0)
          // ||
-           (zz < fHLength && dir.z() < 0.0)
+           (zz < -fAbsZ0 && dir.z() < 0.0) //(zz < fHLength && dir.z() < 0.0)
        )
   ) { // backward
     isLeaking = true;
-    if (pd == fNeutron) { // && Tkin < fTcut)   {
-      G4cout << "Neutron backward lost" << G4endl;
+    if (pname == "neutron") { // && Tkin < fTcut)   {
        ++fNneu_back;
        //  fHisto->Fill(16, en,  1.0);
      }
@@ -1055,15 +1053,13 @@ void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
          // ||   (std::abs(yy) <= fAbsY0 && (xx * dir.x()  + zz * dir.z()) > 0.0 )
          // ||
          //(std::abs(zz) <= -fHLength && (xx * dir.x()  + yy * dir.y()) > 0.0 )
-         (std::abs(xx) > fHLength || std::abs(yy) > fHLength)
+         (std::abs(xx) <= fAbsX0 || std::abs(yy) <= fAbsY0)
          && ((xx * dir.x()  + yy * dir.y()) > 0.0 )
        )
   ) { // side
     isLeaking = true;
     if (pd == fNeutron){ // && Tkin < fTcut)  {
-      G4cout << "Neutron side lost" << G4endl;
       ++fNneu_leak;
-      G4cout << "-------------------->   side " << fNneu_leak << G4endl;
       // fHisto->Fill(14, en,  1.0);
     }
   }
@@ -1287,10 +1283,10 @@ void G4TARCHistoManager::Check10s(T inVal, T &outVal, G4String &uniStr){
     }
   }
   switch(iresult){
-    case 9: outVal = inVal / GeV; uniStr = "GeV"; break;
-    case 6: outVal = inVal / MeV; uniStr = "MeV"; break;
-    case 3: outVal = inVal / keV; uniStr = "keV"; break;
-    case 1: outVal = inVal; uniStr = "eV"; break;
+    case 9: outVal = inVal / GeV; uniStr = " GeV"; break;
+    case 6: outVal = inVal / MeV; uniStr = " MeV"; break;
+    case 3: outVal = inVal / keV; uniStr = " keV"; break;
+    case 1: outVal = inVal; uniStr = " eV"; break;
   }
 }
 
@@ -1324,15 +1320,15 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   G4double trVal = 0.0;
   G4String enerUnit = "";
   Check10s(fEdepSum, trVal, enerUnit);
-  trackout << std::setprecision(4) << "Eenergy Deposited <mean> " << trVal << "  " << enerUnit;
+  trackout << "  Per event data:" << G4endl;
+  trackout << std::setprecision(4) << "Energy Deposited <mean> " << trVal << enerUnit;
   Check10s(fEdepSum2, trVal, enerUnit);
-  trackout << "  <rms> " << trVal << "  " << enerUnit <<  G4endl;
-
+  trackout << "  <rms> " << trVal << enerUnit <<  G4endl;
   Check10s(fPrimaryKineticEnergy, trVal, enerUnit);
-  trackout << "Beam energy = " << trVal  << "   " << enerUnit << G4endl;
+  trackout << "Beam energy = " << trVal << enerUnit << G4endl;
   trackout << "                                                                        "  << G4endl;
-  trackout << " Production in Target:"        << "                                     "  << G4endl;
 
+  trackout << " Production in Target (per event):"        << "                                     "  << G4endl;
   trackout << std::setprecision(4) << "Average Number of steps: "       << xStep             << G4endl;
   trackout << std::setprecision(4) << "Average Number of Gammas: "      << xGamma            << G4endl;
   trackout << std::setprecision(4) << "Average Number of Electrons: "   << xElectron         << G4endl;
@@ -1346,7 +1342,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << std::setprecision(4) << "Average Number of ions: "        << xIons             << G4endl;
   trackout << "                                                      "  << "              "  << G4endl;
 
-  trackout << " Leakage from the system: "                                                       << G4endl;
+  trackout << " Leakage from the system (per event): "                                            << G4endl;
   trackout << std::setprecision(4) << "Average Number of forward Neutrons: "      << xneuF        << G4endl;
   trackout << std::setprecision(4) << "Average Number of reflected Neutrons: "    << xneuB        << G4endl;
   //trackout << std::setprecision(4) << "Average Number of other leaked Neutrons " << xNeutronLeak << G4endl;
@@ -1360,21 +1356,25 @@ void G4TARCHistoManager::TrackRun(G4double x) {
 
   trackout << "==========================================================" << G4endl;
   trackout << "Exiting flux : " << fExiting_Flux << G4endl;
-  trackout << "Total Exiting Energy : " << fExiting_Energy << G4endl;
-  trackout << " Gamma Edep <mean> : " << fAnalysisManager->GetH1(1)->mean() << "keV  rms: " << fAnalysisManager->GetH1(1)->rms() << G4endl;
-  trackout << "Neutron Lethargy <mean> : " << fAnalysisManager->GetH1(2)->mean() << " rms: " << fAnalysisManager->GetH1(2)->rms() << G4endl;
+  Check10s(fExiting_Energy, trVal, enerUnit);
+  trackout << "Total Exiting Energy : " << trVal << enerUnit << G4endl;
+  Check10s(fAnalysisManager->GetH1(1)->mean(), trVal, enerUnit);
+  trackout << " Gamma Edep <mean> : " << trVal << enerUnit;
+  Check10s(fAnalysisManager->GetH1(1)->rms(), trVal, enerUnit);
+   trackout << " rms: " << trVal << enerUnit << G4endl;
+  trackout << "Neutron Lethargy <mean> : " << fAnalysisManager->GetH1(2)->mean() << " rms: " << fAnalysisManager->GetH1(2)->rms()  << G4endl;
   trackout << "==========================================================" << G4endl;
 
   G4double kEffective, rho, rat, react, perN=x;
   kEffective = (fNeutronInit!= 0.0) ? fNeutronSum / fNeutronInit : 0.0;
   rho        =  (kEffective != 0.0) ? (kEffective - 1.0) / kEffective : 0.0;  // reactivity :: deviation from criticality
-  rat        = (kEffective != 0.0) ? std::log(kEffective) : 0.0;
+  rat        = (kEffective != 0.0) ? std::log10(kEffective) : 0.0;
   react      = rat / (1.0 + rat);
 
   trackout << " IMP Parameters : "    << G4endl;
   trackout << " Neutron_Init/p = "    << fNeutronInit* perN << ",  Neutron_Sum/p = " << fNeutronSum * perN << G4endl;
   trackout << " kEffective = "        << kEffective         << ", Rho = "            << rho                << G4endl;
-  trackout << " Estimated reactivity = " << react                                       << G4endl             << G4endl;
+  trackout << " Estimated reactivity = " << react                                    << G4endl             << G4endl;
   trackout << "==========================================================================================" << G4endl;
   trackout << G4endl;
 
@@ -1542,7 +1542,8 @@ void G4TARCHistoManager::otherEnergyTime(G4double thisE, G4double thisT, G4doubl
 void G4TARCHistoManager::exitingTally(G4bool exiting_flag, G4double energyL){
   //G4cout << exiting_flag << "  energyL:  " << energyL << " exitingF: " << fExiting_Flux << "  exitingE: " << fExiting_Energy << G4endl;
   if(exiting_flag) {
-    G4TARCHistoManager::AddExitingFlux(energyL);
+    //G4TARCHistoManager::AddExitingFlux(energyL);
+    AddExitingFlux(energyL);
     fAnalysisManager->FillNtupleDColumn(2, 0, energyL / MeV);
     fAnalysisManager->AddNtupleRow(2);
   }
@@ -1668,12 +1669,9 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
       G4String PreVol = thePreTouchable->GetVolume()->GetName();
       G4String PostVol = thePostTouchable->GetVolume()->GetName();
       if (PreVol == "lab_phys" && PostVol == "world_log_PV"){
-        //G4cout << PostVol << G4endl;
-        //G4TARCHistoManager::exitingTally(true, partEnergy);
-        exitingTally(true, partEnergy/eV);
+        exitingTally(true, partEnergy);
       }
       if (PostVol == "world_log_PV"){
-        // G4TARCHistoManager::exitingTallyCheck(true);
         exitingTallyCheck(true);
       }
     }
