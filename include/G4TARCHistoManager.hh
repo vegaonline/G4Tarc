@@ -127,7 +127,7 @@ public:
 
   void DefineShellBlocks();
 
-  template <typename T>  G4int Check10s(T inVal);
+  template <typename T>  void Check10s(T, T&, G4String&);
 
   inline void exitingTallyCheck(G4bool exiting_flag_check){if(exiting_flag_check) fExiting_check_Flux++; }
   inline void AddExitingFlux(G4double exitingE)           { fExiting_Flux++;   fExiting_Energy += exitingE;}

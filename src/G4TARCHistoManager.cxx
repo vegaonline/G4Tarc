@@ -1268,22 +1268,29 @@ void G4TARCHistoManager::WriteEventRange(G4ThreeVector rsum, G4double lsum, G4do
 
 
 template <typename T>
-G4int G4TARCHistoManager::Check10s(T inVal){
+void G4TARCHistoManager::Check10s(T inVal, T &outVal, G4String &uniStr){
+  G4int iresult = 0;
   div_t divresult = div((inVal / MeV), 1000);
   if (divresult.quot >= 1){
-    return 9;  // unit = Giga
+    iresult = 9;  // unit = Giga
   } else {
     divresult = div((inVal / keV), 1000);
     if (divresult.quot >=1){
-      return 6;   // Mega
+      iresult = 6;   // Mega
     } else {
       divresult = div((inVal / eV), 1000);
       if (divresult.quot >= 1) {
-        return 3;   // kilo
+        iresult = 3;   // kilo
       } else {
-        return 1;
+        iresult = 1;
       }
     }
+  }
+  switch(iresult){
+    case 9: outVal = inVal / GeV; uniStr = "GeV"; break;
+    case 6: outVal = inVal / MeV; uniStr = "MeV"; break;
+    case 3: outVal = inVal / keV; uniStr = "keV"; break;
+    case 1: outVal = inVal; uniStr = "eV"; break;
   }
 }
 
@@ -1306,54 +1313,25 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   G4double xDeut         = x * (G4double)fNdeut;
   G4double xp0           = x * (G4double)fNPionleak;
 
-
-
   fEdepSum  *= x;
   fEdepSum2 *= x;
   fEdepSum2 -= fEdepSum * fEdepSum;
   fEdepSum2  = (fEdepSum2 > 0.0) ? std::sqrt(fEdepSum2) : 0.0;
 
-  trackout << "x = 1/fNevt = "               << x                                          << G4endl;
+  trackout << "x = 1/Number_of_Events = "  << x << " for number of Events = " << fNevt   << G4endl;
 
   //div_t divresult = div((fEdepSum/MeV),1000);
-  G4int fixEdepUnit1, fixEdepUnit2;
-  G4String enerUnit1, enerUnit2;
-  fixEdepUnit1 = Check10s(fEdepSum);
-  fixEdepUnit2 = Check10s(fEdepSum2);
-  G4double enerdep, enerdepmean;
-  switch(fixEdepUnit1){
-    case 9: enerdep = fEdepSum / GeV; enerUnit1 = "GeV"; break;
-    case 6: enerdep = fEdepSum / MeV; enerUnit1 = "MeV"; break;
-    case 3: enerdep = fEdepSum / keV; enerUnit1 = "keV"; break;
-    case 1: enerdep = fEdepSum; enerUnit1 = "eV"; break;
-  }
-  switch(fixEdepUnit2){
-    case 9: enerdepmean = fEdepSum2 / GeV; enerUnit2 = "GeV"; break;
-    case 6: enerdepmean = fEdepSum2 / MeV; enerUnit2 = "MeV"; break;
-    case 3: enerdepmean = fEdepSum2 / keV; enerUnit2 = "keV"; break;
-    case 1: enerdepmean = fEdepSum2; enerUnit2 = "eV"; break;
-  }
+  G4double trVal = 0.0;
+  G4String enerUnit = "";
+  Check10s(fEdepSum, trVal, enerUnit);
+  trackout << std::setprecision(4) << "Eenergy Deposited <mean> " << trVal << "  " << enerUnit;
+  Check10s(fEdepSum2, trVal, enerUnit);
+  trackout << "  <rms> " << trVal << "  " << enerUnit <<  G4endl;
 
-  trackout << " Total Eenergy Deposited = " << enerdep << " " << enerUnit1 << G4endl;
-
-  div_t divresult;
-  if (fPrimaryDef){
-    trackout << "Beam Particle "                << fPrimaryDef->GetParticleName()    << " having ";
-    divresult = div((fPrimaryKineticEnergy/MeV),1000);
-    if (divresult.quot >= 1){
-        trackout << "beam energy = " << fPrimaryKineticEnergy/GeV  << " GeV"         << G4endl;
-    }else {
-        trackout << "beam Energy = " << fPrimaryKineticEnergy/MeV  << " MeV"         << G4endl;
-    }
-  }
-  trackout << "Number of Events = "             << fNevt                                    << G4endl;
+  Check10s(fPrimaryKineticEnergy, trVal, enerUnit);
+  trackout << "Beam energy = " << trVal  << "   " << enerUnit << G4endl;
   trackout << "                                                                        "  << G4endl;
-
   trackout << " Production in Target:"        << "                                     "  << G4endl;
-
-
-      trackout << std::setprecision(4) << " Total Eenergy Deposited <mean> " << enerdep << "  " <<
-      enerUnit1 << " <rms> " << enerdepmean << "  " << enerUnit2 <<  G4endl;
 
   trackout << std::setprecision(4) << "Average Number of steps: "       << xStep             << G4endl;
   trackout << std::setprecision(4) << "Average Number of Gammas: "      << xGamma            << G4endl;
@@ -1366,7 +1344,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << std::setprecision(4) << "Average Number of D + T: "       << xDeut             << G4endl;
   trackout << std::setprecision(4) << "Average Number of He3 + alpha: " << xAlpha            << G4endl;
   trackout << std::setprecision(4) << "Average Number of ions: "        << xIons             << G4endl;
-  trackout << "                                                      " << "              "  << G4endl;
+  trackout << "                                                      "  << "              "  << G4endl;
 
   trackout << " Leakage from the system: "                                                       << G4endl;
   trackout << std::setprecision(4) << "Average Number of forward Neutrons: "      << xneuF        << G4endl;
@@ -1449,11 +1427,14 @@ void G4TARCHistoManager::NeutronRun(G4double x) {
     }
   }
 //----------------------------------------------------
+//------------> This is working but commented as it is taking time to process and write huge data at the end of the execution.
+/*
   std::ofstream neutSpec("neutSpec.dat", std::ios::out);
   for (size_t ii = 0; ii < fNSpectra.size(); ii ++){
     neutSpec << fNSpectra[ii][0] << "   " << fNSpectra[ii][1] << G4endl;
   }
   neutSpec.close();
+  */
 //-------------------------------------------------
   std::ofstream teaxis("teaxis.dat",std::ios::out);
   teaxis << fNEsecond.GetVectorLength() << G4endl;
