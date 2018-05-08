@@ -43,6 +43,7 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
 
 
 void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
+  G4int nEvt = evt->GetEventID();
   if ( fDebugStarted ){
     fUITARC->ApplyCommand("/tracking/verbose 0");
     fDebugStarted = false;

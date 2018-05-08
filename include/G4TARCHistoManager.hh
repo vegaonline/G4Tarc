@@ -116,10 +116,9 @@ public:
   void StartProcessing();
   void ProcessStepping(const G4Step*);
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
-  void analyseNeutronRadialFluence(G4double, G4double, G4double, G4int);
+  void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analyseNeutronShellFluence(G4double, G4double);
-  void analyseNeutronFlux(G4double, G4double, G4double, G4int, G4int, G4double, G4double, G4double, G4double,
-    G4double, G4String, G4double, G4int, G4String, G4bool);
+  void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
   void analyseSecondaries(G4double, G4String, G4double, G4double, G4int, G4double, G4double, G4String, G4bool, G4int);
   void NeutronEnergyTime(G4double, G4double, G4double);
   void otherEnergyTime(G4double, G4double, G4double);
@@ -393,6 +392,7 @@ private:
   std::vector<G4double>                  fFluence_step;
   std::vector<G4double>                  fLow_Fluence_step;
 
+  // G4double testMax1 = -99999999.99e8, testMax2 = testMax1, testMin1 = -testMax1, testMin2 = testMin1;    // for histo check
 
 };
 

@@ -147,16 +147,17 @@ void G4TARCHistoManager::DefineShellBlocks() {
 void G4TARCHistoManager::BookHistogram() {
   fHistoBooked = true;
   fAnalysisManager->SetFirstHistoId(1);
-  fAnalysisManager->CreateH1("1","Gamma Edep /keV", 1000, 0., 1000*keV);
-  fAnalysisManager->CreateH1("2","Neutron ener vs. 1/mom /eV", 100000, 0., 1000000.);
-  fAnalysisManager->CreateH1("3","Electron Edep /keV", 1000, 0., 1000*keV);
-  fAnalysisManager->CreateH1("4","Positron Edep /keV", 1000, 0., 1000*keV);
-  fAnalysisManager->CreateH1("5","Other Edep /keV", 1000, 0., 1000*keV);
-  fAnalysisManager->CreateH1("6","Particle Stack", 12, 0.5, 12.5);
-  fAnalysisManager->CreateH1("7","Neutrons/event", 30, 0., 30.);
-  fAnalysisManager->CreateH1("8","Protons/event", 30, 0., 30.);
-  fAnalysisManager->CreateH2("Neutron_Energy_Time","Neutron Energy vs. Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
-  fAnalysisManager->CreateH2("Other_Particle_Energy_Time","OTHER particle Energy vs. Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
+  fAnalysisManager->CreateH1("1","Gamma Edep /keV", 1000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("2","Neutron ener vs. 1/mom /eV", 100000, -1.0, 250.0);   // 100000, 0., 1000000.);
+  fAnalysisManager->CreateH1("3","Electron Edep /keV", 10000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("4","Positron Edep /keV", 10000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("5","Other Edep /keV", 1000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("6","Particle Stack", 1000, 0.5, 12.5);
+  fAnalysisManager->CreateH1("7","Neutrons/event", 30, 0.0, 30.0);
+  fAnalysisManager->CreateH1("8","Protons/event", 30, 0.0, 30.0);
+  fAnalysisManager->CreateH2("Neutron_Energy_Time","Neutron Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 7.0);
+  //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 100, 0.0, 1500.0, 100, 0.0, 1500.0);
+  fAnalysisManager->CreateH2("Other_Particle_Energy_Time","OTHER particle Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 6.0);
 
 
 
@@ -1560,7 +1561,11 @@ void G4TARCHistoManager::analysePS(G4double partEnergy, G4String particleName
   // hGammaEdep->fill(energy/keV);
     //Iparticle = 1;
   }else if(particleName == "neutron") {
+  //  testMax1 = std::max(testMax1, partEnergy); testMin1 = std::min(testMin1, partEnergy);
+  //  testMax2 = std::max(testMax2, 1.0 / partMomentum); testMin2 = std::min(testMin2, 1.0/partMomentum);
+
     //G4cout << " filling neutron lethargy with: energy = " << partEnergy / eV << " and momentum = " << 1.0 / partMomentum << G4endl;
+    //fAnalysisManager->FillH1(2, partEnergy / eV, 1.0 / partMomentum);
     fAnalysisManager->FillH1(2, partEnergy / eV, 1.0 / partMomentum);
     // hNeutronEdep->fill(energy/eV,1/momentum);  // fill(x,weight)
     //Iparticle = 2;
@@ -1603,7 +1608,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
   G4double partEnergy = myStep->GetPreStepPoint()->GetKineticEnergy();
   G4double partTime   = myStep->GetPreStepPoint()->GetGlobalTime();
   G4double partMomentum = myStep->GetPreStepPoint()->GetMomentum().mag();
-  G4double zMomentum = myStep->GetPreStepPoint()->GetMomentum().z();
+  //G4double zMomentum = myStep->GetPreStepPoint()->GetMomentum().z();
   G4double angle = myStep->GetPreStepPoint()->GetMomentum().angle(myStep->GetPreStepPoint()->GetPosition());
   G4double cosAngle = std::abs(cos(angle));
   G4ParticleDefinition* particleType = myStep->GetTrack()->GetDefinition();
@@ -1655,7 +1660,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
   }
   G4double radiusPre = myStep->GetPreStepPoint()->GetPosition().mag();
   G4double radiusPost = myStep->GetPostStepPoint()->GetPosition().mag();
-  G4double zPos = myStep->GetPreStepPoint()->GetPosition().z();
+  //G4double zPos = myStep->GetPreStepPoint()->GetPosition().z();
   G4double StepLength = myStep->GetStepLength();
   G4String vol = myStep->GetTrack()->GetVolume()->GetName();
 
@@ -1698,7 +1703,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
     if ((radiusPost <= (radOut + fMyRadTol))
      && (radiusPost >= (radIn - fMyRadTol)) && (particleName == "neutron")) post_inside_radial = true;
     if (pre_inside_radial && post_inside_radial){
-      analyseNeutronRadialFluence(partEnergy, partTime, StepLength, ishell);
+      analyseNeutronRadialFluence(partEnergy, StepLength, ishell);  // partTime, StepLength, ishell);
     }
   }
 
@@ -1707,9 +1712,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
        ||(radiusPre > fFluxRadTables[ii] && radiusPost < fFluxRadTables[ii])){
          G4double radiusL = fFluxRadTables[ii];
 
-         analyseNeutronFlux(partEnergy, partTime, startEnergy, thisTrackID, parentTrackID, zMomentum,
-           startTime, radiusL, zPos, parent_energy[parentTrackID], parent_particle[parentTrackID],
-           cosAngle, number_generations, particleName, reduced_tally);
+         analyseNeutronFlux(partEnergy, thisTrackID, radiusL, cosAngle, particleName);
     }
   }
 }
@@ -1791,7 +1794,7 @@ void G4TARCHistoManager::analyseSecondaries(G4double energyL, G4String nameL, G4
 }
 
 
-void G4TARCHistoManager::analyseNeutronRadialFluence(G4double partEnergyL, G4double partTimeL,
+void G4TARCHistoManager::analyseNeutronRadialFluence(G4double partEnergyL, //G4double partTimeL,
 G4double StepLengthL, G4int ishellL){
   //G4cout << "radial index : " << ishellL << " fShellNumber: " << fShellNumber << G4endl;
   if (ishellL < 0 || ishellL > fShellNumber) G4cout << "WARNING! radial index is wrong !!!!!!!" << G4endl;
@@ -1805,10 +1808,14 @@ G4double StepLengthL, G4int ishellL){
   }
 }
 
-void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4double partTimeL, G4double startEnergyL,
-  G4int thisTrackIDL, G4int parentTrackIDL, G4double zMomentumL, G4double startTimeL, G4double radiusL,
-  G4double zPosL, G4double parent_energyL, G4String parent_particleL, G4double cosAngleL,
-  G4int number_generationsL, G4String particleNameL, G4bool reduced_tallyL){
+//void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4double partTimeL, G4double startEnergyL,
+//  G4int thisTrackIDL, G4int parentTrackIDL, G4double zMomentumL, G4double startTimeL, G4double radiusL,
+//  G4double zPosL, G4double parent_energyL, G4String parent_particleL, G4double cosAngleL,
+//  G4int number_generationsL, G4String particleNameL, G4bool reduced_tallyL)
+void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4double radiusL,
+  G4double cosAngleL, G4String particleNameL)
+  //G4double zPosL,G4double cosAngleL, G4String particleNameL)
+  {
     if (particleNameL == "neutron"){
       if (thisTrackIDL == fOldTrackID && std::abs(radiusL - 456.0*mm) < 0.1){
         ++fDuplicate_neutrons;
