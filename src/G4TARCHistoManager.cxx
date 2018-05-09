@@ -1523,7 +1523,8 @@ void G4TARCHistoManager::NeutronEnergyTime(G4double thisE, G4double thisT, G4dou
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
+  // if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, tempT, tempE, 1.0);
   //if (fNtuple_full) {
     fAnalysisManager->FillNtupleDColumn(1, 0, tempE);
     fAnalysisManager->FillNtupleDColumn(1, 1, tempT);
@@ -1537,7 +1538,8 @@ void G4TARCHistoManager::otherEnergyTime(G4double thisE, G4double thisT, G4doubl
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
+  // if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, tempT, tempE, 1.0);
   //if (fNtuple_full) {
     fAnalysisManager->FillNtupleDColumn(14, 0, tempE);
     fAnalysisManager->FillNtupleDColumn(14, 1, tempT);

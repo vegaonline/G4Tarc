@@ -7,6 +7,8 @@
 /run/verbose 0
 /gps/verbose 0 #2
 
+/tracking/storeTrajectory 0
+
 /run/initialize
 
 #### Default intensity say 1
@@ -45,5 +47,5 @@
 #/tarc/histo/fileName Hadro
 #/tarc/histo/setHisto 0 10  0 1500 MeV
 
-/run/beamOn 5
+/run/beamOn 100
 
