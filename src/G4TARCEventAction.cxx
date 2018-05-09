@@ -50,5 +50,5 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
     // G4cout << " EventAction: Event # " << evt->GetEventID() << " ended" << G4endl;
   }
   fHisto->EndOfEvent();
-  //if (fHisto->GetVerbose() > 0) G4cout << "   EventAction: Event # " << evt->GetEventID() << " ended." <<G4endl;
+  if (fHisto->GetVerbose() > 1) G4cout << "   EventAction: Event # " << nEvt << " ended." <<G4endl;
 }

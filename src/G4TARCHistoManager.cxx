@@ -147,14 +147,14 @@ void G4TARCHistoManager::DefineShellBlocks() {
 void G4TARCHistoManager::BookHistogram() {
   fHistoBooked = true;
   fAnalysisManager->SetFirstHistoId(1);
-  fAnalysisManager->CreateH1("1","Gamma Edep /keV", 1000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("2","Neutron ener vs. 1/mom /eV", 100000, -1.0, 250.0);   // 100000, 0., 1000000.);
-  fAnalysisManager->CreateH1("3","Electron Edep /keV", 10000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("4","Positron Edep /keV", 10000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("5","Other Edep /keV", 1000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("6","Particle Stack", 1000, 0.5, 12.5);
-  fAnalysisManager->CreateH1("7","Neutrons/event", 30, 0.0, 30.0);
-  fAnalysisManager->CreateH1("8","Protons/event", 30, 0.0, 30.0);
+  fAnalysisManager->CreateH1("TH1","Gamma Edep /keV", 1000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("TH2","Neutron ener vs. 1/mom /eV", 100000, -1.0, 250.0);   // 100000, 0., 1000000.);
+  fAnalysisManager->CreateH1("TH3","Electron Edep /keV", 10000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("TH4","Positron Edep /keV", 10000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("TH5","Other Edep /keV", 1000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("TH6","Particle Stack", 1000, 0.5, 12.5);
+  fAnalysisManager->CreateH1("TH7","Neutrons/event", 30, 0.0, 30.0);
+  fAnalysisManager->CreateH1("TH8","Protons/event", 30, 0.0, 30.0);
   fAnalysisManager->CreateH2("Neutron_Energy_Time","Neutron Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 7.0);
   //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 100, 0.0, 1500.0, 100, 0.0, 1500.0);
   fAnalysisManager->CreateH2("Other_Particle_Energy_Time","OTHER particle Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 6.0);
@@ -800,16 +800,6 @@ void G4TARCHistoManager::EndOfRun() {
   TrackRun(x);  // track and get leaks
   NeutronRun(x); // neutron leak data and spectra
   GunParticleRun(x);  // beam distribution in target.
-
-  //****************** This is for G4ParticleHPThermalScattering
-  //fNHisto = 1;
-  /*
-  for (G4int i = 0; i < fNHisto; i++)
-    fHisto->ScaleH1(i, x);           // Normalize Histogram
-    fHisto->Save();
-
-  */
-
   fAnalysisManager->Write();
   fAnalysisManager->CloseFile();
 }
@@ -1086,7 +1076,9 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack){   //}, const G4
   G4int ii, jj;
 
   if (myTrack->GetDynamicParticle()->GetDefinition()->GetParticleName() == "neutron"){
-    fNeutronSum+= 1.0;
+	if ((myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log")
+       || (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockA_log")) fNeutronSum+= 1.0;
+
     // future plan for neutron breed at breeder with X
     TKin = myTrack->GetDynamicParticle()->GetKineticEnergy();
     //stepLen = myStep->GetStepLength();
@@ -1104,33 +1096,47 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack){   //}, const G4
 
 void G4TARCHistoManager::TargetProfile(const G4Track* myTrack){ //}, const G4Step* myStep) {
   //G4double TKinE = 0.0, TSpectr = 0.0, stepLen, time, xn;
-  G4double xn;
+  G4double rn;
   G4int ix = 0;
+
+ if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron") {
+    if (
+	   ((myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log") || (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockA_log"))
+			&& (myTrack->GetParentID() == 1)
+			) {
+			fNeutronInit += 1.0;
+		}
+	}
 
   if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron") {
     if (
-           (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log")
-           && (  (myTrack->GetVertexPosition().x() >= -35.0 && myTrack->GetVertexPosition().x() <= 35.0)
-           || (myTrack->GetVertexPosition().y() >= -35.0 && myTrack->GetVertexPosition().y() <= 35.0)
-           || (myTrack->GetVertexPosition().z() >= -1500.0 && myTrack->GetVertexPosition().z() <= -299.0)
-           )
-           && (myTrack->GetGlobalTime()/nanosecond <= 10.0)
+            ((myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log")
+            || (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockA_log"))
+           //  && (  (myTrack->GetVertexPosition().x() >= -35.0 && myTrack->GetVertexPosition().x() <= 35.0)
+           //  || (myTrack->GetVertexPosition().y() >= -35.0 && myTrack->GetVertexPosition().y() <= 35.0)
+           //  || (myTrack->GetVertexPosition().z() >= -1500.0 && myTrack->GetVertexPosition().z() <= -299.0)
+           // )
+           && 
+		   (myTrack->GetGlobalTime() <= 10.0 * nanosecond)
            && (myTrack->GetParentID() == 1)
      ) {
-       fNeutronInit += 1.0;
-       xn = myTrack->GetVertexPosition().x() + 0.5 * fRange;
-       ix = G4int(xn / fLBin + 0.5);
-       if (ix >= 0 && ix < fLMax) fGunParticleX[ix] += 1.0;
+       rn = myTrack->GetVertexPosition().x() + 0.5 * fRange;
+       ix = G4int(rn / fLBin + 0.5);
+       //  if (ix >= 0 && ix < fLMax) fGunParticleX[ix] += 1.0;
+       if (ix >= 0 && ix < fVirtualDia) fGunParticleX[ix] += 1.0;
 
-       xn = myTrack->GetVertexPosition().y() + 0.5 * fRange;
-       ix = G4int(xn / fLBin + 0.5);
-       if (ix >= 0 && ix < fLMax) fGunParticleY[ix] += 1.0;
+       rn = myTrack->GetVertexPosition().y() + 0.5 * fRange;
+       ix = G4int(rn / fLBin + 0.5);
+       //  if (ix >= 0 && ix < fLMax) fGunParticleY[ix] += 1.0;
+       if (ix >= 0 && ix < fVirtualDia) fGunParticleY[ix] += 1.0;
 
-       xn = myTrack->GetVertexPosition().z() + 0.5 * fRange;
-       ix = G4int(xn / fLBin + 0.5);
-       if (ix >= 0 && ix < fLMax) fGunParticleZ[ix] += 1.0;
+       rn = myTrack->GetVertexPosition().z() + 0.5 * fRange;
+       ix = G4int(rn / fLBin + 0.5);
+       // if (ix >= 0 && ix < fLMax) fGunParticleZ[ix] += 1.0;
+       if (ix >= 0 && ix < fVirtualDia) fGunParticleZ[ix] += 1.0;
      }
   }
+  // if (fNeutronInit) G4cout << "N init " << fNeutronInit << G4endl;
 }
 
 void G4TARCHistoManager::AddEnergyTimeHole(const G4Track* myTrack, const G4Step* myStep) {
@@ -1369,7 +1375,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   G4double kEffective, rho, rat, react, perN=x;
   kEffective = (fNeutronInit!= 0.0) ? fNeutronSum / fNeutronInit : 0.0;
   rho        =  (kEffective != 0.0) ? (kEffective - 1.0) / kEffective : 0.0;  // reactivity :: deviation from criticality
-  rat        = (kEffective != 0.0) ? std::log10(kEffective) : 0.0;
+  rat        = (kEffective != 0.0) ? std::log(kEffective) : 0.0;
   react      = rat / (1.0 + rat);
 
   trackout << " IMP Parameters : "    << G4endl;
