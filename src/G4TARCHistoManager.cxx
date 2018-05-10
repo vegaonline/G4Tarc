@@ -155,7 +155,7 @@ void G4TARCHistoManager::BookHistogram() {
   fAnalysisManager->CreateH1("TH6","Particle Stack", 1000, 0.5, 12.5);
   fAnalysisManager->CreateH1("TH7","Neutrons/event", 30, 0.0, 30.0);
   fAnalysisManager->CreateH1("TH8","Protons/event", 30, 0.0, 30.0);
-  fAnalysisManager->CreateH2("Neutron_Energy_Time","Neutron Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 7.0);
+  fAnalysisManager->CreateH2("Neutron_Energy_Time","Neutron Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 8.0);
   //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 100, 0.0, 1500.0, 100, 0.0, 1500.0);
   fAnalysisManager->CreateH2("Other_Particle_Energy_Time","OTHER particle Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 6.0);
 
@@ -1523,8 +1523,8 @@ void G4TARCHistoManager::NeutronEnergyTime(G4double thisE, G4double thisT, G4dou
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-  // if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
-  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, tempT, tempE, 1.0);
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
+  // if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, tempT, tempE, 1.0);
   //if (fNtuple_full) {
     fAnalysisManager->FillNtupleDColumn(1, 0, tempE);
     fAnalysisManager->FillNtupleDColumn(1, 1, tempT);
@@ -1538,8 +1538,8 @@ void G4TARCHistoManager::otherEnergyTime(G4double thisE, G4double thisT, G4doubl
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-  // if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
-  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, tempT, tempE, 1.0);
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
+  //if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, tempT, tempE, 1.0);
   //if (fNtuple_full) {
     fAnalysisManager->FillNtupleDColumn(14, 0, tempE);
     fAnalysisManager->FillNtupleDColumn(14, 1, tempT);
