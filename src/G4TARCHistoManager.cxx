@@ -515,8 +515,8 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
 
 void G4TARCHistoManager::BeginOfRun() {
   fAnalysisManager = G4AnalysisManager::Instance();
-  G4String path = getenv("dateStr");
-  fAnalysisFileName = path + "/" + fAnalysisFileName;
+  //G4String path = getenv("dateStr");
+  //fAnalysisFileName = path + "/" + fAnalysisFileName;
   fAnalysisManager->OpenFile(fAnalysisFileName);
 
   if (!fHistoBooked) {
@@ -1116,7 +1116,7 @@ void G4TARCHistoManager::TargetProfile(const G4Track* myTrack){ //}, const G4Ste
            //  || (myTrack->GetVertexPosition().y() >= -35.0 && myTrack->GetVertexPosition().y() <= 35.0)
            //  || (myTrack->GetVertexPosition().z() >= -1500.0 && myTrack->GetVertexPosition().z() <= -299.0)
            // )
-           && 
+           &&
 		   (myTrack->GetGlobalTime() <= 10.0 * nanosecond)
            && (myTrack->GetParentID() == 1)
      ) {
