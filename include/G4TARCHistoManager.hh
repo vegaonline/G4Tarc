@@ -76,8 +76,6 @@ public:
 private:
   G4TARCHistoManager ();
 
-  void BookHistogram();
-  //void CreateTuples();
   void save();
   void FillHisto(G4int, G4double, G4double);
   void Normalize(G4int, G4double);

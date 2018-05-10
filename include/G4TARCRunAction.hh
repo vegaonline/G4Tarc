@@ -39,8 +39,14 @@ public:
   //virtual G4Run* GenerateRun();
   virtual void BeginOfRunAction( const G4Run* ); // booking of histogram
   virtual void EndOfRunAction( const G4Run* );  // method fills histogram
+  void CreateTuples();
+  void BookHistogram();
+
+  G4bool                        fHistoBooked;
 
 private:
+  G4String                      fAnalysisFileName = "G4TARC_output";
+  G4AnalysisManager*            fAnalysisManager;
   G4TARCEventAction*            fEventAction;
   //G4TARCDetectorConstruction*   fDetector;
   G4TARCPrimaryGeneratorAction* fPrimary;
