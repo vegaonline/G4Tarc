@@ -1178,6 +1178,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << "Neutron Lethargy <mean> : " << fAnalysisManager->GetH1(2)->mean() << " rms: " << fAnalysisManager->GetH1(2)->rms()  << G4endl;
   trackout << "==========================================================" << G4endl;
 
+/*
   G4double kEffective, rho, rat, react, perN=x;
   kEffective = (fNeutronInit!= 0.0) ? fNeutronSum / fNeutronInit : 0.0;
   rho        =  (kEffective != 0.0) ? (kEffective - 1.0) / kEffective : 0.0;  // reactivity :: deviation from criticality
@@ -1190,6 +1191,10 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << " Estimated reactivity = " << react                                    << G4endl             << G4endl;
   trackout << "==========================================================================================" << G4endl;
   trackout << G4endl;
+*/
+
+//G4cout << "T:: max  " << testMax1 << "  min " << testMin1 << " E:: max " << testMax2 << "  min " << testMin2 << G4endl;
+
 
 }
 
@@ -1330,7 +1335,9 @@ void G4TARCHistoManager::NeutronEnergyTime(G4double thisE, G4double thisT, G4dou
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
   if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
-  // if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, tempT, tempE, 1.0);
+  //if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, tempT, tempE, 1.0);
+  //testMax1 = std::max(testMax1, tempT);   testMin1 = std::min(testMin1, tempT);
+  //testMax2 = std::max(testMax2, tempE);   testMin2 = std::min(testMin2, tempE);
   //if (fNtuple_full) {
     fAnalysisManager->FillNtupleDColumn(1, 0, tempE);
     fAnalysisManager->FillNtupleDColumn(1, 1, tempT);

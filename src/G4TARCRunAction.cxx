@@ -9,12 +9,14 @@
 //: G4UserRunAction(), fDetector(det), fPrimary(prim), fHisto(0){
 G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
   fAnalysisManager = G4AnalysisManager::Instance();
-  fAnalysisManager->OpenFile(fAnalysisFileName);
   fHistoBooked = false;
 
-  if (!fHistoBooked) {
-    BookHistogram();
-    CreateTuples();
+  if (IsMaster()){
+    if (!fHistoBooked) {
+      fAnalysisManager->OpenFile(fAnalysisFileName);
+      BookHistogram();
+      CreateTuples();
+    }
   }
 }
 
@@ -25,30 +27,18 @@ G4TARCRunAction::~G4TARCRunAction() {
 void G4TARCRunAction::BookHistogram() {
   fHistoBooked = true;
   fAnalysisManager->SetFirstHistoId(1);
-  fAnalysisManager->CreateH1("TH1","Gamma Edep /keV", 10000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("TH2","Neutron ener vs. 1/mom /eV", 100000, -1.0, 100.0);   // 100000, 0., 1000000.);
-  fAnalysisManager->CreateH1("TH3","Electron Edep /keV", 100000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("TH4","Positron Edep /keV", 10000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("TH5","Other Edep /keV", 1000, 0.0, 1000*keV);
-  fAnalysisManager->CreateH1("TH6","Particle Stack", 1000, 0.5, 12.5);
-  fAnalysisManager->CreateH1("TH7","Neutrons/event", 30, 0.0, 30.0);
-  fAnalysisManager->CreateH1("TH8","Protons/event", 30, 0.0, 30.0);
-  fAnalysisManager->CreateH2("Neutron_Energy_Time","Neutron Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 8.0);
-  //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 100, 0.0, 1500.0, 100, 0.0, 1500.0);
-  fAnalysisManager->CreateH2("Other_Particle_Energy_Time","OTHER particle Energy vs. Time", 100, -4.0, 4.0, 100, -4.0, 6.0);
+  fAnalysisManager->CreateH1("H1","Gamma Edep /keV", 10000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("H2","Neutron ener vs. 1/mom /eV", 100000, -1.0, 1000.0);   // 100000, 0., 1000000.);
+  fAnalysisManager->CreateH1("H3","Electron Edep /keV", 100000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("H4","Positron Edep /keV", 10000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("H5","Other Edep /keV", 1000, 0.0, 1000*keV);
+  fAnalysisManager->CreateH1("H6","Particle Stack", 1000, 0.5, 12.5);
+  fAnalysisManager->CreateH1("H7","Neutrons/event", 30, 0.0, 30.0);
+  fAnalysisManager->CreateH1("H8","Protons/event", 30, 0.0, 30.0);
+  fAnalysisManager->CreateH2("Neutron_Energy_Time","log(Neutron Energy) vs. log(Time)", 100, -4.0, 4.0, 100, -4.0, 9.0);
+  //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 1000, 0.0, 5.0e+3, 1000, 0.0, 2.0e+9);
+  fAnalysisManager->CreateH2("Other_Particle_Energy_Time","log(OTHER particle Energy) vs. log(Time)", 100, -4.0, 4.0, 100, -4.0, 6.0);
 
-
-
-  /*
-  fAnalysisManager->CreateH1("Protons_per_Event", "Protons/event", 50, 0.0, 100.0);
-  fAnalysisManager->CreateH1("Neutrons_per_Event", "Neutrons/event", 50, 0.0, 100.0);
-  fAnalysisManager->CreateH1("Neutron_Energy", "Neutron Energy vs 1/mom /eV", 100000, 0.0, 1000000.0);
-  fAnalysisManager->CreateH1("proton_Energy", "Proton Energy Deposition/keV", 1000, 0.0, 1000.0 * keV);
-  fAnalysisManager->CreateH1("Particle_Stack", "Particle Stack", 12, 0.5, 12.5);
-  fAnalysisManager->CreateH1("log10En", "Log10 Energy (eV) of neutron", 100, -9.0, 9.0);
-  fAnalysisManager->CreateH2("Neutron_Energy_Time", "Neutron Energy vs Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
-  fAnalysisManager->CreateH2("Other_particle_Energy_Time", "Other particle Energy vs Time", 100, -1.0, 4.0, 100, -2.0, 7.0);
-  */
 }
 
 

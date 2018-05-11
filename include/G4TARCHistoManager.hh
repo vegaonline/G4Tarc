@@ -390,7 +390,7 @@ private:
   std::vector<G4double>                  fFluence_step;
   std::vector<G4double>                  fLow_Fluence_step;
 
-  // G4double testMax1 = -99999999.99e8, testMax2 = testMax1, testMin1 = -testMax1, testMin2 = testMin1;    // for histo check
+//  G4double testMax1 = -99999999.99e8, testMax2 = testMax1, testMin1 = -testMax1, testMin2 = testMin1;    // for histo check
 
 };
 
