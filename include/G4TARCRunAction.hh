@@ -51,7 +51,8 @@ private:
   //G4TARCDetectorConstruction*   fDetector;
   G4TARCPrimaryGeneratorAction* fPrimary;
   G4TARCRunAction*              fRun;
-  G4TARCHistoManager*           fHisto;
+  G4TARCHistoManager*           fHistoM;
+  G4bool                        fInMaster;
 
 };
 

@@ -8,14 +8,18 @@
 //G4TARCRunAction::G4TARCRunAction(G4TARCDetectorConstruction* det, G4TARCPrimaryGeneratorAction* prim)
 //: G4UserRunAction(), fDetector(det), fPrimary(prim), fHisto(0){
 G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
+  fHistoM = G4TARCHistoManager::GetPointer();
   fAnalysisManager = G4AnalysisManager::Instance();
   fHistoBooked = false;
-
+  fHistoM->SetHistoBooked(false);
+  fInMaster = false;
   if (IsMaster()){
     if (!fHistoBooked) {
       fAnalysisManager->OpenFile(fAnalysisFileName);
       BookHistogram();
       CreateTuples();
+      fHistoM->SetHistoBooked(fHistoBooked);
+      fInMaster = true;
     }
   }
 }
@@ -35,7 +39,7 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateH1("H6","Particle Stack", 1000, 0.5, 12.5);
   fAnalysisManager->CreateH1("H7","Neutrons/event", 30, 0.0, 30.0);
   fAnalysisManager->CreateH1("H8","Protons/event", 30, 0.0, 30.0);
-  fAnalysisManager->CreateH2("Neutron_Energy_Time","log(Neutron Energy) vs. log(Time)", 100, -4.0, 4.0, 100, -4.0, 9.0);
+  fAnalysisManager->CreateH2("Neutron_Energy_Time","log(Neutron Energy) vs. log(Time)", 100, -2.5, 4.0, 100, -4.0, 9.0);
   //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 1000, 0.0, 5.0e+3, 1000, 0.0, 2.0e+9);
   fAnalysisManager->CreateH2("Other_Particle_Energy_Time","log(OTHER particle Energy) vs. log(Time)", 100, -4.0, 4.0, 100, -4.0, 6.0);
 
@@ -209,7 +213,10 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
   auto id = aRun->GetRunID();
   G4cout << "Run # " << id << " starts." << G4endl;
   G4NuclearLevelData::GetInstance();
-  (G4TARCHistoManager::GetPointer())->BeginOfRun();
+  if (IsMaster()){
+    fHistoM->BeginOfRun();
+  }
+
 
 #ifdef G4VIS_USE
   auto UI = G4UImanager::GetUIpointer();
@@ -225,7 +232,7 @@ void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
   //auto analysisManager = G4AnalysisManager::Instance();
   G4cout << " RunAction: End of run actions for # " << aRun->GetRunID() << " is started" << G4endl;
 
-  (G4TARCHistoManager::GetPointer())->EndOfRun();
+  fHistoM->EndOfRun();
   #ifdef G4VIS_USE
     if (G4VVisManager::GetConcreteInstance())
       G4UImanager::GetUIpointer()->ApplyCommand("/vis/viewer/update");

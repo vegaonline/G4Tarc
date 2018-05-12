@@ -141,6 +141,7 @@ public:
   inline void SetGPSMomentumIN (const G4double value)     { fPrimaryMomentum = value; }
   inline void TotalProtonIn ()                            { fProtonIN++; }
   inline void TotalNCount()                               { fNCountTotal++; }
+  inline void SetHistoBooked( G4bool val)                 { fHistoBooked = val;}
 
 private:
   G4bool                      fNtuple_full;
