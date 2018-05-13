@@ -30,6 +30,7 @@ G4TARCHistoManager::G4TARCHistoManager()
 //  fNSlices( fMaxSlices )
 {
     fHistoBooked = false;
+    fNtuple_full = false;
     fEdepMax = fMaxEVal;
     fLength = fMaxLVal;
     fHLength = 0.5 * fMaxLVal;
@@ -315,27 +316,220 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
       fAnalysisManager->AddNtupleRow(10);
     }
   }
-
   G4cout << "Experimental data filling complete." << G4endl;
 }
+
+
+
+void G4TARCHistoManager::BookHistogram() {
+  fHistoBooked = true;
+  fAnalysisManager->SetFirstHistoId(1);
+  //1
+  fAnalysisManager->CreateH1("Gamma","Gamma Edep /keV", 10000, 0.0, 5.1e5);
+  //2
+  fAnalysisManager->CreateH1("NeutronEnergy","Neutron energy (eV) vs. 1/mom /eV", 100000, 0.0, 50.0);   // 100000, 0., 1000000.);
+  //3
+  fAnalysisManager->CreateH1("ElectronEdep","Electron Edep /eV", 60000, 10.0, 2.0e5);
+  //4
+  fAnalysisManager->CreateH1("PositronEdep","Positron Edep /keV", 10000, 1.0, 1.0e5);
+  //5
+  fAnalysisManager->CreateH1("OtherEdep","Other Edep /eV", 1000000, 0.1, 2.0e2);
+  //6
+  fAnalysisManager->CreateH1("ParticleStack","Particle Stack", 100000, 0.0, 1.5e6);
+  //7
+  fAnalysisManager->CreateH1("NeutronPerEvent","Neutrons/event", 30, 0.0, 30.0);
+  //8
+  fAnalysisManager->CreateH1("ProtonPerEvent","Protons/event", 30, 0.0, 30.0);
+  //9
+  fAnalysisManager->CreateH2("NeutronEnergyTime","log(Neutron Energy) vs. log(Time)", 100, -2.5, 4.0, 100, -4.0, 9.0);
+  //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 1000, 0.0, 5.0e+3, 1000, 0.0, 2.0e+9);
+  //10
+  fAnalysisManager->CreateH2("OtherParticleEnergyTime","log(OTHER particle Energy) vs. log(Time)", 100, -4.0, 4.0, 100, -4.0, 6.0);
+}
+
+
+void G4TARCHistoManager::CreateTuples(){
+  fAnalysisManager->CreateNtuple("h1_Secondary", "Secondary Particle Info");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleIColumn("particle");
+  fAnalysisManager->CreateNtupleDColumn("momentum");
+  fAnalysisManager->CreateNtupleIColumn("parentid");
+  fAnalysisManager->CreateNtupleDColumn("e_prim");
+  fAnalysisManager->CreateNtupleIColumn("parent");
+  fAnalysisManager->CreateNtupleDColumn("e_parent");
+  fAnalysisManager->CreateNtupleIColumn("numgen");
+  fAnalysisManager->CreateNtupleIColumn("event");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 0 - filled
+
+  fAnalysisManager->CreateNtuple("h2_N_ET", "Neutron Time");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleDColumn("primary");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 1
+
+  fAnalysisManager->CreateNtuple("h3_N_Exiting", "Neutrons Exiting");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 2 - filled
+
+  fAnalysisManager->CreateNtuple("h4_Flux_4002", "Neutrons G4TARC flux");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("tarcflux");
+  fAnalysisManager->CreateNtupleDColumn("errstat");
+  fAnalysisManager->CreateNtupleDColumn("g4flux");
+  fAnalysisManager->CreateNtupleDColumn("g4perp");
+  fAnalysisManager->CreateNtupleDColumn("gfluence");
+  fAnalysisManager->CreateNtupleDColumn("g4err");
+  fAnalysisManager->CreateNtupleDColumn("rawflux");
+  fAnalysisManager->CreateNtupleDColumn("trceflux");
+  fAnalysisManager->CreateNtupleDColumn("g4eflux");
+  fAnalysisManager->CreateNtupleDColumn("gstep");
+  fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
+  fAnalysisManager->CreateNtupleDColumn("g4front");
+  // fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 3
+
+  fAnalysisManager->CreateNtuple("h5_Flux_4004", "Neutrons G4TARC flux");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("tarcflux");
+  fAnalysisManager->CreateNtupleDColumn("errstat");
+  fAnalysisManager->CreateNtupleDColumn("g4flux");
+  fAnalysisManager->CreateNtupleDColumn("g4perp");
+  fAnalysisManager->CreateNtupleDColumn("gfluence");
+  fAnalysisManager->CreateNtupleDColumn("g4err");
+  fAnalysisManager->CreateNtupleDColumn("rawflux");
+  //fAnalysisManager->CreateNtupleDColumn("gstep");
+  //fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
+  //fAnalysisManager->CreateNtupleDColumn("g4front");
+  // fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 4
+
+
+  fAnalysisManager->CreateNtuple("h6 Flux 4005", "Neutrons Test15 flux");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("tarcflux");
+  //fAnalysisManager->CreateNtupleDColumn("errstat");
+  fAnalysisManager->CreateNtupleDColumn("errsyst");
+  fAnalysisManager->CreateNtupleDColumn("g4flux");
+  fAnalysisManager->CreateNtupleDColumn("g4perp");
+  fAnalysisManager->CreateNtupleDColumn("gfluence");
+  //fAnalysisManager->CreateNtupleDColumn("g4zflux");
+  fAnalysisManager->CreateNtupleDColumn("g4err");
+  //fAnalysisManager->CreateNtupleDColumn("flux5cm");
+  //fAnalysisManager->CreateNtupleDColumn("err5cm");
+  fAnalysisManager->CreateNtupleDColumn("rawflux");
+  fAnalysisManager->CreateNtupleDColumn("gstep");
+  //fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
+  //fAnalysisManager->CreateNtupleDColumn("g4front");
+  //fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  //fAnalysisManager->CreateNtupleDColumn("g4_shell_err");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 5
+
+
+  fAnalysisManager->CreateNtuple("h7_Created_N_A", "Created Neutrons");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleIColumn("particle");
+  fAnalysisManager->CreateNtupleDColumn("momentum");
+  fAnalysisManager->CreateNtupleDColumn("zmom");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 6
+
+  fAnalysisManager->CreateNtuple("h8_Created_N", "Created Neutrons");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleDColumn("starte");
+  fAnalysisManager->CreateNtupleIColumn("trackid");
+  fAnalysisManager->CreateNtupleIColumn("parentid");
+  fAnalysisManager->CreateNtupleDColumn("fluxe");
+  fAnalysisManager->CreateNtupleDColumn("fluxidx");
+  fAnalysisManager->CreateNtupleDColumn("zmom");
+  fAnalysisManager->CreateNtupleDColumn("startt");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("e_parent");
+  fAnalysisManager->CreateNtupleIColumn("parent");
+  fAnalysisManager->CreateNtupleIColumn("step");
+  fAnalysisManager->CreateNtupleIColumn("dupli");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 7
+
+  fAnalysisManager->CreateNtuple("h9_Rad_Shell_Fluence", "Radial Shell Fluence");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("fluence");
+  fAnalysisManager->CreateNtupleDColumn("true_e");
+  fAnalysisManager->CreateNtupleDColumn("true_f");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 8
+
+  fAnalysisManager->CreateNtuple("h10_Rad_Fluence_Expt_Li_Data", "Lithium Radial Fluence Exptl Data");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("error");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 9
+
+  fAnalysisManager->CreateNtuple("h11_Rad_Fluence_Expt_He3_Data", "He3 Radial Fluence Exptl Data");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("error");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 10
+
+
+  fAnalysisManager->CreateNtuple("h12_3.5GeV_He3_Expt_Data", "Radial Fluence He3 Expt Data");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("stat_err");
+  fAnalysisManager->CreateNtupleDColumn("syst_err");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 11
+
+  fAnalysisManager->CreateNtuple("h13_Rad_Fluence_Li", "Radial Fluence Li");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("data");
+  fAnalysisManager->CreateNtupleDColumn("stat_err");
+  fAnalysisManager->CreateNtupleDColumn("syst_err");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 12
+
+  fAnalysisManager->CreateNtuple("h14_Rad_Fluence", "Radial Fluence");
+  fAnalysisManager->CreateNtupleDColumn("radius");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("fluence");
+  fAnalysisManager->CreateNtupleDColumn("he_data");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 13
+
+  fAnalysisManager->CreateNtuple("h15_Other_ET", "OTHER Time");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->CreateNtupleDColumn("time");
+  fAnalysisManager->CreateNtupleDColumn("primary");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 14
+
+  fAnalysisManager->CreateNtuple("h16", "log10(En)");
+  fAnalysisManager->CreateNtupleDColumn("energy");
+  fAnalysisManager->FinishNtuple(); // ntupleID: 15 for neutron
+
+  G4cout << "Ntuples created." << G4endl;
+}
+
 
 void G4TARCHistoManager::BeginOfRun() {
   fAnalysisManager = G4AnalysisManager::Instance();
   //G4String path = getenv("dateStr");
   //fAnalysisFileName = path + "/" + fAnalysisFileName;
-  //fAnalysisManager->OpenFile(fAnalysisFileName);
-/*
+
   if (!fHistoBooked) {
+    fAnalysisManager->OpenFile(fAnalysisFileName);
     BookHistogram();
     CreateTuples();
   }
-*/
-  DefineShellBlocks();
-  ReadExperimentalDataFromFile(fExptlDataFileName);
-  FillRadialExperimentalData();
 
+  if (!fNtuple_full){
+    DefineShellBlocks();
+    ReadExperimentalDataFromFile(fExptlDataFileName);
+    FillRadialExperimentalData();
+    fNtuple_full = true;
+  }
 
-  fNtuple_full = false;
+  //fNtuple_full = false;
   fAbsX0 = fAbsY0 = fAbsZ0 = 0.0; // 0.5 * fLength;
   fNevt       = 0;
   fNelec      = 0;
@@ -390,8 +584,8 @@ void G4TARCHistoManager::BeginOfRun() {
   fExiting_check_Flux = 0;
   fExiting_Energy = 0.0;
 
-  fNEsecond  = G4PhysicsLogVector(fTmin,fTmax,fNbin);
-  fNTsecond  = G4PhysicsLogVector(fTimeMin,fTimeMax,fNbin);
+  fNEsecond  = G4PhysicsLogVector(fTmin, fTmax, fNbin);
+  fNTsecond  = G4PhysicsLogVector(fTimeMin, fTimeMax, fNbin);
   fNSecondSum1  = G4DataVector(fNbin, 0.0);
   fNSecondSum2  = G4DataVector(fNbin, 0.0);
   fNSecondSum3  = G4DataVector(fNbin, 0.0);
@@ -432,10 +626,8 @@ void G4TARCHistoManager::BeginOfRun() {
   fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
   fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
 
-
   fET.resize(fNbin, std::vector<G4double>(fNbin, 0.0));
   fEdNdE.resize(fNbin, std::vector<G4double>(fNbin, 0.0));
-
 
   fGunParticleX   = G4DataVector(fLMax, 0.0);
   fGunParticleY   = G4DataVector(fLMax, 0.0);
@@ -468,6 +660,55 @@ void G4TARCHistoManager::BeginOfRun() {
   if( fVerbose > 0 ) G4cout << "G4TARCHistoManager: Histograms are booked and run has been started:" << G4endl;
 }
 
+
+void G4TARCHistoManager::EndOfRun() {
+  G4cout << "G4TARCHistoManager ; End of run actions are started" << G4endl;
+  G4cout << "fNevt = " << fNevt << G4endl;
+  G4cout << "EndOfRun(), fEdepSum = " << fEdepSum << G4endl;
+  G4cout << "======================================================================" << G4endl;
+
+  StartProcessing();
+  CreateNeutronFluxHisto();
+  CreateRadialFluxHisto();
+
+  G4double x = ( G4double )fNevt;
+  G4double perN = 1.0;
+  if (fNevt > 0){
+    x = perN = 1.0 / x;
+  }
+  TrackRun(x);  // track and get leaks
+  NeutronRun(x); // neutron leak data and spectra
+  GunParticleRun(x);  // beam distribution in target.
+  fAnalysisManager->Write();
+  fAnalysisManager->CloseFile();
+}
+
+void G4TARCHistoManager::BeginOfEvent(G4int nEvt) {
+  fEdepEvt    = 0.0;
+  fEdepEM     = 0.0;
+  fEdepProton = 0.0;
+  fEdepPI     = 0.0;
+  fNsecondary = 0.0;
+  fRangeSum   = G4ThreeVector(0.0, 0.0, 0.0);
+  fStepSum    = 0.0;
+  fDeltaSum   = 0.0;
+  SetEventID(nEvt);
+}
+
+void G4TARCHistoManager::EndOfEvent() {
+  fEdepSum  += fEdepEvt;
+  fEdepSum2 += fEdepEvt * fEdepEvt;
+  fNevt ++;
+  if (fNsecondary > 0) fNinelastic++;
+  //  fHisto->Fill(21,fEdepEvt/fPrimaryKineticEnergy,1.0);
+  //  fHisto->Fill(22,fEdepEM/fPrimaryKineticEnergy,1.0);
+  //  fHisto->Fill(23,fEdepPI/fPrimaryKineticEnergy,1.0);
+  //  fHisto->Fill(24,fEdepProton/fPrimaryKineticEnergy,1.0);
+
+  fAnalysisManager->FillH1(6, fNeutronStack);
+  // G4cout << fNeutronStack << G4endl;
+  WriteEventRange( fRangeSum, fStepSum, fDeltaSum );
+}
 
 void G4TARCHistoManager::CreateNeutronFluxHisto(){
   fAbsolute_TotalFlux = (fTotal_flux * 1.0e9 / (G4double)fNevt) / fTestSphereSurfaceArea;
@@ -587,55 +828,6 @@ void G4TARCHistoManager::CreateRadialFluxHisto(){
     }
   }
 }
-
-void G4TARCHistoManager::EndOfRun() {
-  G4cout << "G4TARCHistoManager ; End of run actions are started" << G4endl;
-  G4cout << "fNevt = " << fNevt << G4endl;
-  G4cout << "EndOfRun(), fEdepSum = " << fEdepSum << G4endl;
-  G4cout << "======================================================================" << G4endl;
-
-  StartProcessing();
-  CreateNeutronFluxHisto();
-  CreateRadialFluxHisto();
-
-  G4double x = ( G4double )fNevt;
-  G4double perN = 1.0;
-  if (fNevt > 0){
-    x = perN = 1.0 / x;
-  }
-  TrackRun(x);  // track and get leaks
-  NeutronRun(x); // neutron leak data and spectra
-  GunParticleRun(x);  // beam distribution in target.
-  fAnalysisManager->Write();
-  fAnalysisManager->CloseFile();
-}
-
-void G4TARCHistoManager::BeginOfEvent(G4int nEvt) {
-  fEdepEvt    = 0.0;
-  fEdepEM     = 0.0;
-  fEdepProton = 0.0;
-  fEdepPI     = 0.0;
-  fNsecondary = 0.0;
-  fRangeSum   = G4ThreeVector(0.0, 0.0, 0.0);
-  fStepSum    = 0.0;
-  fDeltaSum   = 0.0;
-  SetEventID(nEvt);
-}
-
-void G4TARCHistoManager::EndOfEvent() {
-  fEdepSum  += fEdepEvt;
-  fEdepSum2 += fEdepEvt * fEdepEvt;
-  fNevt ++;
-  if (fNsecondary > 0) fNinelastic++;
-  //  fHisto->Fill(21,fEdepEvt/fPrimaryKineticEnergy,1.0);
-  //  fHisto->Fill(22,fEdepEM/fPrimaryKineticEnergy,1.0);
-  //  fHisto->Fill(23,fEdepPI/fPrimaryKineticEnergy,1.0);
-  //  fHisto->Fill(24,fEdepProton/fPrimaryKineticEnergy,1.0);
-
-  fAnalysisManager->FillH1(7, fNeutronStack);
-  WriteEventRange( fRangeSum, fStepSum, fDeltaSum );
-}
-
 
 // Normalization for no hadron interaction in the target. EM and hadron elastic shuld be inactivated
 void G4TARCHistoManager::AddNzero(const G4Track* myTrack) {
@@ -1378,15 +1570,14 @@ void G4TARCHistoManager::analysePS(G4double partEnergy, G4String particleName
 ){
   //G4int Iparticle = -9;
   if(particleName == "gamma") {
-    fAnalysisManager->FillH1(1, partEnergy / keV);
+    fAnalysisManager->FillH1(1, partEnergy / eV);
   // hGammaEdep->fill(energy/keV);
     //Iparticle = 1;
-  }else if(particleName == "neutron") {
+  } else if(particleName == "neutron") {
   //  testMax1 = std::max(testMax1, partEnergy); testMin1 = std::min(testMin1, partEnergy);
   //  testMax2 = std::max(testMax2, 1.0 / partMomentum); testMin2 = std::min(testMin2, 1.0/partMomentum);
 
     //G4cout << " filling neutron lethargy with: energy = " << partEnergy / eV << " and momentum = " << 1.0 / partMomentum << G4endl;
-    //fAnalysisManager->FillH1(2, partEnergy / eV, 1.0 / partMomentum);
     fAnalysisManager->FillH1(2, partEnergy / eV, 1.0 / partMomentum);
     // hNeutronEdep->fill(energy/eV,1/momentum);  // fill(x,weight)
     //Iparticle = 2;
@@ -1404,19 +1595,16 @@ void G4TARCHistoManager::analysePS(G4double partEnergy, G4String particleName
       fNeutflux[3]++;
       fENflux[3] += partEnergy;
     }
-  }
-  if(particleName == "e-") {
-    fAnalysisManager->FillH1(3, partEnergy / keV);
+  }else if(particleName == "e-") {
+    fAnalysisManager->FillH1(3, partEnergy / eV);
     // hElectronEdep->fill(energy/keV);  // fill(x,weight)
     //Iparticle = 3;
-  }
-  if(particleName == "e+") {
+  } else if(particleName == "e+") {
     fAnalysisManager->FillH1(4, partEnergy / keV);
     // hPositronEdep->fill(energy/keV);  // fill(x,weight)
     //Iparticle = 4;
-  }
-  if(particleName == "other") {
-    fAnalysisManager->FillH1(5, partEnergy / keV);
+  } else {   //(particleName == "other") {
+    fAnalysisManager->FillH1(5, partEnergy / eV);
     // hOtherEdep->fill(energy/keV);  // fill(x,weight)
     //Iparticle = 5;
   }

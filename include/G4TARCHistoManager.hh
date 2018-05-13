@@ -108,6 +108,7 @@ public:
 
   void ReadExperimentalDataFromFile(G4String&);
   void FillRadialExperimentalData();
+  void BookHistogram();
   void CreateTuples();
   void CreateNeutronFluxHisto();
   void CreateRadialFluxHisto();
@@ -145,6 +146,7 @@ public:
 
 private:
   G4bool                      fNtuple_full;
+  
   G4String                    fRootFileName;
   static G4TARCHistoManager*  fHistoManager;
   G4TARCHisto*                fHisto;
@@ -194,7 +196,6 @@ private:
   G4double fVirtualDia;
   G4double fVirtVol;
   G4double fExiting_Energy;
-
 
   G4int fExiting_check_Flux;
   G4int fExiting_Flux;
@@ -280,8 +281,6 @@ private:
   G4String                              fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
   G4String                              fAnalysisFileName = "G4TARC_output";
   G4TARCEventAction*                    fEventAction;
-  //G4TARCPrimaryGeneratorAction*         fPrimary;
-  //G4TARCRunAction*                      fRun;
 
   G4double                               fTestSphereRadius;
   G4double                               fTestSphereVolume;
