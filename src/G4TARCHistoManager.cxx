@@ -325,15 +325,15 @@ void G4TARCHistoManager::BookHistogram() {
   fHistoBooked = true;
   fAnalysisManager->SetFirstHistoId(1);
   //1
-  fAnalysisManager->CreateH1("Gamma","Gamma Edep /keV", 10000, 0.0, 5.1e5);
+  fAnalysisManager->CreateH1("Gamma","Gamma Edep (eV)", 10000, 100.0, 5.1e5);  // 0:
   //2
-  fAnalysisManager->CreateH1("NeutronEnergy","Neutron energy (eV) vs. 1/mom /eV", 100000, 0.0, 50.0);   // 100000, 0., 1000000.);
+  fAnalysisManager->CreateH1("NeutronEnergy","Neutron energy (eV) vs. 1/mom /eV", 100000, 1.0e-3, 30.0); // , 0.0, 50.0);  // 100000, 0., 1000000.);
   //3
-  fAnalysisManager->CreateH1("ElectronEdep","Electron Edep /eV", 60000, 10.0, 2.0e5);
+  fAnalysisManager->CreateH1("ElectronEdep","Electron Edep (eV)", 60000, 10.0, 2.0e5);
   //4
-  fAnalysisManager->CreateH1("PositronEdep","Positron Edep /keV", 10000, 1.0, 1.0e5);
+  fAnalysisManager->CreateH1("PositronEdep","Positron Edep (keV)", 10000, 10.0, 1.0e5);
   //5
-  fAnalysisManager->CreateH1("OtherEdep","Other Edep /eV", 1000000, 0.1, 2.0e2);
+  fAnalysisManager->CreateH1("OtherEdep","Other Edep (eV)", 1000000, 0.1, 2.0e2);
   //6
   fAnalysisManager->CreateH1("ParticleStack","Particle Stack", 100000, 0.0, 1.5e6);
   //7
@@ -341,10 +341,10 @@ void G4TARCHistoManager::BookHistogram() {
   //8
   fAnalysisManager->CreateH1("ProtonPerEvent","Protons/event", 30, 0.0, 30.0);
   //9
-  fAnalysisManager->CreateH2("NeutronEnergyTime","log(Neutron Energy) vs. log(Time)", 100, -2.5, 4.0, 100, -4.0, 9.0);
-  //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy vs. Mometum", 1000, 0.0, 5.0e+3, 1000, 0.0, 2.0e+9);
+  fAnalysisManager->CreateH2("NeutronEnergyTime","log(Neutron Energy <eV>) vs. log(Time <us> )", 100, -2.5, 4.0, 100, -4.0, 9.0);
+  //fAnalysisManager->CreateH2("Neutron_Energy_Mom","Neutron Energy <eV> vs. Mometum", 1000, 0.0, 5.0e+3, 1000, 0.0, 2.0e+9);
   //10
-  fAnalysisManager->CreateH2("OtherParticleEnergyTime","log(OTHER particle Energy) vs. log(Time)", 100, -4.0, 4.0, 100, -4.0, 6.0);
+  fAnalysisManager->CreateH2("OtherParticleEnergyTime","log(OTHER particle Energy <eV>) vs. log(Time <us>)", 100, -4.0, 4.0, 100, -4.0, 6.0);
 }
 
 
