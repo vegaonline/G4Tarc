@@ -953,7 +953,7 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
       // fEventAction->AddNeutronStack();
       //fHisto->Fill(5, ke, 1.0);
       //G4cout << ke << G4endl;
-      fAnalysisManager->FillNtupleDColumn(15, 0, log10(ke));
+      fAnalysisManager->FillNtupleDColumn(15, 0, ke);   //log10(ke));
       fAnalysisManager->AddNtupleRow(15);
     } else if (pd == G4AntiProton::AntiProtonDefinition()){
       fNaproton++;
@@ -1370,7 +1370,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << "Neutron Lethargy <mean> : " << fAnalysisManager->GetH1(2)->mean() << " rms: " << fAnalysisManager->GetH1(2)->rms()  << G4endl;
   trackout << "==========================================================" << G4endl;
 
-/*
+
   G4double kEffective, rho, rat, react, perN=x;
   kEffective = (fNeutronInit!= 0.0) ? fNeutronSum / fNeutronInit : 0.0;
   rho        =  (kEffective != 0.0) ? (kEffective - 1.0) / kEffective : 0.0;  // reactivity :: deviation from criticality
@@ -1383,7 +1383,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << " Estimated reactivity = " << react                                    << G4endl             << G4endl;
   trackout << "==========================================================================================" << G4endl;
   trackout << G4endl;
-*/
+
 
 //G4cout << "T:: max  " << testMax1 << "  min " << testMin1 << " E:: max " << testMax2 << "  min " << testMin2 << G4endl;
 

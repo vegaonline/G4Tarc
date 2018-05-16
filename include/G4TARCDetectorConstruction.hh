@@ -14,6 +14,7 @@
 #include "G4TARCDetectorMessenger.hh"
 #include "G4TARCTargetSD.hh"
 #include "G4TARCVolumeSD.hh"
+#include "G4TARCtransmutSD.hh"
 
 #include "G4VUserDetectorConstruction.hh"
 #include "G4VPhysicalVolume.hh"
@@ -58,6 +59,7 @@ class G4LogicalVolume;
 class G4TARCDetectorMessenger; //---------------
 class G4TARCTargetSD;
 class G4TARCVolumeSD;
+class G4TARCtransmutSD;
 
 
 // Detector constructor is loading the GDML geometry
@@ -77,6 +79,7 @@ private:
   G4TARCDetectorConstruction & operator=(const G4TARCDetectorConstruction&);
   G4TARCDetectorConstruction ( const G4TARCDetectorConstruction& );
 
+  void addTransU();
 
 private:
   G4TARCDetectorMessenger* fDetectorMessenger = 0;
@@ -95,6 +98,7 @@ private:
   //G4ThreeVector            pbTargetMin;
   //G4ThreeVector            pbTargetMax;
   G4Material*              fTargetMat;
+  G4Material*              fTc99;
 };
 
 #endif

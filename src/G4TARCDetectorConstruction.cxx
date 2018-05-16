@@ -39,6 +39,8 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
     fWorldPhysVol = fParser.GetWorldVolume();
   }
 
+  addTransU();   // define extra material(s) for testSphere LV
+
   // Declaring SD for whole volume
   fLVS = G4LogicalVolumeStore::GetInstance();
   for(fLVciter = fLVS->begin(); fLVciter != fLVS->end(); fLVciter++) {
@@ -52,10 +54,28 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
      || (found3 != std::string::npos) || (found4 != std::string::npos)
      || (found5 != std::string::npos)
     ){
+      if (LVName.find("sampleSphere_log") != std::string::npos){
+        (*fLVciter)->SetMaterial(fTc99);
+        (*fLVciter)->SetVisAttributes(new G4Colour(1.0, 0.5, 0.5));
+      }
       fLVvectorMini.push_back(*fLVciter);
       //G4cout << (*fLVciter)->GetName() << G4endl;
     }
   }
+
+
+
+
+  // sample_phys :: CopyNo:0 sampleSphere_log
+/*
+  fPVS = G4PhysicalVolumeStore::GetInstance();
+  for (fPVciter = fPVS->begin(); fPVciter != fPVS->end(); fPVciter++){
+    G4cout << (*fPVciter)->GetName() << " copy# " << (*fPVciter)->GetCopyNo()
+           << " LogName: " << (*fPVciter)->GetLogicalVolume()->GetName()
+           << G4endl;
+  }
+*/
+  G4cout <<*(G4Material::GetMaterialTable()) << G4endl;
   return fWorldPhysVol;
 }
 
@@ -74,13 +94,31 @@ void G4TARCDetectorConstruction::ConstructSDandField() {
     G4TARCTargetSD* fBlockBSD = new G4TARCTargetSD("BVolSD");
     (G4SDManager::GetSDMpointer())->AddNewDetector(fBlockBSD);
 
+    G4TARCtransmutSD* fTransmutSD = new G4TARCtransmutSD("99TcSD");
+    (G4SDManager::GetSDMpointer())->AddNewDetector(fTransmutSD);
+
     for (std::vector<G4LogicalVolume*>::iterator it = fLVvectorMini.begin(); it != fLVvectorMini.end(); ++it) {
       if ((*it)->GetName().find("blockB_log")!=std::string::npos){
         SetSensitiveDetector( (*it)->GetName(), fBlockBSD);
+      } else if ((*it)->GetName().find("sampleSphere_log")!=std::string::npos) {
+        SetSensitiveDetector( (*it)->GetName(), fTransmutSD);
       } else {
         SetSensitiveDetector( (*it)->GetName(), fAllBlocksSD);
       }
     }
     initialized = true;
   }
+}
+
+void G4TARCDetectorConstruction::addTransU(){
+  G4double a;   // atMass;
+  G4double z;   // atNum;
+  G4double density;
+  G4String name, symbol;
+
+  //  99Tc
+  a = 98.906254 *g / mole;
+  z = 43.0;
+  density = 11.0 * g / cm3;
+  fTc99 = new G4Material("99Tc", z, a, density);
 }
