@@ -111,14 +111,20 @@ void G4TARCDetectorConstruction::ConstructSDandField() {
 }
 
 void G4TARCDetectorConstruction::addTransU(){
-  G4double a;   // atMass;
-  G4double z;   // atNum;
-  G4double density;
+  G4int ncomponents;
+  G4double atMass;
+  G4int atNum, nNucleons;
+  G4double density, abundance, massfraction;
   G4String name, symbol;
 
   //  99Tc
-  a = 98.906254 *g / mole;
-  z = 43.0;
+  atMass = 98.906254 * g / mole;
+  atNum = 43.0;
+  nNucleons = 99;
   density = 11.0 * g / cm3;
-  fTc99 = new G4Material("99Tc", z, a, density);
+  G4Isotope* Tc99Iso = new G4Isotope("Tc", atNum, nNucleons, atMass);
+  G4Element* Tc99Ele = new G4Element("Tecnicium-99", "99Tc", ncomponents=1);
+  Tc99Ele->AddIsotope(Tc99Iso, abundance=100.0*perCent);
+  fTc99 = new G4Material("Tc", density, ncomponents=1);
+  fTc99->AddElement(Tc99Ele, massfraction=100.0*perCent);
 }

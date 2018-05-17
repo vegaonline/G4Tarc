@@ -1159,7 +1159,7 @@ void G4TARCHistoManager::AddEnergyTimeHole(const G4Track* myTrack, const G4Step*
 
     G4double eval = KE / eV;
     G4int fluxEBin = eval / (fNstepEnergy);
-    G4cout << "stepE " << fNstepEnergy << G4endl;
+    //G4cout << "stepE " << fNstepEnergy << G4endl;
     fluxEBin = (fluxEBin >= fMaxEBin) ? fMaxEBin - 1 : fluxEBin;
 
     // insert LV, time, energy to fETVirtual
@@ -1612,7 +1612,6 @@ void G4TARCHistoManager::analysePS(G4double partEnergy, G4String particleName
 
 
 void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
-  //StartProcessing();
   G4int StepNo = myStep->GetTrack()->GetCurrentStepNumber();
   G4double partEnergy = myStep->GetPreStepPoint()->GetKineticEnergy();
   G4double partTime   = myStep->GetPreStepPoint()->GetGlobalTime();

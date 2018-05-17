@@ -10,7 +10,8 @@ G4bool G4TARCtransmutSD::ProcessHits(G4Step* myStep, G4TouchableHistory*){
   fHisto->AddTargetStep(myStep);
   fHisto->ScoreNewTrack(myTrack);
   if (myTrack->GetTrackID() > 1){
-    fHisto->AddEnergyTime(myTrack);  // , myStep);
+    //fHisto->AddEnergyTime(myTrack);  // , myStep);
+    fHisto->AddEnergyTimeHole(myTrack, myStep);
   } else {
     fHisto->GunParticleDistribution(myStep);
   }
