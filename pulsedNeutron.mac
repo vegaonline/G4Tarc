@@ -1,0 +1,95 @@
+###################################################
+# Pulsed Neutron
+###################################################
+/control/verbose 0
+/tracking/verbose 0
+/event/verbose 0
+/hits/verbose 0
+/run/verbose 0
+/gps/verbose 2
+
+/tracking/storeTrajectory 0
+
+/run/initialize
+
+/gps/particle neutron
+#/gps/pos/type beam
+/gps/pos/type Point
+
+/gps/source/multiplevertex true
+/gps/source/intensity 1
+
+#### beam in X-Y plane -Z direction
+/gps/pos/rot1 1 0 0
+/gps/pos/rot2 0 1 0
+/gps/direction 0 0 -1
+/gps/pos/centre  0.0  0.0 -1800.0 mm
+
+/gps/source/add 1
+/gps/pos/rot1 1 0 0
+/gps/pos/rot2 0 1 0
+/gps/direction 0 0 -1
+/gps/pos/centre 10.0  0.0 -1800.0 mm
+
+/gps/source/add 1
+/gps/pos/rot1 1 0 0
+/gps/pos/rot2 0 1 0
+/gps/direction 0 0 -1
+/gps/pos/centre  0.0 10.0 -1800.0 mm
+
+#### beam in X-Y plane +Z direction
+/gps/pos/rot1 1 0 0
+/gps/pos/rot2 0 1 0
+/gps/direction 0 0 1
+/gps/pos/centre 0.0 0.0 1800.0 mm
+
+/gps/source/add 1
+/gps/pos/rot1 1 0 0
+/gps/pos/rot2 0 1 0
+/gps/direction 0 0 1
+/gps/pos/centre 10.0 0.0 1800.0 mm
+
+/gps/source/add 1
+/gps/pos/rot1 1 0 0
+/gps/pos/rot2 0 1 0
+/gps/direction 0 0 1
+/gps/pos/centre 0.0 10.0 1800.0 mm
+
+
+#### beam in Y-Z plane +X direction
+/gps/pos/rot1 0 1 0
+/gps/pos/rot2 0 0 1
+/gps/direction 1 0 0
+/gps/pos/centre 1800.0 mm 0.0 0.0 
+
+/gps/source/add 1
+/gps/pos/rot1 0 1 0
+/gps/pos/rot2 0 0 1
+/gps/direction 1 0 0
+/gps/pos/centre 1800.0 mm 10.0 0.0 
+
+/gps/source/add 1
+/gps/pos/rot1 0 1 0
+/gps/pos/rot2 0 0 1
+/gps/direction 1 0 0
+/gps/pos/centre 1800.0 mm 0.0 10.0 
+
+#### beam in Y-Z plane -X direction
+/gps/pos/rot1 0 1 0
+/gps/pos/rot2 0 0 1
+/gps/direction -1 0 0
+
+
+#### beam in Z-X plane  -Y direction
+/gps/pos/rot1 0 0 1
+/gps/pos/rot2 1 0 0
+/gps/direction 0 -1 0
+
+#### beam in Z-X plane  +Y direction
+/gps/pos/rot1 0 0 1
+/gps/pos/rot2 1 0 0
+/gps/direction 0 1 0
+
+/gps/ene/mono 2.4 MeV
+
+/run/beamOn 2
