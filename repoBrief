@@ -1,0 +1,4 @@
+master    : MASTER repo
+transU    : Reporting with transUranic element position in samplesphere
+testing   : Testing with MT and also testing with neutron source only
+parallel2 : Works without transuranic element. Only for example with TARC 

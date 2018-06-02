@@ -128,7 +128,7 @@ public:
   template <typename T>  void Check10s(T, T&, G4String&);
 
   inline void exitingTallyCheck(G4bool exiting_flag_check){if(exiting_flag_check) fExiting_check_Flux++; }
-  inline void AddExitingFlux(G4double exitingE)           { fExiting_Flux++;   fExiting_Energy += exitingE;}
+  inline void CalcExitingFlux(G4double exitingE)           { fExiting_Flux++;   fExiting_Energy += exitingE;}
   inline G4int GetVerbose()               const           { return fVerbose; }
   inline G4double GetLength()             const           { return fLength; }
   inline G4double GetGPSEnergy()          const           { return fPrimaryKineticEnergy; }
@@ -146,7 +146,8 @@ public:
 
 private:
   G4bool                      fNtuple_full;
-  
+  G4bool                      fReadData;
+
   G4String                    fRootFileName;
   static G4TARCHistoManager*  fHistoManager;
   G4TARCHisto*                fHisto;
@@ -318,11 +319,11 @@ private:
   G4double                               fTotal_flux;
 
   G4bool flag;
-  std::map<G4int, G4double, std::less<G4int> > parent_energy;
-  std::map<G4int, G4String, std::less<G4int> > parent_particle;
-  std::map<G4int, G4int, std::less<G4int> > parent_particleID;
+  std::map<G4int, G4double, std::less<G4int> > fParentEnergy;
+  std::map<G4int, G4String, std::less<G4int> > fParentParticle;
+  std::map<G4int, G4int, std::less<G4int> > fParentParticleID;
   G4int number_generations, fNmax;
-  G4double startEnergy, startTime, fractional_bin_width;
+  G4double startEnergy, startTime, fractional_fBinWidth;
 
   std::vector< G4double>                 fExptEnergyBin;
   std::vector<G4double>                  fFluxRadTables;
@@ -374,8 +375,9 @@ private:
   std::vector<G4double>                  fFluence_Spectrum;
   std::vector<G4double>                  fLithium_Radial_Energy_Lower;
   std::vector<G4double>                  fLithium_Radial_Energy_Upper;
-  std::vector<std::vector<G4double> >    fRadial_Fluence_Step;
+  std::vector<std::vector<G4double> >    fRadialFluenceStep;
   std::vector<G4double>                  fLithium_Radial_Mean;
+  std::vector<G4double>                  fLithium_Radial_True_Mean;
   std::vector<G4double>                  fLithium_Fluence_Step_Shell;
   std::vector<G4double>                  fLithium_Fluence_Step;
   std::vector<G4double>                  fLow_Fluence_Step_Shell;

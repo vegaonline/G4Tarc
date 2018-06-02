@@ -117,7 +117,7 @@ G4GeometryCell G4TARCParallelWorld::GetGeometryCell(G4int i) {
 
 void G4TARCParallelWorld::ConstructSD() {
   auto SDman = G4SDManager::GetSDMpointer();
-  G4String TARCSDName, fltName, particleName, psName;
+  G4String TARCSDName, fltName, fParticleName, psName;
   G4SDParticleFilter* neutronFilter;
   G4SDParticleFilter* protonFilter;
 
@@ -128,7 +128,7 @@ void G4TARCParallelWorld::ConstructSD() {
   fTARCNeutronDet = new G4MultiFunctionalDetector(TARCSDName);
   SDman->AddNewDetector(fTARCNeutronDet);
   // Then create filters to study
-  neutronFilter = new G4SDParticleFilter(fltName="neutronFilter", particleName="neutron");
+  neutronFilter = new G4SDParticleFilter(fltName="neutronFilter", fParticleName="neutron");
   fTARCNeutronDet->SetFilter(neutronFilter);
 
   //----------------------------- SD 02 Proton ----------------------------------------
@@ -137,7 +137,7 @@ void G4TARCParallelWorld::ConstructSD() {
   fTARCProtonDet = new G4MultiFunctionalDetector(TARCSDName);
   SDman->AddNewDetector(fTARCProtonDet);
   // Then create filters to study
-  protonFilter = new G4SDParticleFilter(fltName="protonFilter", particleName="proton");
+  protonFilter = new G4SDParticleFilter(fltName="protonFilter", fParticleName="proton");
   fTARCProtonDet->SetFilter(protonFilter);
 
   //------------- Next we need to add concerned LV to these detectors ----------------------
