@@ -110,8 +110,8 @@ public:
   void FillRadialExperimentalData();
   void BookHistogram();
   void CreateTuples();
-  void CreateNeutronFluxHisto();
-  void CreateRadialFluxHisto();
+  void NeutronFluxHistogram();
+  void RadialFluxHistogram();
   void StartProcessing();
   void ProcessStepping(const G4Step*);
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
@@ -268,6 +268,7 @@ private:
   G4DataVector       fNSecondSum2;
   G4DataVector       fNSecondSum3;
   G4DataVector       fNSecondLow;
+  G4DataVector                           fLocal_Energy_Integral;
 
   G4ThreeVector      fRangeSum;
   G4double           fStepSum;
@@ -297,13 +298,12 @@ private:
   G4double                               fZposProt;
   G4int                                  fShellNumber;
   G4double                               fShellThickness;
+  G4int                                  fRefShellNumber;
+  G4double                               fRefShellThickness;
   G4double                               fMaxOuterRadiusofShell;
   G4double                               fMinInnerRadiusofShell;
   G4double                               fInnerRadProtonShell;
   G4double                               fOuterRadProtonShell;
-  std::vector<G4double>                  fOuterRadiusofShell;
-  std::vector<G4double>                  fInnerRadiusofShell;
-  G4DataVector                           fLocal_Energy_Integral;
   G4double                               fRadHole;
   G4double                               fRadCyl;
   G4double                               fLenCyl;
@@ -324,6 +324,13 @@ private:
   std::map<G4int, G4int, std::less<G4int> > fParentParticleID;
   G4int number_generations, fNmax;
   G4double startEnergy, startTime, fractional_fBinWidth;
+
+  std::vector<G4double>                  fOuterRadiusofShell;
+  std::vector<G4double>                  fInnerRadiusofShell;
+
+  std::vector<G4double>                  fRadiusReference {200.0 * cm, 190.0 * cm, 185.0 * cm, 175.0 * cm, 165.0 * cm, 150.0 * cm,
+    140.0 * cm, 130.0 * cm, 120.0 * cm, 110.0 * cm, 100.0 * cm, 90.0 * cm, 80.0 * cm, 70.0 * cm, 60.0 * cm, 50.0 * cm, 45.7 * cm,
+    40.0 * cm, 30.0 * cm, 25.0 * cm, 20.0 * cm, 15.0 * cm, 10.0 * cm, 8.0 * cm, 5.0 * cm, 3.0 * cm};
 
   std::vector< G4double>                 fExptEnergyBin;
   std::vector<G4double>                  fFluxRadTables;

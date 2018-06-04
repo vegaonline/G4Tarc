@@ -122,19 +122,23 @@ void G4TARCHistoManager::DefineShellBlocks() {
   fNewHalfZProt          =     0.5 * ((2.0 * fHalfZBlockB) / 3.0);
   fZposProt              = -fHalfZBlockB + fNewHalfZProt;
   fShellThickness        =     50.0 * mm;
+  fRefShellThickness     =     2.0 * mm;
   fMinInnerRadiusofShell =    10.0 * mm;
   fMaxOuterRadiusofShell =   1500.0 * mm;
   fInnerRadProtonShell   =     0.0 * mm;   //
   fOuterRadProtonShell   =   300.0 * mm;   // These two were thought as a spherical 4Pi measurement for Proton
   fShellNumber           = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
-  G4double tmp1          = fMaxOuterRadiusofShell;
-  G4double tmp2          =     0.0;
+  fRefShellNumber           = fRadiusReference.size();
+  // G4double tmp1          = fMaxOuterRadiusofShell;
+  // G4double tmp2          =     0.0;
   for (G4int ii = 0; ii < fShellNumber; ii++) {
-    tmp2 = tmp1 - fShellThickness;
-    fInnerRadiusofShell.push_back(tmp2);
-    fOuterRadiusofShell.push_back(tmp1);
-    tmp1 = tmp2;
+    //  tmp2 = tmp1 - fShellThickness;
+    G4double radThis = fRadiusReference[ii] / mm;
+    fInnerRadiusofShell.push_back(radThis - fRefShellThickness);
+    fOuterRadiusofShell.push_back(radThis);
+    // tmp1 = tmp2;
   }
+
   fTestSphereRadius = 45.6 * cm;
   fTestSphereVolume = (4.0 / 3.0) * CLHEP::pi * (fTestSphereRadius * fTestSphereRadius * fTestSphereRadius);
   fTestSphereSurfaceArea = 4.0 * CLHEP::pi * (fTestSphereRadius * fTestSphereRadius);
@@ -613,7 +617,7 @@ void G4TARCHistoManager::BeginOfRun() {
   fLow_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
 
   //fRadialFluenceStep.resize(fMaxTestFluxData, std::vector<G4double>(fMaxRadCount, 0.0));
-  fRadialFluenceStep.resize(fShellNumber, std::vector<G4double>(fMaxRadCount, 0.0));
+  fRadialFluenceStep.resize(fRefShellNumber, std::vector<G4double>(fMaxRadCount, 0.0));
 
   fFlux.resize(fMaxTestFluxData, 0.0);
   fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
@@ -676,8 +680,8 @@ void G4TARCHistoManager::EndOfRun() {
   G4cout << "======================================================================" << G4endl;
 
   //  StartProcessing();
-  CreateNeutronFluxHisto();
-  CreateRadialFluxHisto();
+  NeutronFluxHistogram();
+  RadialFluxHistogram();
 
   G4double x = ( G4double )fNevt;
   G4double perN = 1.0;
@@ -721,7 +725,7 @@ void G4TARCHistoManager::EndOfEvent() {
   WriteEventRange( fRangeSum, fStepSum, fDeltaSum );
 }
 
-void G4TARCHistoManager::CreateNeutronFluxHisto(){
+void G4TARCHistoManager::NeutronFluxHistogram(){
   fAbsolute_TotalFlux = (fTotal_flux * 1.0e9 / (G4double)fNevt) / fTestSphereSurfaceArea;
 
   for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
@@ -820,8 +824,9 @@ void G4TARCHistoManager::CreateNeutronFluxHisto(){
   }
 }
 
-void G4TARCHistoManager::CreateRadialFluxHisto(){
-  for (G4int ijk1 = 0; ijk1 < fMaxTestFluxData; ijk1++) {  // ijk1 < fMaxTestFluxData; ijk1++){
+void G4TARCHistoManager::RadialFluxHistogram(){
+
+  for (G4int ijk1 = 0; ijk1 < fRefShellNumber; ijk1++) {  // ijk1 < fMaxTestFluxData; ijk1++){
     G4double shellVol = (4.0 / 3.0) * CLHEP::pi * (std::pow(fOuterRadiusofShell[ijk1], 3.0) - std::pow(fInnerRadiusofShell[ijk1], 3.0));
     G4double radL = 0.5 * (fOuterRadiusofShell[ijk1] + fInnerRadiusofShell[ijk1]);
     for (G4int ijk2 = 0; ijk2 < fMaxRadCount; ijk2++){
