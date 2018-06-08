@@ -98,8 +98,8 @@ public:
   void AddNzero( const G4Track*);
   void GunParticleDistribution ( const G4Step* );
   void WriteEventRange(G4ThreeVector, G4double, G4double);
-  G4double GetPrimaryEnergy() { return startEnergy; }
-  G4double GetPrimaryTime() { return startTime; }
+  G4double GetPrimaryEnergy() { return fEnergy0; }
+  G4double GetPrimaryTime() { return fTime0; }
 
   void TrackRun(G4double);
   void NeutronRun(G4double);
@@ -115,6 +115,9 @@ public:
   void StartProcessing();
   void ProcessStepping(const G4Step*);
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
+  void analyseNeutronFluence(G4double, G4String&, G4double, G4double, G4int, G4double, G4double,
+    G4int, G4double, G4double, G4String&, G4bool, G4int);
+
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
@@ -300,6 +303,9 @@ private:
   G4double                               fShellThickness;
   G4int                                  fRefShellNumber;
   G4double                               fRefShellThickness;
+  G4double                               fRefShellOuterRad;
+  G4double                               fRefShellInnerRad;
+  G4double                               fRefShellVol;
   G4double                               fMaxOuterRadiusofShell;
   G4double                               fMinInnerRadiusofShell;
   G4double                               fInnerRadProtonShell;
@@ -323,7 +329,7 @@ private:
   std::map<G4int, G4String, std::less<G4int> > fParentParticle;
   std::map<G4int, G4int, std::less<G4int> > fParentParticleID;
   G4int number_generations, fNmax;
-  G4double startEnergy, startTime, fractional_fBinWidth;
+  G4double fEnergy0, fTime0, fFracBinWidth;
 
   std::vector<G4double>                  fOuterRadiusofShell;
   std::vector<G4double>                  fInnerRadiusofShell;
@@ -389,6 +395,7 @@ private:
   std::vector<G4double>                  fLithium_Fluence_Step;
   std::vector<G4double>                  fLow_Fluence_Step_Shell;
   std::vector<G4double>                  fFluence_Step_Shell;
+  std::vector<G4double>                  fFluence_step;
   std::vector<G4double>                  fLithium_Flux;
   std::vector<G4double>                  fCos_Lithium_Flux;
   std::vector<G4double>                  fLow_Flux;
@@ -396,7 +403,6 @@ private:
   std::vector<G4double>                  fCos_Flux;
   std::vector<G4double>                  fEFlux;
   std::vector<G4double>                  fFluence_Cyl;
-  std::vector<G4double>                  fFluence_step;
   std::vector<G4double>                  fLow_Fluence_step;
 
 //  G4double testMax1 = -99999999.99e8, testMax2 = testMax1, testMin1 = -testMax1, testMin2 = testMin1;    // for histo check
