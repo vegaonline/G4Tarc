@@ -400,7 +400,7 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("gstep");
   fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
   fAnalysisManager->CreateNtupleDColumn("g4front");
-  // fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->CreateNtupleDColumn("g4_shell");
   fAnalysisManager->FinishNtuple(); // ntupleID: 3
 
   fAnalysisManager->CreateNtuple("h5_Flux_4004", "Neutrons G4TARC flux");
@@ -412,18 +412,17 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("g4fluence");
   fAnalysisManager->CreateNtupleDColumn("g4err");
   fAnalysisManager->CreateNtupleDColumn("rawflux");
-  //fAnalysisManager->CreateNtupleDColumn("gstep");
-  //fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
-  //fAnalysisManager->CreateNtupleDColumn("g4front");
-  // fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->CreateNtupleDColumn("gstep");
+  fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
+  fAnalysisManager->CreateNtupleDColumn("g4front");
+  fAnalysisManager->CreateNtupleDColumn("g4_shell");
   fAnalysisManager->FinishNtuple(); // ntupleID: 4
 
 
-  fAnalysisManager->CreateNtuple("h6_Flux_4005", "Neutrons Test15 flux");
+  fAnalysisManager->CreateNtuple("h6_Flux_4005", "Neutrons G4TARC flux");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("tarcflux");
-  //fAnalysisManager->CreateNtupleDColumn("errstat");
-  fAnalysisManager->CreateNtupleDColumn("errsyst");
+  fAnalysisManager->CreateNtupleDColumn("errstat");
   fAnalysisManager->CreateNtupleDColumn("g4flux");
   fAnalysisManager->CreateNtupleDColumn("g4perp");
   fAnalysisManager->CreateNtupleDColumn("g4fluence");
@@ -433,9 +432,9 @@ void G4TARCHistoManager::CreateTuples(){
   //fAnalysisManager->CreateNtupleDColumn("err5cm");
   fAnalysisManager->CreateNtupleDColumn("rawflux");
   fAnalysisManager->CreateNtupleDColumn("gstep");
-  //fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
-  //fAnalysisManager->CreateNtupleDColumn("g4front");
-  //fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
+  fAnalysisManager->CreateNtupleDColumn("g4front");
+  fAnalysisManager->CreateNtupleDColumn("g4_shell");
   //fAnalysisManager->CreateNtupleDColumn("g4_shell_err");
   fAnalysisManager->FinishNtuple(); // ntupleID: 5
 
@@ -737,26 +736,27 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
   fAbsolute_TotalFlux = (fTotal_flux * 1.0e9 / (G4double)fNevt) / fTestSphereSurfaceArea;
 
   for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
-    G4double mean_energy   = 0.5 * (fFlux_Energy[ij1 + 1] + fFlux_Energy[ij1]);
+    G4double fMeanEnergy   = 0.5 * (fFlux_Energy[ij1 + 1] + fFlux_Energy[ij1]);
     G4double fAbsFlux      = (fFlux[ij1] * ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea;
     G4double fBinWidth = (fFlux_Energy[ij1 + 1] - fFlux_Energy[ij1]);
-    G4double fAbsFluxPerp = mean_energy * (((fCos_Flux[ij1] * (1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea) / fBinWidth);
+    G4double fAbsFluxPerp = fMeanEnergy * (((fCos_Flux[ij1] * (1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea) / fBinWidth);
     G4double fAbsEFlux     = (fEFlux[ij1] * ( 1.0e9 / (G4double)fNevt)) /fTestSphereSurfaceArea;
-    G4double fAbsFluence   = mean_energy * (100.0 * (1.0e9 / (G4double)fNevt) * (fFluence_step[ij1] / fTestSphereVolume) / fBinWidth);
+    G4double fAbsFluence   = fMeanEnergy * (100.0 * (1.0e9 / (G4double)fNevt) * (fFluence_step[ij1] / fTestSphereVolume) / fBinWidth);
+    G4double fAbsFluenceShell = fMeanEnergy * (100.0 * (1.0e9 / (G4double)fNevt) * (fFluence_Step_Shell[ij1] / fTestShellVol) / fBinWidth);
 
-    G4cout << ij1 << " meanE " << mean_energy << " fAbsFlux " << fAbsFlux << " Absfluence " << fAbsFluence
+    G4cout << ij1 << " meanE " << fMeanEnergy << " fAbsFlux " << fAbsFlux << " Absfluence " << fAbsFluence
                   << "  FlStep  " << fFluence_step[ij1] << G4endl;
 
     G4double fAbsErr = 0.0;
     if (fFlux[ij1] != 0.0) fAbsErr = (std::pow(fFlux[ij1], 0.5) / fFlux[ij1]) * fAbsFlux;
 
     fTARC_helium   += fFlux_Data[ij1];
-    fTARC_helium_E += fFlux_Data[ij1] * mean_energy;
+    fTARC_helium_E += fFlux_Data[ij1] * fMeanEnergy;
 
-    fLocal_Energy_Integral[2] += fAbsFlux * mean_energy;
-    fLocal_Energy_Integral[3] += fFlux_Data[ij1] * mean_energy;
+    fLocal_Energy_Integral[2] += fAbsFlux * fMeanEnergy;
+    fLocal_Energy_Integral[3] += fFlux_Data[ij1] * fMeanEnergy;
 
-    fAnalysisManager->FillNtupleDColumn(3, 0, mean_energy);
+    fAnalysisManager->FillNtupleDColumn(3, 0, fMeanEnergy);
     fAnalysisManager->FillNtupleDColumn(3, 1, fFlux_Data[ij1]);
     fAnalysisManager->FillNtupleDColumn(3, 2, fFlux_Syst_Err[ij1]);
     fAnalysisManager->FillNtupleDColumn(3, 3, fAbsFlux);
@@ -764,74 +764,74 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     fAnalysisManager->FillNtupleDColumn(3, 5, fAbsFluence);
     fAnalysisManager->FillNtupleDColumn(3, 6, fAbsErr);
     fAnalysisManager->FillNtupleDColumn(3, 7, fFlux[ij1]);
-    fAnalysisManager->FillNtupleDColumn(3, 8, 0.0);         // eflux_data
+    fAnalysisManager->FillNtupleDColumn(3, 8, fEflux_Data[ij1]);         // eflux_data
     fAnalysisManager->FillNtupleDColumn(3, 9, fAbsEFlux);
     fAnalysisManager->FillNtupleDColumn(3, 10, fFluence_step[ij1]);
-    fAnalysisManager->FillNtupleDColumn(3, 12, 0.0);           // abs fluence cyl
-    /*
-    fAnalysisManager->FillNtupleDColumn(3, 13, 0.0);           // abs fluence front
-    fAnalysisManager->FillNtupleDColumn(3, 14, 0.0);           // abs fluence shell
-    */
+    fAnalysisManager->FillNtupleDColumn(3, 11, 0.0);                      // abs fluence cyl
+    fAnalysisManager->FillNtupleDColumn(3, 12, 0.0);                     // abs fluence front
+    fAnalysisManager->FillNtupleDColumn(3, 13, fAbsFluenceShell);           // abs fluence Shell
     fAnalysisManager->AddNtupleRow(3);
   }
 
 
   for (G4int ij1 = 0; ij1 < fMaxFluenceData; ij1++){
-    G4double mean_low_energy   = std::exp(0.5 * (std::log10(fFlux_Low_Energy[ij1]) + std::log10(fFlux_Low_Energy[ij1])));
-    G4double abs_low_flux      = (fFlux_Low_Data[ij1] * ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea;
-    G4double bin_tmp_width2    = fFlux_Low_Energy[ij1 + 1] - fFlux_Low_Energy[ij1];
-    G4double abs_low_flux_perp = mean_low_energy * (((fCos_Low_Flux[ij1] *
-      ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea) / bin_tmp_width2);
-    G4double abs_low_fluence   = 100.0 * ( 1.0e9 / (G4double)fNevt) * ((fLow_Fluence_step[ij1]) / fTestSphereVolume);
+    G4double fMeanLowEnergy   = std::exp(0.5 * (std::log10(fFlux_Low_Energy[ij1]) + std::log10(fFlux_Low_Energy[ij1])));
+    G4double fAbsLowFlux      = (fFlux_Low_Data[ij1] * ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea;
+    G4double fBinWidth      = fFlux_Low_Energy[ij1 + 1] - fFlux_Low_Energy[ij1];
+    G4double fAbsLowFluxPerp = fMeanLowEnergy * (((fCos_Low_Flux[ij1] * ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea) / fBinWidth);
+    G4double fAbsLowFluence   = 100.0 * ( 1.0e9 / (G4double)fNevt) * ((fLow_Fluence_step[ij1]) / fTestSphereVolume);
+    G4double fAbsLowFluenceShell = fMeanLowEnergy * (100.0 * (1.0e9 / (G4double)fNevt) * fLow_Fluence_Step_Shell[ij1]
+     / fTestShellVol) / fBinWidth;
 
 
-    G4double abs_error = 0.0;
-    if (fFlux_Low_Data[ij1] != 0.0) abs_error = (std::pow(fFlux_Low_Data[ij1], 0.5) / fFlux_Low_Data[ij1]) * abs_low_flux;
+    G4double fAbsError = 0.0;
+    if (fFlux_Low_Data[ij1] != 0.0) fAbsError = (std::pow(fFlux_Low_Data[ij1], 0.5) / fFlux_Low_Data[ij1]) * fAbsLowFlux;
     fTARC_Integral += fFlux_Low_Data[ij1];
-    fTARC_Integral_E += fFlux_Low_Data[ij1] * mean_low_energy;
+    fTARC_Integral_E += fFlux_Low_Data[ij1] * fMeanLowEnergy;
 
-    fAnalysisManager->FillNtupleDColumn(4, 0, mean_low_energy);
+    fAnalysisManager->FillNtupleDColumn(4, 0, fMeanLowEnergy);
     fAnalysisManager->FillNtupleDColumn(4, 1, fFlux_Low_Data[ij1]);
     fAnalysisManager->FillNtupleDColumn(4, 2, fFlux_Low_Syst_Err[ij1]);
-    fAnalysisManager->FillNtupleDColumn(4, 3, abs_low_flux);
-    fAnalysisManager->FillNtupleDColumn(4, 4, abs_low_flux_perp);
-    fAnalysisManager->FillNtupleDColumn(4, 5, abs_low_fluence);
-    fAnalysisManager->FillNtupleDColumn(4, 6, abs_error);
+    fAnalysisManager->FillNtupleDColumn(4, 3, fAbsLowFlux);
+    fAnalysisManager->FillNtupleDColumn(4, 4, fAbsLowFluxPerp);
+    fAnalysisManager->FillNtupleDColumn(4, 5, fAbsLowFluence);
+    fAnalysisManager->FillNtupleDColumn(4, 6, fAbsError);
     fAnalysisManager->FillNtupleDColumn(4, 7, fLow_Flux[ij1]);
-    /*
-    fAnalysisManager->FillNtupleDColumn(4, 9, 0.0);         // low_fluence_step
-    fAnalysisManager->FillNtupleDColumn(4, 10, 0.0);        // abs low fluence cyl
-    fAnalysisManager->FillNtupleDColumn(4, 11, 0.0);           // abs low fluence front
-    fAnalysisManager->FillNtupleDColumn(4, 12, 0.0);           // abs low fluence shell
-    */
+    fAnalysisManager->FillNtupleDColumn(4, 8, fLow_Fluence_step[ij1]);         // low_fluence_step
+    fAnalysisManager->FillNtupleDColumn(4, 9, 0.0);        // abs low fluence cyl
+    fAnalysisManager->FillNtupleDColumn(4, 10, 0.0);           // abs low fluence front
+    fAnalysisManager->FillNtupleDColumn(4, 11, fAbsLowFluenceShell);           // abs low fluence shell
     fAnalysisManager->AddNtupleRow(4);
   }
 
   for (G4int ij1 = 0; ij1 < fMaxFluenceData; ij1++){
-    G4double mean_lithium_energy   = std::exp(0.5 * (std::log10(fFlux_Lithium_Energy[ij1 + 1]) + std::log10(fFlux_Lithium_Energy[ij1])));
-    G4double abs_lithium_flux      = (fFlux_Lithium_Data[ij1] * (1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea;
-    G4double bin_tmp_width_lithium = fFlux_Low_Energy[ij1 + 1] - fFlux_Low_Energy[ij1];
-    G4double abs_lithium_flux_perp = mean_lithium_energy * (((fCos_Lithium_Flux[ij1] * (1.0e9 / (G4double)fNevt))
-      / fTestSphereSurfaceArea) / bin_tmp_width_lithium);
-    G4double abs_lithium_fluence   = 100.0 * (1.0e9 / (G4double)fNevt) * ((fLithium_Fluence_Step[ij1]) / fTestSphereVolume);
-    //G4double abs_lithium_fluence_shell = mean_lithium_energy * (100.0 * (1.0e9 / (G4double)fNevt)
-    //  * ((fLithium_Fluence_Step_Shell[ij1]) / fTestShellVol) / bin_tmp_width_lithium);
+    G4double fMeanLithiumEnergy   = std::exp(0.5 * (std::log10(fFlux_Lithium_Energy[ij1 + 1]) + std::log10(fFlux_Lithium_Energy[ij1])));
+    G4double fAbsLithiumFlux      = (fFlux_Lithium_Data[ij1] * (1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea;
+    G4double fBinWidth = fFlux_Low_Energy[ij1 + 1] - fFlux_Low_Energy[ij1];
+    G4double fAbsLithiumFluxPerp = fMeanLithiumEnergy * (((fCos_Lithium_Flux[ij1] * (1.0e9 / (G4double)fNevt))
+      / fTestSphereSurfaceArea) / fBinWidth);
+    G4double fAbsLithiumFluence   = 100.0 * (1.0e9 / (G4double)fNevt) * ((fLithium_Fluence_Step[ij1]) / fTestSphereVolume);
+    G4double fAbsLithiumFluenceShell = fMeanLithiumEnergy * (100.0 * (1.0e9 / (G4double)fNevt)
+      * ((fLithium_Fluence_Step_Shell[ij1]) / fTestShellVol) / fBinWidth);
 
-    G4double abs_error_li = 0.0;
-    if (fFlux_Low_Data[ij1] != 0.0) abs_error_li = (std::pow(fFlux_Lithium_Data[ij1], 0.5) / fFlux_Lithium_Data[ij1]) * abs_lithium_flux;
+    G4double fAbsErrorLi = 0.0;
+    if (fFlux_Low_Data[ij1] != 0.0) fAbsErrorLi = (std::pow(fFlux_Lithium_Data[ij1], 0.5) / fFlux_Lithium_Data[ij1]) * fAbsLithiumFlux;
 
     fTARC_lithium   += fFlux_Lithium_Data[ij1];
-    fTARC_lithium_E += fFlux_Lithium_Data[ij1] * mean_lithium_energy;
+    fTARC_lithium_E += fFlux_Lithium_Data[ij1] * fMeanLithiumEnergy;
 
-    fAnalysisManager->FillNtupleDColumn(5, 0, mean_lithium_energy);
+    fAnalysisManager->FillNtupleDColumn(5, 0, fMeanLithiumEnergy);
     fAnalysisManager->FillNtupleDColumn(5, 1, fFlux_Lithium_Data[ij1]);
     fAnalysisManager->FillNtupleDColumn(5, 2, fFlux_Low_Syst_Err[ij1]);
-    fAnalysisManager->FillNtupleDColumn(5, 3, abs_lithium_flux);
-    fAnalysisManager->FillNtupleDColumn(5, 4, abs_lithium_flux_perp);
-    fAnalysisManager->FillNtupleDColumn(5, 5, abs_lithium_fluence);
-    fAnalysisManager->FillNtupleDColumn(5, 6, abs_error_li);
+    fAnalysisManager->FillNtupleDColumn(5, 3, fAbsLithiumFlux);
+    fAnalysisManager->FillNtupleDColumn(5, 4, fAbsLithiumFluxPerp);
+    fAnalysisManager->FillNtupleDColumn(5, 5, fAbsLithiumFluence);
+    fAnalysisManager->FillNtupleDColumn(5, 6, fAbsErrorLi);
     fAnalysisManager->FillNtupleDColumn(5, 7, fLithium_Flux[ij1]);
     fAnalysisManager->FillNtupleDColumn(5, 8, fLithium_Fluence_Step[ij1]);
+    fAnalysisManager->FillNtupleDColumn(5, 9, 0.0);
+    fAnalysisManager->FillNtupleDColumn(5, 10, 0.0);
+    fAnalysisManager->FillNtupleDColumn(5, 11, fAbsLithiumFluenceShell);
     fAnalysisManager->AddNtupleRow(5);
   }
 }
