@@ -25,10 +25,10 @@ void testRootMacro() {
   TNtuple* exitingTuple        = (TNtuple*) tf1->Get("h3_N_Exiting");
   TNtuple* flux4002             = (TNtuple*) tf1->Get("h4_Flux_4002");
   TNtuple* flux4004             = (TNtuple*) tf1->Get("h5_Flux_4004");
-  TNtuple* flux4005     = (TNtuple*) tf1->Get("h6_Flux_4005");
-  TNtuple* tarcRad      = (TNtuple*) tf1->Get("h9_Rad_Shell_Fluence");
-  TNtuple* tarcRadLi    = (TNtuple*) tf1->Get("h10_Rad_Fluence_Expt_Li_Data");
-  TNtuple* tarcRadHe3   = (TNtuple*) tf1->Get("h11_Rad_Fluence_Expt_He3_Data");
+  TNtuple* flux4005             = (TNtuple*) tf1->Get("h6_Flux_4005");
+  TNtuple* tarcRad               = (TNtuple*) tf1->Get("h9_Rad_Shell_Fluence");
+  TNtuple* tarcRadLi           = (TNtuple*) tf1->Get("h10_Rad_Fluence_Expt_Li_Data");
+  TNtuple* tarcRadHe3        = (TNtuple*) tf1->Get("h11_Rad_Fluence_Expt_He3_Data");
 
   TTree* h9RadShellFluence = (TTree*) tf1->Get("h9_Rad_Shell_Fluence");
 
@@ -207,7 +207,7 @@ void testRootMacro() {
 
   TCanvas* c0 = new TCanvas("c0", "TARC Summary Report", 1020, 800);
   c0->Divide(2, 2);
-
+  gStyle->SetOptStat(100000011);
   c0->cd(1);  // left top gPad
   gPad->SetLogx();
   gPad->SetLogy();
@@ -238,7 +238,6 @@ void testRootMacro() {
   tlx->SetNDC(kTRUE); // <- use NDC coordinate
   tlx->SetTextSize(0.05);
   tlx->Draw();
-
   gPad->DrawFrame(1.0e-2, 1.0e3, 5.0e7, 2.0e7,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
   TARCDataFluenceHi->SetLineColor(kRed);
   TARCDataFluenceHi->Draw("SAME E1");
@@ -260,11 +259,14 @@ void testRootMacro() {
   TARCG4FluenceLi->Draw("SAME E");
 
   c0->cd(4); // Bottom Right gPad
-  hgGamma->Draw("COLZ");
+  gPad->SetLogx();
+  //gPad->SetLogy();
+  //hgGamma->Draw("COLZ");
   hgNeutEnergy->SetLineColor(kRed);
   hgNeutEnergy->SetMarkerColor(kRed);
-  hgNeutEnergy->Draw("SAME COLZ");
-  hgGamma->Draw("SAME COLZ");
+  hgNeutEnergy->Draw("COLZ");
+  //hgNeutEnergy->Draw("SAME COLZ");
+  //hgGamma->Draw("SAME COLZ");
 
   c0->Print("TARC_Report_Summary.png");
   c0->Close();
