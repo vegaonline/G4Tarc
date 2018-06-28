@@ -319,9 +319,10 @@ private:
   G4int                                  fMaxTestFluxData;
   G4int                                  fIFluxCountRef;
   G4int                                  fMaxRadCount;
+  G4int        fIntegral_flux_5cm, fIntegral_flux_10cm, fIntegral_flux_46cm, fIntegral_flux_70cm, fIntegral_flux_100cm, fIntegral_flux_120cm;
 
-  G4double                               fTARC_Integral, fTARC_Integral_E, fTARC_lithium, fTARC_lithium_E;
-  G4double                               fTARC_helium, fTARC_helium_E, fEflux_Integral;
+  G4double                               fTARC_Integral, fTARC_Integral_E, fTARC_lithium, fTARC_lithium_IntegralData, fTARC_lithium_E;
+  G4double                               fTARC_helium, fTARC_helium_E, fEflux_Integral, fTARC_Integral_Eflux_46cm;
   G4double                               fTotal_flux;
 
   G4bool flag;
@@ -338,9 +339,15 @@ private:
     140.0 * cm, 130.0 * cm, 120.0 * cm, 110.0 * cm, 100.0 * cm, 90.0 * cm, 80.0 * cm, 70.0 * cm, 60.0 * cm, 50.0 * cm, 45.7 * cm,
     40.0 * cm, 30.0 * cm, 25.0 * cm, 20.0 * cm, 15.0 * cm, 10.0 * cm, 8.0 * cm, 5.0 * cm, 3.0 * cm};
 
-  std::vector< G4double>                 fExptEnergyBin;
-  std::vector<G4double>                  fFluxRadTables;
-  std::vector<G4double>                  fRadList;
+  G4double                               fAbsolute_TotalFlux, fAbsolute_Flux;
+
+  G4double floatDummy=0.0;
+  G4int      intDummy = 0;
+
+  unsigned                            fMeanEnergyTable = 40;
+  std::vector<G4double>     fMeanEnergyT40List;
+  std::vector<G4int>                fFluxTableList {36, 38};     // , 40}; the energy supplied is E_low
+
   std::vector< std::vector<G4double> >   fExptRadiiTables;
   std::vector< std::vector<G4double> >   fExptFluenceTables;
   std::vector< std::vector<G4double> >   fExptErrTables;
@@ -348,9 +355,12 @@ private:
   std::vector< std::vector<G4double> >   fExptFluxTables;
   std::vector< std::vector<G4double> >   fExptFluxErrTables;
   std::vector< std::vector<G4double> >   fFlux_Radius;
-  std::vector<G4int>                     fFluxTableList {36, 38, 40};
-  G4double                               fAbsolute_TotalFlux, fAbsolute_Flux;
+  std::vector<std::vector<G4double> >    fRadialFluenceStep;
 
+
+  std::vector< G4double>                 fExptEnergyBin;
+  std::vector<G4double>                  fFluxRadTables;
+  std::vector<G4double>                  fRadList;
   std::vector<G4double>                  fFlux;
   std::vector<G4double>                  fFlux_Energy;
   std::vector<G4double>                  fFlux_Data;
@@ -364,14 +374,24 @@ private:
   std::vector<G4double>                  fFlux_Low_Energy;
   std::vector<G4double>                  fFlux_Low_Energy_in;
   std::vector<G4double>                  fFlux_Low_Data;
+  std::vector<G4double>                  fFlux_Low_Data_in;
   std::vector<G4double>                  fFlux_Low_Syst_Err;
+  std::vector<G4double>                  fFlux_Low_Syst_Err_in;
 
   std::vector<G4double>                  fFlux_Lithium;
   std::vector<G4double>                  fFlux_Lithium_Radius;
   std::vector<G4double>                  fFlux_Lithium_Energy;
   std::vector<G4double>                  fFlux_Lithium_Energy_in;
   std::vector<G4double>                  fFlux_Lithium_Data;
+  std::vector<G4double>                  fFlux_Lithium_Data_in;
   std::vector<G4double>                  fFlux_Lithium_Syst_Err;
+  std::vector<G4double>                  fFlux_Lithium_Syst_Err_in;
+
+  std::vector<G4double>                  fFlux_He3;
+  std::vector<G4double>                  fFlux_He3_Energy;
+  std::vector<G4double>                  fFlux_He3_Energy_in;
+  std::vector<G4double>                  fFlux_He3_Data;
+  std::vector<G4double>                  fFlux_He3_Syst_Err;
 
   std::vector<G4double>                  fFluence1D;
   std::vector<G4double>                  fFluence_Radius;
@@ -388,7 +408,6 @@ private:
   std::vector<G4double>                  fFluence_Spectrum;
   std::vector<G4double>                  fLithium_Radial_Energy_Lower;
   std::vector<G4double>                  fLithium_Radial_Energy_Upper;
-  std::vector<std::vector<G4double> >    fRadialFluenceStep;
   std::vector<G4double>                  fLithium_Radial_Mean;
   std::vector<G4double>                  fLithium_Radial_True_Mean;
   std::vector<G4double>                  fLithium_Fluence_Step_Shell;
@@ -397,6 +416,8 @@ private:
   std::vector<G4double>                  fFluence_Step_Shell;
   std::vector<G4double>                  fFluence_step;
   std::vector<G4double>                  fLithium_Flux;
+  std::vector<G4double>                  fHe3_Flux;
+  std::vector<G4double>                  fCos_He3_Flux;
   std::vector<G4double>                  fCos_Lithium_Flux;
   std::vector<G4double>                  fLow_Flux;
   std::vector<G4double>                  fCos_Low_Flux;

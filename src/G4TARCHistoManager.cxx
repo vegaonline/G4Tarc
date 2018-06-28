@@ -151,7 +151,7 @@ void G4TARCHistoManager::DefineShellBlocks() {
   fTestSphereVolume = (4.0 / 3.0) * CLHEP::pi * (fRadHole * fRadHole * fRadHole) / mm2;
   fTestSphereSurfaceArea = 4.0 * CLHEP::pi * (fTestSphereRadius * fTestSphereRadius);
 
-  G4cout << "SA: " << fTestSphereSurfaceArea/cm2 << "    " << fTestSphereSurfaceArea / mm2 << G4endl;
+  //G4cout << "SA: " << fTestSphereSurfaceArea/cm2 << "    " << fTestSphereSurfaceArea / mm2 << G4endl;
 
 //exit(0);
 
@@ -168,6 +168,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   G4bool readPara = false;
   G4double v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
   G4bool isFlux = false;
+  G4int is40 = 0;
   std::vector<G4double> tmpV1;
   std::vector<G4double> tmpV2;
   std::vector<G4double> tmpV3;
@@ -183,7 +184,8 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
       G4String tableNum = (lineIN.substr(found1 + 5, 3));
       tableNum = std::regex_replace(tableNum, std::regex("^ +| +$|( ) +"), "$1"); // stripping extra spaces
       iTableNum = std::atoi(tableNum);
-      isFlux = (std::find( fFluxTableList.begin(), fFluxTableList.end(), iTableNum) != fFluxTableList.end());
+      isFlux = ((std::find( fFluxTableList.begin(), fFluxTableList.end(), iTableNum) != fFluxTableList.end()) || (iTableNum == fMeanEnergyTable)) ;
+      if (iTableNum == fMeanEnergyTable) ++is40;
       if (found1 != std::string::npos){
         file0 = (iTableNum == 0) ? 1 : 0;
       }
@@ -222,18 +224,34 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
         G4int wcount = std::distance(std::istream_iterator<std::string>(sdummy), std::istream_iterator<std::string>());
         if (wcount == 3) {
           ss >> v1 >> v2  >> v3;
-          tmpV1.push_back(v1);  tmpV2.push_back(v2);  tmpV3.push_back(v3);
+          if (isFlux && is40 == 2){
+            fMeanEnergyT40List.push_back(v1);  fMeanEnergyT40List.push_back(v2);  fMeanEnergyT40List.push_back(v3);
+          } else {
+            tmpV1.push_back(v1);  tmpV2.push_back(v2);  tmpV3.push_back(v3);
+          }
           --restCount;
         } else if (wcount == 6) {
           ss >> v1 >> v2 >> v3 >> v4 >> v5 >> v6;
-          tmpV1.push_back(v1);  tmpV2.push_back(v2);  tmpV3.push_back(v3);
-          tmpV1.push_back(v4);  tmpV2.push_back(v5);  tmpV3.push_back(v6);
+          if (isFlux && is40 == 2){
+            fMeanEnergyT40List.push_back(v1);  fMeanEnergyT40List.push_back(v2);  fMeanEnergyT40List.push_back(v3);
+            fMeanEnergyT40List.push_back(v4);  fMeanEnergyT40List.push_back(v5);  fMeanEnergyT40List.push_back(v6);
+          } else {
+            tmpV1.push_back(v1);  tmpV2.push_back(v2);  tmpV3.push_back(v3);
+            tmpV1.push_back(v4);  tmpV2.push_back(v5);  tmpV3.push_back(v6);
+          }
           restCount -= 2;
         }else if (wcount == 9){
           ss >> v1 >> v2 >> v3 >> v4 >> v5 >> v6 >> v7 >> v8 >> v9;
-          tmpV1.push_back(v1);  tmpV2.push_back(v2);  tmpV3.push_back(v3);
-          tmpV1.push_back(v4);  tmpV2.push_back(v5);  tmpV3.push_back(v6);
-          tmpV1.push_back(v7);  tmpV2.push_back(v8);  tmpV3.push_back(v9);
+          if (isFlux && is40 == 2){
+            fMeanEnergyT40List.push_back(v1);  fMeanEnergyT40List.push_back(v2);  fMeanEnergyT40List.push_back(v3);
+            fMeanEnergyT40List.push_back(v4);  fMeanEnergyT40List.push_back(v5);  fMeanEnergyT40List.push_back(v6);
+            fMeanEnergyT40List.push_back(v7);  fMeanEnergyT40List.push_back(v8);  fMeanEnergyT40List.push_back(v8);
+            fMeanEnergyT40List.push_back(v9);
+          } else {
+            tmpV1.push_back(v1);  tmpV2.push_back(v2);  tmpV3.push_back(v3);
+            tmpV1.push_back(v4);  tmpV2.push_back(v5);  tmpV3.push_back(v6);
+            tmpV1.push_back(v7);  tmpV2.push_back(v8);  tmpV3.push_back(v9);
+          }
           restCount -= 3;
         }
       }
@@ -245,7 +263,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
         std::vector<G4double>().swap(tmpV1);
         std::vector<G4double>().swap(tmpV2);
         std::vector<G4double>().swap(tmpV3);
-      } else if (isFlux && (tmpV1.size()) == NCount){
+      } else if (isFlux && (tmpV1.size()) == NCount  && is40 !=2) {
         fExptEnergyTables.push_back(tmpV1);
         fExptFluxTables.push_back(tmpV2);
         fExptFluxErrTables.push_back(tmpV3);
@@ -253,6 +271,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
         std::vector<G4double>().swap(tmpV2);
         std::vector<G4double>().swap(tmpV3);
       }
+
     }
     lineIN="";
   }
@@ -261,55 +280,69 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   std::vector<G4double>().swap(tmpV2);
   std::vector<G4double>().swap(tmpV3);
 
+  // Now sorting the vector fMeanEnergyT40List
+  std::sort(fMeanEnergyT40List.begin(), fMeanEnergyT40List.end(),  [] (G4double const& a, G4double const& b) { return a < b; });
 
-  fMaxRadCount = fExptRadiiTables[10].size();
+  fMaxRadCount = fExptRadiiTables[8].size();
+  //  G4cout << " Rad count = " << fMaxRadCount << G4endl;
   //  fMaxRadCount = 10  fMaxTestFluxData = 21;
   //  fMaxFluxData  = 95 fMaxFluenceData  = 102
 
+  for (std::size_t ii = 0; ii < fExptFluxTables.size(); ii++) {
+    for (std::size_t jj = 0; jj < fExptFluxTables[ii].size(); jj++) {
+      fExptFluxTables[ii][jj] /= 100.0;
+      fExptFluxErrTables[ii][jj] /= 100;
+    }
+  }
+
+
   for (G4int ii = 0; ii < fMaxRadCount; ii++){
-    fFluxRadTables.push_back(fExptRadiiTables[10][ii]);
+    G4double tmp = fExptRadiiTables[8][ii] * 10.0;  // mm
+    fFluxRadTables.push_back(tmp);
   }
 
 
   for (std::size_t ijk2 = 0; ijk2 < fExptRadiiTables[3].size(); ijk2++){
     G4double rVal = fExptRadiiTables[3][ijk2] * 10.0; // in mm
-    fRadList.push_back(rVal);
+    if (floatDummy != rVal)   fRadList.push_back(rVal);
+    floatDummy = rVal;
   }
 
-  for (std::size_t ijk1 = 0; ijk1 < fFluxRadTables.size(); ijk1++){
-    fFluxRadTables[ijk1] *= 10.0;
-  }
-
-  for (std::size_t ij1 = 0; ij1 < fExptEnergyTables[0].size(); ij1++){
+  for (std::size_t ij1 = 0; ij1 < fExptEnergyTables[0].size(); ij1++){    // Table 36
     fFlux_Low_Energy.push_back(fExptEnergyTables[0][ij1]);
     fFlux_Low_Data.push_back(fExptFluxTables[0][ij1]);
     fFlux_Low_Syst_Err.push_back(fExptFluxErrTables[0][ij1]);
   }
 
-  for (std::size_t ij1 = 0; ij1 < fExptEnergyTables[1].size(); ij1++){
+  for (std::size_t ij1 = 0; ij1 < fExptEnergyTables[1].size(); ij1++){   // Table 38
     fFlux_Lithium_Energy.push_back(fExptEnergyTables[1][ij1]);
     fFlux_Lithium_Data.push_back(fExptFluxTables[1][ij1]);
     fFlux_Lithium_Syst_Err.push_back(fExptFluxErrTables[1][ij1]);
   }
 
-  for (std::size_t ij1 = 0; ij1 < fExptEnergyTables[2].size(); ij1++){
+  for (std::size_t ij1 = 0; ij1 < fExptEnergyTables[2].size(); ij1++){   // Table 40
     fFlux_Energy.push_back(fExptEnergyTables[2][ij1]);
     fFlux_Data.push_back(fExptFluxTables[2][ij1]);
     fFlux_Syst_Err.push_back(fExptFluxErrTables[2][ij1]);
   }
 
   fFlux_Energy_in = fFlux_Energy;
-  fFlux_Data_in   = fFlux_Data;
+  fFlux_Data_in = fFlux_Data;
   fFlux_Syst_Err_in = fFlux_Syst_Err;
+
   fFlux_Low_Energy_in = fFlux_Low_Energy;
+  fFlux_Low_Data_in = fFlux_Low_Data;
+  fFlux_Low_Syst_Err_in = fFlux_Low_Syst_Err;
+
   fFlux_Lithium_Energy_in = fFlux_Lithium_Energy;
+  fFlux_Lithium_Data_in = fFlux_Lithium_Data;
+  fFlux_Lithium_Syst_Err_in = fFlux_Lithium_Syst_Err;
 
   fReadData = true;
 }
 
 
 void G4TARCHistoManager::FillRadialExperimentalData(){
-
   for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  fExptRadiiTables.size(); ij1++){  0~ 41 to 7 ~ 48
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
       fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[ij1][ij2]);
@@ -602,6 +635,7 @@ void G4TARCHistoManager::BeginOfRun() {
   fTotal_flux = 0.0;
   fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
   fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
+  fTARC_Integral_Eflux_46cm = 0.0;
   fExiting_Flux = 0;
   fExiting_check_Flux = 0;
   fExiting_Energy = 0.0;
@@ -631,6 +665,9 @@ void G4TARCHistoManager::BeginOfRun() {
   //fRadialFluenceStep.resize(fMaxTestFluxData, std::vector<G4double>(fMaxRadCount, 0.0));
   fRadialFluenceStep.resize(fRefShellNumber, std::vector<G4double>(fMaxRadCount, 0.0));
 
+  fFlux_He3.resize(fMaxFluxData, 0.0);
+  fFlux_Low.resize(fMaxFluxData, 0.0);
+  fFlux_Lithium.resize(fMaxFluxData, 0.0);
   fFlux.resize(fMaxTestFluxData, 0.0);
   fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
   fEFlux.resize(fMaxTestFluxData, 0.0);
@@ -641,6 +678,8 @@ void G4TARCHistoManager::BeginOfRun() {
   fCos_Lithium_Flux.resize(fMaxFluxData, 0.0);
   fCos_Low_Flux.resize(fMaxFluxData, 0.0);
   fCos_Flux.resize(fMaxFluxData, 0.0);
+  fCos_He3_Flux.resize(fMaxFluxData, 0.0);
+
 
   fLithium_Flux.resize(fMaxFluxData, 0.0);
   fLithium_Radial_Mean.resize(fMaxRadCount, 0.0);
@@ -747,8 +786,8 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     G4double fBinWidth = std::abs(fFlux_Energy[ij1 + 1] - fFlux_Energy[ij1]);
     G4double fAbsFluxPerp = fMeanEnergy * (((fCos_Flux[ij1] * (1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea) / fBinWidth);
     G4double fAbsEFlux     = (fEFlux[ij1] * ( 1.0e9 / (G4double)fNevt)) /fTestSphereSurfaceArea;
-    G4double fAbsFluence   = fMeanEnergy * (100.0 * (1.0e9 / (G4double)fNevt) * (fFluence_step[ij1] / fTestSphereVolume) / fBinWidth);
-    G4double fAbsFluenceShell = fMeanEnergy * (100.0 * (1.0e9 / (G4double)fNevt) * (fFluence_Step_Shell[ij1] / fTestShellVol) / fBinWidth);
+    G4double fAbsFluence   = fMeanEnergy * (1.0 * (1.0e9 / (G4double)fNevt) * (fFluence_step[ij1] / fTestSphereVolume) / fBinWidth);
+    G4double fAbsFluenceShell = fMeanEnergy * (1.0 * (1.0e9 / (G4double)fNevt) * (fFluence_Step_Shell[ij1] / fTestShellVol) / fBinWidth);
 /*
     G4cout << ij1 << " meanE " << fMeanEnergy << " fAbsFlux " << fAbsFlux << " Absfluence " << fAbsFluence
                   << "  FlStep  " << fFluence_step[ij1] << G4endl;
@@ -858,7 +897,7 @@ void G4TARCHistoManager::RadialFluxHistogram(){
     G4double radL = 0.5 * (fOuterRadiusofShell[ijk1] + fInnerRadiusofShell[ijk1]);
     for (G4int ijk2 = 0; ijk2 < fMaxRadCount; ijk2++){
       G4double fBinTmpWidth = fLithium_Radial_Energy_Upper[ijk2] - fLithium_Radial_Energy_Lower[ijk2];
-      G4cout << " ijk2 " << ijk2 << " R " << radL << "  F  " << fRadialFluenceStep[ijk1][ijk2] << G4endl;
+      //G4cout << " ijk2 " << ijk2 << " R " << radL << "  F  " << fRadialFluenceStep[ijk1][ijk2] << G4endl;
       if (fRadialFluenceStep[ijk1][ijk2] != 0.0){
         G4double fAbs_Rad_Fluence = fLithium_Radial_Mean[ijk2]*(100.0 * (1.0e9 / (G4double)fNevt) *
         ((fRadialFluenceStep[ijk1][ijk2]) / shellVol) / fBinTmpWidth); // radii are in mm
@@ -1525,18 +1564,18 @@ void G4TARCHistoManager::StartProcessing(){
   G4double fMeanEnergy = 0.0;
   G4int j = 0;
 
-  //G4cout << "Entered in StartProcessing. " << G4endl;
+  //G4cout << "Entered in StartProcessing. " << " MaxTestFluxData: " << fMaxTestFluxData << G4endl;
   for (G4int ii1 = 0; ii1 < (fMaxTestFluxData - 1); ii1++){
     fMeanEnergy = 0.5 * (fFlux_Energy[ii1] + fFlux_Energy_in[ii1 + 1]);
     fEflux_Data.push_back(fMeanEnergy * fFlux_Data_in[ii1]);
     fEflux_Integral += fFlux_Data_in[ii1] * fMeanEnergy;      ///1.0e6;
     fFine_Energy.push_back(fMeanEnergy);
   }
-  fEflux_Data.push_back(fFlux_Energy[fMaxTestFluxData - 1] * fFlux_Data_in[fMaxTestFluxData - 1]);
+  //fEflux_Data.push_back(fFlux_Energy[fMaxTestFluxData - 1] * fFlux_Data_in[fMaxTestFluxData - 1]);
 
   G4double fScale = 100.0;
   fEnergy0 = 0.01;
-  G4double fBinWidth = (std::log(1.0e6) - std::log(fEnergy0)) / fScale; // Binning with MeV
+  G4double fBinWidth = (std::log(1.0e5) - std::log(fEnergy0)) / fScale; // as per definition in NIM paper
   G4int fRadialIndex = 0;
 
   fFlux_Lithium_Energy[0] = fEnergy0;
@@ -1545,31 +1584,34 @@ void G4TARCHistoManager::StartProcessing(){
   //G4cout << "LowE: " << fFlux_Low_Energy.size() << " Li_E: " << fFlux_Lithium_Energy.size()
   //     << "  BINWidth:   " << fBinWidth << G4endl; //exit(0);
 
-  for (std::size_t ii1 = 0; ii1 < fFlux_Low_Energy.size(); ii1++){
-    fFlux_Low_Energy[ii1 + 1] = std::exp(fBinWidth + std::log(fFlux_Low_Energy[ii1]));
-    //G4cout << ii1 << "  LowE0: " << fFlux_Low_Energy[ii1] << "  LowE1: " << fFlux_Low_Energy[ii1 + 1] << G4endl;
-  }
+  G4int kIndex= 0, mIndex = 0;
+  for (std::size_t ii = 0; ii < fFlux_Low_Energy.size(); ii++)  fFlux_Low_Energy[ii + 1] = std::exp(fBinWidth + std::log(fFlux_Low_Energy[ii]));
 
-  for(G4int ii1 = 0; ii1 < fMaxFluxData; ii1++){
-    fFlux_Lithium_Energy[ii1 + 1] = std::exp(fBinWidth + std::log(fFlux_Lithium_Energy[ii1]));
-    //fMeanEnergy = std::exp(0.5 * (std::log(fFlux_Low_Energy[ii1 + 1]) + std::log(fFlux_Low_Energy[ii1])));
-    G4double fLithiumMeanEnergy = std::exp(0.5 * (std::log(fFlux_Lithium_Energy[ii1 + 1]) + std::log(fFlux_Lithium_Energy[ii1])));
+  for(std::size_t ii = 0; ii < fFlux_Lithium_Energy.size(); ii++){
+    fFlux_Lithium_Energy[ii + 1] = std::exp(fBinWidth + std::log(fFlux_Lithium_Energy[ii]));
+    fMeanEnergy = std::exp(0.5 * (std::log(fFlux_Low_Energy[ii + 1]) + std::log(fFlux_Low_Energy[ii])));
+    G4double fLithiumMeanEnergy = std::exp(0.5 * (std::log(fFlux_Lithium_Energy[ii + 1]) + std::log(fFlux_Lithium_Energy[ii])));
 
-    //G4cout << ii1 << " Li_E1: " << fFlux_Lithium_Energy[ii1] << " Li_E2: " << fFlux_Lithium_Energy[ii1+1]
-    //       << " fRadialIndex: " << fRadialIndex << " E_RadIndex: " << fExptEnergyBin[fRadialIndex] << G4endl;
-
-    if (fFlux_Lithium_Energy[ii1] <= fExptEnergyBin[fRadialIndex]
-      && fFlux_Lithium_Energy[ii1 + 1] > fExptEnergyBin[fRadialIndex]){
-        fLithium_Radial_Energy_Lower[fRadialIndex] = fFlux_Lithium_Energy[ii1];
-        fLithium_Radial_Energy_Upper[fRadialIndex] = fFlux_Lithium_Energy[ii1+1];;
+    if (fFlux_Lithium_Energy[ii] <= fExptEnergyBin[fRadialIndex]
+      && fFlux_Lithium_Energy[ii + 1] > fExptEnergyBin[fRadialIndex]){
+        fLithium_Radial_Energy_Lower[fRadialIndex] = fFlux_Lithium_Energy[ii];
+        fLithium_Radial_Energy_Upper[fRadialIndex] = fFlux_Lithium_Energy[ii+1];;
         fLithium_Radial_Mean[fRadialIndex] = fExptEnergyBin[fRadialIndex];
         fLithium_Radial_True_Mean[fRadialIndex] = fLithiumMeanEnergy;
-
-        //G4cout << " RadIndex: " << fRadialIndex << " L: " << fLithium_Radial_Energy_Lower[fRadialIndex]
-        //       << " U: " << fLithium_Radial_Energy_Upper[fRadialIndex] << G4endl;
-
         ++fRadialIndex;
-        fRadialIndex = (fRadialIndex > fMaxRadCount - 1) ? (fMaxRadCount - 1) : fRadialIndex;
+        //fRadialIndex = (fRadialIndex > fMaxRadCount - 1) ? (fMaxRadCount - 1) : fRadialIndex;
+    }
+    if (std::abs(fMeanEnergy / fFlux_Low_Energy_in[kIndex] - 1.0) < 0.05) {
+      fFlux_Low_Data[ii]       = fFlux_Low_Data_in[kIndex];
+      fFlux_Low_Syst_Err[ii] = fFlux_Low_Syst_Err_in[kIndex];
+      ++kIndex;
+    }
+    if (std::abs(fLithiumMeanEnergy / fFlux_Lithium_Energy_in[mIndex] - 1.0) < 0.05) {
+      fFlux_Lithium_Data[ii]       = fFlux_Lithium_Data_in[mIndex];
+      fFlux_Lithium_Syst_Err[ii] = fFlux_Lithium_Data_in[mIndex];
+      fTARC_lithium_IntegralData += fFlux_Lithium_Data_in[mIndex];
+      fTARC_lithium_E                  += fFlux_Lithium_Data_in[mIndex] * fLithiumMeanEnergy / 1.0e6;   // check 10^6
+      ++mIndex;
     }
   }
 }
@@ -1872,19 +1914,19 @@ void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackI
     G4double radiusLmm = radiusL * 10.0;
 
     if (fParticleNameL == "neutron"){
-      if (thisTrackIDL == fOldTrackID && std::abs(radiusLmm - 456.0*mm) < 1.0e-6){
+      if (thisTrackIDL == fOldTrackID && std::abs(radiusLmm - 456.0*mm) < 1.0e-2){
         ++fDuplicate_neutrons;
       } else {
         fDuplicate_neutrons = 0;
       }
       fOldTrackID = thisTrackIDL;
     }
+
     G4double tempEnergy = n_EnergyL / eV;
     if (fParticleNameL == "neutron"){
       for (G4int ii1 = 0; ii1 < fMaxRadCount; ii1++){
-        if (std::abs(radiusLmm - fFluxRadTables[ii1]) < 0.1){
+        if (std::abs(radiusLmm - fRadList[ii1]) < 0.1){
           for (G4int ii2 = 0; ii2 < fMaxRadCount; ii2++){
-
             // if (std::abs(n_EnergyL - fExptEnergyBin[ii2]) < fractional_fBinWidth * fExptEnergyBin[ii2])
             if (std::abs(tempEnergy - fExptEnergyBin[ii2]) < fFracBinWidth * fExptEnergyBin[ii2])
               fFlux_Radius[ii1][ii2] += 1.0 / std::abs(cosAngleL);
@@ -1896,8 +1938,9 @@ void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackI
         // if (n_EnergyL > 0.345*eV && n_EnergyL < 1.0e5*eV){
         if (tempEnergy > 0.345 && tempEnergy < 1.0e5){
           fTARC_Integral   += 1.0 / std::abs(cosAngleL);
-          fTARC_Integral_E += tempEnergy * 1.0 / std::abs(cosAngleL);
+          fTARC_Integral_E += tempEnergy / std::abs(cosAngleL);
         }
+
         //G4int nVal = (G4int)((2.0 + std::log10(n_EnergyL / eV)) / 0.09);
         G4int nVal = (G4int)((2.0 + std::log10(tempEnergy)) / 0.09);
         if (nVal < 0) nVal = 0;
@@ -1905,20 +1948,27 @@ void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackI
           fFluence_Spectrum[nVal] += 1.0 /std::abs(cosAngleL);
           if (nVal > fNmax) fNmax = nVal;
         }
-
         if (tempEnergy > 0.0194 && tempEnergy < 1.0e5){
           fTARC_lithium   += 1.0 / std::abs(cosAngleL);
-          fTARC_lithium_E += tempEnergy * 1.0 / std::abs(cosAngleL);
+          fTARC_lithium_E += tempEnergy / std::abs(cosAngleL);
         }
         if (tempEnergy > 59500.0 && tempEnergy < 1825092.0){
           fTARC_helium   += 1.0 / std::abs(cosAngleL);
-          fTARC_helium_E += tempEnergy * 1.0 / std::abs(cosAngleL);
+          fTARC_helium_E += tempEnergy / std::abs(cosAngleL);
         }
       }
 
       std::size_t LithiumMax = fFlux_Lithium_Energy.size();
-      //G4cout << "LithiumMax:-> " << LithiumMax << "   FluxLithium: -> " << fFlux_Lithium.size() << G4endl;
+
+      if (std::abs(radiusLmm - 50.0) < 1.0e-2) ++fIntegral_flux_5cm;
+      if (std::abs(radiusLmm - 100.0) < 1.0e-2) ++fIntegral_flux_10cm;
+      if (std::abs(radiusLmm - 700.0) < 1.0e-2) ++fIntegral_flux_70cm;
+      if (std::abs(radiusLmm - 1000.0) < 1.0e-2) ++fIntegral_flux_100cm;
+      if (std::abs(radiusLmm - 1200.0) < 1.0e-2) ++fIntegral_flux_120cm;
+
       if (std::abs(radiusLmm - 456.0 * mm) < 0.1){
+        ++fIntegral_flux_46cm;
+        fTARC_Integral_Eflux_46cm += tempEnergy;
         fTotal_flux++;
         if (tempEnergy < fFlux_Energy[0]) fLocal_Energy_Integral[0] += tempEnergy;
         if (tempEnergy < fFlux_Lithium_Energy[LithiumMax-1]){
@@ -1941,7 +1991,9 @@ void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackI
               if (tempEnergy > fFlux_Energy[ijk1] && tempEnergy < fFlux_Energy[ijk1 + 1]){
                 fLocal_Energy_Integral[1] += tempEnergy;
                 fFlux[ijk1]++;
+                //fLow_Flux[ijk1]++;
                 if (cosAngleL != 0.0) fCos_Flux[ijk1] += 1.0 / std::abs(cosAngleL);
+                fCos_Low_Flux[ijk1] = fCos_Flux[ijk1];
                 fEFlux[ijk1] += tempEnergy;
               }
             }
@@ -1953,25 +2005,24 @@ void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackI
 
 void G4TARCHistoManager::analyseNeutronShellFluence(G4double energyL, G4double StepLengthL){
     G4double tempE = energyL / eV;
+    G4double stepLenmm = StepLengthL / mm;
 
     if (tempE < fFlux_Lithium_Energy[fMaxFluxData - 1]){
       for (G4int ii1 = 0; ii1 < fMaxFluxData; ii1++){
-
-        if (tempE > fFlux_Lithium_Energy[ii1] && tempE < fFlux_Lithium_Energy[ii1 + 1]) fLithium_Fluence_Step_Shell[ii1] += StepLengthL / mm;
+        if (tempE > fFlux_Lithium_Energy[ii1] && tempE < fFlux_Lithium_Energy[ii1 + 1]) fLithium_Fluence_Step_Shell[ii1] += stepLenmm;
       }
     }
 
     std::size_t lastTagLowEFlux = fFlux_Low_Energy.size();
     if (tempE < fFlux_Low_Energy[lastTagLowEFlux - 1]){
       for (std::size_t ii1 = 0; ii1 < lastTagLowEFlux; ii1++){
-        if (tempE > fFlux_Low_Energy[ii1] && tempE < fFlux_Low_Energy[ii1 + 1]) fLow_Fluence_Step_Shell[ii1] += StepLengthL / mm;
+        if (tempE > fFlux_Low_Energy[ii1] && tempE < fFlux_Low_Energy[ii1 + 1]) fLow_Fluence_Step_Shell[ii1] += stepLenmm;
       }
     }
     std::size_t lastTagFluxE = fFlux_Energy.size();
-    //G4cout << "lastElementFluxE : " << lastTagFluxE << "  analyseNeutronShellFluence in Histo" << G4endl;
     if (tempE > fFlux_Energy[0]){
       for (std::size_t ii1 = 0; ii1 < lastTagFluxE; ii1++){
-        if (tempE > fFlux_Energy[ii1] && tempE < fFlux_Energy[ii1 + 1]) fFluence_Step_Shell[ii1] += StepLengthL / mm;
+        if (tempE > fFlux_Energy[ii1] && tempE < fFlux_Energy[ii1 + 1]) fFluence_Step_Shell[ii1] += stepLenmm;
       }
     }
   }
@@ -2000,7 +2051,7 @@ void G4TARCHistoManager::analyseNeutronFluence(G4double energyL, G4String& nameL
     if (fTempE >= fFlux_Energy[0]){
       for (G4int ii = 0; ii < fMaxTestFluxData; ii++){
         if (fTempE > fFlux_Energy[ii] && fTempE < fFlux_Energy[ii + 1]) fFluence_step[ii] += thisStepL / mm;
-      G4cout << fTempE << "   " << fFlux_Energy[0] << "   " << thisStepL / mm << "       " << fFluence_step[ii] << G4endl;
+        // G4cout << fTempE << "   " << fFlux_Energy[0] << "   " << thisStepL / mm << "       " << fFluence_step[ii] << G4endl;
       }
     }
 

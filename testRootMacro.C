@@ -38,11 +38,11 @@ void testRootMacro() {
     455500, 505000, 554500, 604000, 653500, 703000, 752500, 802000, 901000, 1000000, 1162308, 1350960, 1570232};  //, 1825092};
 
   Float_t fXbinLo[xLoCnt];
-  Float_t fBinWidth = (std::log(1.0e+6) - std::log(0.01)) / 100.0;
+  Float_t fBinWidth = (std::log(1.0e+5) - std::log(0.01)) / 100.0;
   fXbinLo[0] = 0.01;
   int index = 0;
   for(int i = 1; i < xLoCnt; i++) {
-    fXbinLo[i] = std::exp(fBinWidth+std::log(fXbinLo[i-1]));
+    fXbinLo[i] = std::exp(fBinWidth + std::log(fXbinLo[i-1]));
   }
 
   TH1F* ExitingSpec            = new TH1F("ExitSpect", "TARC Exiting Neutron Spectrum", 100, 0.01, 2.0);
@@ -103,16 +103,18 @@ void testRootMacro() {
     Int_t binX2   = xAxis2->FindBin(energy);
     TARCDataFluenceHiErr->SetBinError(binX2, errstat);
 
-    double corrG4perp = g4shell * 1.0e3;
+    double corrG4perp = g4shell ;
     TARCG4FluenceHi->Fill(energy, corrG4perp);
     TAxis* xAxis3 = TARCG4FluenceHi->GetXaxis();
     Int_t binX3 = xAxis3->FindBin(energy);
     TARCG4FluenceHi->SetBinError(binX3, g4Err);
+	  // std::cout << flux4002->GetEntries() << ".  tarcflux: " <<  tarcflux << "  g4shell: " << g4shell << "  g4flux:  " << g4flux << std::endl;
     if (tarcflux !=0.0){
       double ratio = corrG4perp / tarcflux;
       TARCG4RatioHi->Fill(energy, ratio);
     }
   }
+
 
   for (int irow = 0; irow < flux4004->GetEntries(); irow++){
     flux4004->SetBranchAddress("energy", &energy);
@@ -144,7 +146,7 @@ void testRootMacro() {
     Int_t binX2   = xAxis2->FindBin(energy);
     TARCDataFluenceHe3Err->SetBinError(binX2, errstat);
 
-    double corrG4perp = g4shell * 1.0e3;
+    double corrG4perp = g4shell ;
     TARCG4FluenceHe3->Fill(energy, corrG4perp);
     TAxis* xAxis3 = TARCG4FluenceHe3->GetXaxis();
     Int_t binX3 = xAxis3->FindBin(energy);
@@ -186,7 +188,7 @@ void testRootMacro() {
     Int_t binX2   = xAxis2->FindBin(energy);
     TARCDataFluenceLiErr->SetBinError(binX2, errstat);
 
-    double corrG4perp = g4shell * 1.0e3;
+    double corrG4perp = g4shell ;
     TARCG4FluenceLi->Fill(energy, corrG4perp);
     TAxis* xAxis3 = TARCG4FluenceLi->GetXaxis();
     Int_t binX3 = xAxis3->FindBin(energy);
@@ -197,17 +199,26 @@ void testRootMacro() {
     }
   }
 
-  TARCDataFluenceHi->SetMarkerStyle(8);
-  TARCDataFluenceHe3->SetMarkerStyle(10);
-  TARCDataFluenceLi->SetMarkerStyle(12);
-  TARCDataFluenceHiErr->SetMarkerStyle(7);
-  TARCDataFluenceHe3Err->SetMarkerStyle(9);
-  TARCDataFluenceLiErr->SetMarkerStyle(11);
+  TARCDataFluenceHi->SetMarkerStyle(kFullCircle);
+  TARCDataFluenceHi->SetMarkerColor(kBlue - 6);
+  TARCDataFluenceHiErr->SetMarkerStyle(kOpenCircle);
+  TARCDataFluenceHiErr->SetMarkerColor(kBlue + 6);
+
+  TARCDataFluenceHe3->SetMarkerStyle(kFullSquare);
+  TARCDataFluenceHe3->SetMarkerColor(kRed - 6);
+  TARCDataFluenceHe3Err->SetMarkerStyle(kOpenSquare);
+  TARCDataFluenceHe3Err->SetMarkerColor(kRed + 6);
+
+  TARCDataFluenceLi->SetMarkerStyle(kDiamond);
+  TARCDataFluenceLi->SetMarkerColor(kGreen - 6);
+  TARCDataFluenceLiErr->SetMarkerStyle(kOpenDiamond);
+  TARCDataFluenceLiErr->SetMarkerColor(kGreen + 6);
 
 
   TCanvas* c0 = new TCanvas("c0", "TARC Summary Report", 1020, 800);
   c0->Divide(2, 2);
   gStyle->SetOptStat(100000011);
+
   c0->cd(1);  // left top gPad
   gPad->SetLogx();
   gPad->SetLogy();
@@ -215,8 +226,8 @@ void testRootMacro() {
   TARCG4FluenceHi->GetXaxis()->SetTitle("Energy / eV");
   TARCG4FluenceHi->GetYaxis()->SetTitle("Flux ( dN/dE / source gamma)");
   TARCG4FluenceHi->GetYaxis()->SetTitleOffset(1.4);
-  TARCG4FluenceHi->SetMarkerStyle(3);
-  TARCG4FluenceHi->SetMarkerColor(kGreen);
+  //TARCG4FluenceHi->SetMarkerStyle(3);
+  //TARCG4FluenceHi->SetMarkerColor(kGreen);
   TARCG4FluenceHi->Draw("SAME");
 
   c0->cd(2); // Right Top gPad
@@ -226,9 +237,10 @@ void testRootMacro() {
   TARCG4FluenceLi->GetXaxis()->SetTitle("Energy / eV");
   TARCG4FluenceLi->GetYaxis()->SetTitle("Flux ( dN/dE / source gamma)");
   TARCG4FluenceLi->GetYaxis()->SetTitleOffset(1.4);
-  TARCG4FluenceLi->SetLineColor(kCyan);
+  //TARCG4FluenceLi->SetLineColor(kCyan);
   //TARCG4FluenceLi->Draw("SAME");
   TARCG4FluenceLi->Draw();
+
 
   c0->cd(3); // Left Bottom gPad
   gPad->SetLogx();
@@ -238,25 +250,18 @@ void testRootMacro() {
   tlx->SetNDC(kTRUE); // <- use NDC coordinate
   tlx->SetTextSize(0.05);
   tlx->Draw();
-  gPad->DrawFrame(1.0e-2, 1.0e3, 5.0e7, 2.0e7,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
-  TARCDataFluenceHi->SetLineColor(kRed);
-  TARCDataFluenceHi->Draw("SAME E1");
-  TARCDataFluenceHe3->SetLineColor(kBlue);
-  TARCDataFluenceHe3->Draw("SAME E1");
-  TARCDataFluenceLi->SetLineColor(kGreen);
-  TARCDataFluenceLi->Draw("SAME E1");
-  TARCDataFluenceHiErr->SetLineColor(kCyan);
-  TARCDataFluenceHiErr->Draw("SAME E");
-  TARCDataFluenceHe3Err->SetLineColor(kYellow);
-  TARCDataFluenceHe3Err->Draw("SAME E");
-  TARCDataFluenceLiErr->SetLineColor(kMagenta);
-  TARCDataFluenceLiErr->Draw("SAME E");
-  TARCG4FluenceHi->SetLineColor(kBlack);
-  TARCG4FluenceHi->Draw("SAME E");
-  TARCG4FluenceHe3->SetLineColor(kBlack);
-  TARCG4FluenceHe3->Draw("SAME E");
-  TARCG4FluenceLi->SetLineColor(kBlack);
-  TARCG4FluenceLi->Draw("SAME E");
+  gPad->DrawFrame(5.0e-2, 1.0e+2, 5.0e6, 5.0e5,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
+
+  TARCDataFluenceHi->Draw("SAME");
+  TARCDataFluenceHiErr->Draw("SAME E1");
+  TARCDataFluenceHe3->Draw("SAME");
+  TARCDataFluenceHe3Err->Draw("SAME E1");
+  TARCDataFluenceLi->Draw("SAME");
+  TARCDataFluenceLiErr->Draw("SAME E1");
+
+  //TARCG4FluenceHi->Draw("SAME E");
+  //TARCG4FluenceHe3->Draw("SAME E");
+  //TARCG4FluenceLi->Draw("SAME E");
 
   c0->cd(4); // Bottom Right gPad
   gPad->SetLogx();
@@ -271,6 +276,7 @@ void testRootMacro() {
   c0->Print("TARC_Report_Summary.png");
   c0->Close();
 
+
   TCanvas*  c1 = new TCanvas("c1", "TARC Study", 700, 500);
   gStyle->SetHistLineWidth(3);
   gStyle->SetLineWidth(0.3);
@@ -278,23 +284,27 @@ void testRootMacro() {
   gPad->SetLogx();
   gPad->SetLogy();
 
-  //gPad->DrawFrame(0.001, 1000, 1000000, 25000000," Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
+  gPad->DrawFrame(1.0e-2, 1.0e2, 1.0e7, 5.0e7,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
   TString thisTitlePart1 = "TARC Output";
   TString thisTitlePart10 = "TARC_Output";
   TString thisTitlePart2 = "1.5 GeV/c protons";
-  TString thisTitlePart3 = "100 events.";
+  TString thisTitlePart3 = " for 500 events.";
   TString plotTitle1 = thisTitlePart1 + thisTitlePart2 + thisTitlePart3;
   tlx = new TLatex(0.23, 0.93, plotTitle1);
   tlx->SetNDC(kTRUE);
   tlx->Draw();
 
+  TARCDataFluenceHi->SetMarkerStyle(kFullCircle);
   TARCDataFluenceHi->Draw("SAME E1");
+  TARCDataFluenceHe3->SetMarkerStyle(kFullSquare);
   TARCDataFluenceHe3->Draw("SAME E1");
+  TARCDataFluenceLi->SetMarkerStyle(kFullTriangleUp);
   TARCDataFluenceLi->Draw("SAME E1");
+
   TARCDataFluenceHiErr->Draw("SAME E");
   TARCDataFluenceHe3Err->Draw("SAME E");
   TARCDataFluenceLiErr->Draw("SAME E");
-  TString savedFile1 = thisTitlePart10 + "_fluence1.png";
+  TString savedFile1 = thisTitlePart10 + "_fluence.png";
   c1->Print(savedFile1);
   c1->Close();
 
@@ -305,29 +315,28 @@ void testRootMacro() {
   gStyle->SetOptStat("n");
   gPad->SetLogx();
   gPad->SetLogy();
-  gPad->DrawFrame(1.0e-1, 1.0e-2,1e7, 1.0e1,"; Energy/eV; G4/Data")->GetXaxis()->SetTitleOffset(1.2);
 
-  TARCG4RatioHi->SetMarkerStyle(15);
-  TARCG4RatioHi->SetStats(kTRUE);
-  TARCG4RatioHe3->SetMarkerStyle(16);
-  TARCG4RatioHe3->SetStats(kTRUE);
-  TARCG4RatioLi->SetMarkerStyle(17);
-  TARCG4RatioLi->SetStats(kTRUE);
+  gPad->DrawFrame(1.0e-1, 1.0e-2,1e7, 1.0e1,"; Energy/eV; G4/Data")->GetXaxis()->SetTitleOffset(1.2);
   TARCG4RatioHi->SetMarkerColor(kRed);
-  TARCG4RatioHi->SetMarkerStyle(21);
+  TARCG4RatioHi->SetMarkerStyle(kFullCircle);
   TARCG4RatioHi->SetLineColor(kRed);
   TARCG4RatioHi->SetLineWidth(0.85);
+  TARCG4RatioHi->SetStats(kTRUE);
+  TARCG4RatioHi->Draw("SAME P");
+
   TARCG4RatioHe3->SetMarkerColor(kBlue);
-  TARCG4RatioHe3->SetMarkerStyle(22);
+  TARCG4RatioHe3->SetMarkerStyle(kFullSquare);
   TARCG4RatioHe3->SetLineColor(kBlue);
   TARCG4RatioHe3->SetLineWidth(0.85);
+  TARCG4RatioHe3->SetStats(kTRUE);
+  TARCG4RatioHe3->Draw("SAME PLC PMC");
+
   TARCG4RatioLi->SetMarkerColor(kGreen);
-  TARCG4RatioLi->SetMarkerStyle(23);
+  TARCG4RatioLi->SetMarkerStyle(kFullTriangleUp);
   TARCG4RatioLi->SetLineColor(kGreen);
   TARCG4RatioLi->SetLineWidth(0.85);
-  TARCG4RatioHi->Draw("SAME P");
-  TARCG4RatioHe3->Draw("SAME P");
-  TARCG4RatioLi->Draw("SAME P");
+  TARCG4RatioLi->SetStats(kTRUE);
+  TARCG4RatioLi->Draw("SAME PLC PMC");
 
   TString savedFile2 = thisTitlePart10 + "_Ratio.png";
   gStyle->SetTitle(thisTitlePart10+" Ratio");
@@ -521,8 +530,8 @@ gStyle->SetTitleX(0.2);
 gPad->SetLogy();
 gStyle->SetTitle("fluence");
 gStyle->SetOptStat("111111111");
-// gPad->DrawFrame(-200, 1.0, 200.0, 25000000, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
-gPad->DrawFrame(0.0, 1.0, 200.0, 25000000, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+gPad->DrawFrame(-200, 1.0, 200.0, 25000000, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+//gPad->DrawFrame(0.0, 1.0, 200.0, 25000000, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
 tarcRad->SetMarkerStyle(28); // (21);
 tarcRad->SetMarkerColor(kRed);
 tarcRad->SetMarkerSize(0.8);
@@ -530,15 +539,18 @@ tarcRad->Draw("fluence/energy * 1.0e3 : radius/10", "", "SAME"); // to convert t
 tarcRadLi->SetMarkerStyle(28);
 tarcRadLi->SetMarkerSize(0.8);
 tarcRadLi->SetMarkerColor(kBlue);
-//  tarcRadLi->Draw("data : radius", "energy < 1000 && radius > 0.0", "SAME");
-tarcRadLi->Draw("data : radius", "radius > 0.0", "SAME");
+tarcRadLi->Draw("data : radius", "", "SAME");
+//tarcRadLi->Draw("data : radius", "energy < 1000 && radius > 0.0", "SAME");
+//tarcRadLi->Draw("data : radius", "radius > 0.0", "SAME");
 tarcRadHe3->SetMarkerStyle(28);  //  (29);
 tarcRadHe3->SetMarkerSize(0.8);
 tarcRadHe3->SetMarkerColor(kGreen);
-// tarcRadHe3->Draw("data : radius", "energy > 1000", "SAME");
-tarcRadHe3->Draw("data : radius", "radius > 0.0", "SAME");
+tarcRadHe3->Draw("data : radius", "", "SAME");
+//tarcRadHe3->Draw("data : radius", "energy > 1000", "SAME");
+//tarcRadHe3->Draw("data : radius", "radius > 0.0", "SAME");
 c11->Print("TARC_Output_radial_X.png");
 c11->Close();
 
-  tf1->Close();
+tf1->Close();
+
 }
