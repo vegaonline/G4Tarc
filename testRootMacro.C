@@ -32,10 +32,10 @@ void testRootMacro() {
 
   TTree* h9RadShellFluence = (TTree*) tf1->Get("h9_Rad_Shell_Fluence");
 
-  const int xHiCnt = 21;    //  22;
+  const int xHiCnt =  22;
   const int xLoCnt = 102;
   Float_t fXbinHi[xHiCnt] = {59500, 109000, 158500, 208000, 257500, 307000, 356500, 406000,
-    455500, 505000, 554500, 604000, 653500, 703000, 752500, 802000, 901000, 1000000, 1162308, 1350960, 1570232};  //, 1825092};
+    455500, 505000, 554500, 604000, 653500, 703000, 752500, 802000, 901000, 1000000, 1162308, 1350960, 1570232, 1825092};
 
   Float_t fXbinLo[xLoCnt];
   Float_t fBinWidth = (std::log(1.0e+5) - std::log(0.01)) / 100.0;
@@ -64,11 +64,11 @@ void testRootMacro() {
   TH1F* TARCG4RatioLi          =  new TH1F("RatioG4Li", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
 
 
-  TH2F* radialHisto            = new TH2F("Radial", "TARC radial", 10000, -1000, 1000, 1000, 1.0, 50.0e+6);
+  TH2F* radialHisto            = new TH2F("Radial", "TARC radial", 1000, -1000, 1000, 1000, 1.0, 2.5e+7);
 
-  double energy, tarcflux, g4flux, g4Err, g4perp, g4fluence, g4shell, rawflux, errstat;
+  double energy, tarcflux, g4flux, g4Err, g4perp, g4fluence, g4shell, rawflux, g4shellerr, eflux, errstat;
 
-  for (int irow = 0; irow < exitingTuple->GetEntries(); irow++){
+  for (int irow = 0; irow < exitingTuple->GetEntries(); ++irow){
     exitingTuple->SetBranchAddress("energy", &energy);
     exitingTuple->GetEntry(irow);
     ExitingSpec->Fill(energy);
@@ -79,19 +79,24 @@ void testRootMacro() {
     flux4002->GetEntry(irow);
     flux4002->SetBranchAddress("tarcflux", &tarcflux);
     flux4002->GetEntry(irow);
-    flux4002->SetBranchAddress("g4flux", &g4flux);
+    flux4002->SetBranchAddress("errstat", &errstat);
     flux4002->GetEntry(irow);
-    flux4002->SetBranchAddress("g4err", &g4Err);
+    flux4002->SetBranchAddress("g4flux", &g4flux);
     flux4002->GetEntry(irow);
     flux4002->SetBranchAddress("g4perp", &g4perp);
     flux4002->GetEntry(irow);
     flux4002->SetBranchAddress("g4fluence", &g4fluence);
     flux4002->GetEntry(irow);
+    flux4002->SetBranchAddress("g4err", &g4Err);
+    flux4002->GetEntry(irow);
     flux4002->SetBranchAddress("rawflux", &rawflux);
     flux4002->GetEntry(irow);
-    flux4002->SetBranchAddress("errstat", &errstat);
+    flux4002->SetBranchAddress("eflux", &eflux);
     flux4002->GetEntry(irow);
     flux4002->SetBranchAddress("g4_shell", &g4shell);
+    flux4002->GetEntry(irow);
+    flux4002->SetBranchAddress("g4_shell_err", &g4shellerr);
+    flux4002->GetEntry(irow);
 
     TARCDataFluenceHi->Fill(energy, tarcflux);
     TAxis* xAxis1 = TARCDataFluenceHi->GetXaxis();
@@ -103,7 +108,7 @@ void testRootMacro() {
     Int_t binX2   = xAxis2->FindBin(energy);
     TARCDataFluenceHiErr->SetBinError(binX2, errstat);
 
-    double corrG4perp = g4shell ;
+    double corrG4perp = g4shell ;   // g4perp; //g4shell ;
     TARCG4FluenceHi->Fill(energy, corrG4perp);
     TAxis* xAxis3 = TARCG4FluenceHi->GetXaxis();
     Int_t binX3 = xAxis3->FindBin(energy);
@@ -146,7 +151,7 @@ void testRootMacro() {
     Int_t binX2   = xAxis2->FindBin(energy);
     TARCDataFluenceHe3Err->SetBinError(binX2, errstat);
 
-    double corrG4perp = g4shell ;
+    double corrG4perp = g4perp; // g4shell ;
     TARCG4FluenceHe3->Fill(energy, corrG4perp);
     TAxis* xAxis3 = TARCG4FluenceHe3->GetXaxis();
     Int_t binX3 = xAxis3->FindBin(energy);
@@ -188,7 +193,7 @@ void testRootMacro() {
     Int_t binX2   = xAxis2->FindBin(energy);
     TARCDataFluenceLiErr->SetBinError(binX2, errstat);
 
-    double corrG4perp = g4shell ;
+    double corrG4perp = g4perp; // g4shell ;
     TARCG4FluenceLi->Fill(energy, corrG4perp);
     TAxis* xAxis3 = TARCG4FluenceLi->GetXaxis();
     Int_t binX3 = xAxis3->FindBin(energy);
@@ -201,18 +206,18 @@ void testRootMacro() {
 
   TARCDataFluenceHi->SetMarkerStyle(kFullCircle);
   TARCDataFluenceHi->SetMarkerColor(kBlue - 6);
-  TARCDataFluenceHiErr->SetMarkerStyle(kOpenCircle);
+  TARCDataFluenceHiErr->SetMarkerStyle(kFullCircle);
   TARCDataFluenceHiErr->SetMarkerColor(kBlue + 6);
 
   TARCDataFluenceHe3->SetMarkerStyle(kFullSquare);
   TARCDataFluenceHe3->SetMarkerColor(kRed - 6);
-  TARCDataFluenceHe3Err->SetMarkerStyle(kOpenSquare);
+  TARCDataFluenceHe3Err->SetMarkerStyle(kFullSquare);
   TARCDataFluenceHe3Err->SetMarkerColor(kRed + 6);
 
   TARCDataFluenceLi->SetMarkerStyle(kDiamond);
   TARCDataFluenceLi->SetMarkerColor(kGreen - 6);
-  TARCDataFluenceLiErr->SetMarkerStyle(kOpenDiamond);
-  TARCDataFluenceLiErr->SetMarkerColor(kGreen + 6);
+  TARCDataFluenceLiErr->SetMarkerStyle(kDiamond);
+  TARCDataFluenceLiErr->SetMarkerColor(kGreen);
 
 
   TCanvas* c0 = new TCanvas("c0", "TARC Summary Report", 1020, 800);
@@ -250,7 +255,7 @@ void testRootMacro() {
   tlx->SetNDC(kTRUE); // <- use NDC coordinate
   tlx->SetTextSize(0.05);
   tlx->Draw();
-  gPad->DrawFrame(5.0e-2, 1.0e+2, 5.0e6, 5.0e5,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
+  gPad->DrawFrame(5.0e-2, 1.0e+3, 5.0e6, 2.0e7,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
 
   TARCDataFluenceHi->Draw("SAME");
   TARCDataFluenceHiErr->Draw("SAME E1");
