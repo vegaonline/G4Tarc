@@ -540,15 +540,16 @@ gStyle->SetLineWidth(0.3);
 gStyle->SetTitleX(0.2);
 gPad->SetLogy();
 gStyle->SetTitle("fluence");
-gPad->DrawFrame(0, 10.0, 200.0, 1.0e8, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+gPad->DrawFrame(-200, 1.0e-2, 200.0, 5.0e5, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
 tarcRad->SetMarkerStyle(21);
 tarcRad->SetMarkerColor(kRed);
 tarcRad->SetMarkerSize(0.8);
-tarcRad->Draw("fluence/energy * 1000.0 : radius/10.0", "", "SAME"); // to convert to cm^{2}
+//tarcRad->Scan();
+tarcRad->Draw("fluence/energy  : radius/10.0", "", "SAME"); // to convert to cm^{2}
 tarcRadLi->SetMarkerStyle(28);
 tarcRadLi->SetMarkerSize(0.8);
 tarcRadLi->SetMarkerColor(kBlue);
-tarcRadLi->Draw("data : radius/10.0", "", "SAME");   // changing to cm
+tarcRadLi->Draw("data : radius/10", "", "SAME");   // changing to cm
 tarcRadHe3->SetMarkerStyle(28);
 tarcRadHe3->SetMarkerSize(0.8);
 tarcRadHe3->SetMarkerColor(kGreen);

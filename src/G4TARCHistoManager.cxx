@@ -343,7 +343,7 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
       fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[ij1][ij2] * 10.0);  //  converted to mm
       fAnalysisManager->FillNtupleDColumn(9, 1, fExptEnergyBin[ij1]);
-      fAnalysisManager->FillNtupleDColumn(9, 2, fExptFluenceTables[ij1][ij2]);
+      fAnalysisManager->FillNtupleDColumn(9, 2, fExptFluenceTables[ij1][ij2] / 100.0);
       fAnalysisManager->FillNtupleDColumn(9, 3, fExptErrTables[ij1][ij2]);
       //G4cout << "9 " << fExptRadiiTables[ij1][ij2] << "  " << fExptEnergyBin[ij1] << "   "
       //       << fExptFluenceTables[ij1][ij2] << "   " << fExptErrTables[ij1][ij2] << G4endl;
@@ -357,7 +357,7 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
       fAnalysisManager->FillNtupleDColumn(10, 0, fExptRadiiTables[ij1][ij2] * 10.0);   // converted to mm
       fAnalysisManager->FillNtupleDColumn(10, 1, fExptEnergyBin[ijE]);
-      fAnalysisManager->FillNtupleDColumn(10, 2, fExptFluenceTables[ij1][ij2]);
+      fAnalysisManager->FillNtupleDColumn(10, 2, fExptFluenceTables[ij1][ij2] / 100.0);
       fAnalysisManager->FillNtupleDColumn(10, 3, fExptErrTables[ij1][ij2]);
       //G4cout << "10 " << fExptRadiiTables[ij1][ij2] << "  " << fExptEnergyBin[ij1] << "   "
       //       << fExptFluenceTables[ij1][ij2] << "   " << fExptErrTables[ij1][ij2] << G4endl;
@@ -810,14 +810,13 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     fAnalysisManager->AddNtupleRow(3);
   }
 
-
   for (G4int ij1 = 0; ij1 < fMaxFluenceData; ij1++){
     G4double fMeanLowEnergy   = std::exp(0.5 * (std::log(fFlux_Low_Energy[ij1 + 1]) + std::log(fFlux_Low_Energy[ij1])));
     G4double fAbsLowFlux      = (fFlux_Low_Data[ij1] * ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea;
     G4double fBinWidth      = fFlux_Low_Energy[ij1 + 1] - fFlux_Low_Energy[ij1];
     G4double fAbsLowFluxPerp = fMeanLowEnergy * (((fCos_Low_Flux[ij1] * ( 1.0e9 / (G4double)fNevt)) / fTestSphereSurfaceArea) / fBinWidth);
-    G4double fAbsLowFluence   = 100.0 * ( 1.0e9 / (G4double)fNevt) * ((fLow_Fluence_step[ij1]) / fTestSphereVolume);
-    G4double fAbsLowFluenceShell = fMeanLowEnergy * (100.0 * (1.0e9 / (G4double)fNevt) * (fLow_Fluence_Step_Shell[ij1]
+    G4double fAbsLowFluence   =  100.0 * ( 1.0e9 / (G4double)fNevt) * ((fLow_Fluence_step[ij1]) / fTestSphereVolume);
+    G4double fAbsLowFluenceShell = fMeanLowEnergy * (100.0 *  (1.0e9 / (G4double)fNevt) * (fLow_Fluence_Step_Shell[ij1]
      / fTestShellVol) / fBinWidth);
 
     G4double fAbsLowFluenceShellError = (fLow_Fluence_Step_Shell[ij1] > 0)
@@ -850,8 +849,8 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     //  G4double fBinWidth = fFlux_Low_Energy[ij1 + 1] - fFlux_Low_Energy[ij1];
     G4double fBinWidth = fFlux_Lithium_Energy[ij1 + 1] - fFlux_Lithium_Energy[ij1];
     G4double fAbsLithiumFluxPerp = fMeanLithiumEnergy * (((fCos_Lithium_Flux[ij1] * (1.0e9 / (G4double)fNevt))
-      / fTestSphereSurfaceArea) / fBinWidth);
-    G4double fAbsLithiumFluence   = 100.0 * (1.0e9 / (G4double)fNevt) * ((fLithium_Fluence_Step[ij1]) / fTestSphereVolume);
+                                                                                  / fTestSphereSurfaceArea) / fBinWidth);
+    G4double fAbsLithiumFluence   =  100.0 * (1.0e9 / (G4double)fNevt) * ((fLithium_Fluence_Step[ij1]) / fTestSphereVolume);
     G4double fAbsLithiumFluenceShell = fMeanLithiumEnergy * (100.0 * (1.0e9 / (G4double)fNevt)
       * ((fLithium_Fluence_Step_Shell[ij1]) / fTestShellVol) / fBinWidth);
 
@@ -887,8 +886,8 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
 }
 
 void G4TARCHistoManager::RadialFluxHistogram(){
-  std::ofstream radFluFile;
-  radFluFile.open("G4TARCRadFluence.dat");
+  //std::ofstream radFluFile;
+  //radFluFile.open("G4TARCRadFluence.dat");
 
   for (G4int ijk1 = 0; ijk1 < fRefShellNumber; ijk1++) {  // ijk1 < fMaxTestFluxData; ijk1++){
     //G4cout << ijk1 << " / " << fRefShellNumber << " RO " << fOuterRadiusofShell[ijk1] << " RI " << fInnerRadiusofShell[ijk1] << "  ";
@@ -899,10 +898,10 @@ void G4TARCHistoManager::RadialFluxHistogram(){
       //G4cout << " ijk2 " << ijk2 << " R " << radL << "  F  " << fRadialFluenceStep[ijk1][ijk2] << G4endl;
 
       if (fRadialFluenceStep[ijk1][ijk2] != 0.0){
-        G4double fAbsRadFluence = fLithium_Radial_Mean[ijk2]*(100.0 * (1.0e9 / (G4double)fNevt) *
+        G4double fAbsRadFluence = fLithium_Radial_Mean[ijk2]*(100.0 *  (1.0e9 / (G4double)fNevt) *
                                             ((fRadialFluenceStep[ijk1][ijk2]) / shellVol) / fBinTmpWidth); // radii are in mm
         G4double fAbsRadFluenceTrueMean = fLithium_Radial_True_Mean[ijk2] *
-                                            (100.0 * ( 1.0e9 / (G4double)fNevt) * fRadialFluenceStep[ijk1][ijk2] / shellVol / fBinTmpWidth);
+                                            ( 100.0 * ( 1.0e9 / (G4double)fNevt) * fRadialFluenceStep[ijk1][ijk2] / shellVol / fBinTmpWidth);
 
         fAnalysisManager->FillNtupleDColumn(8, 0, radL);    // rad in mm
         fAnalysisManager->FillNtupleDColumn(8, 1, fLithium_Radial_Mean[ijk2]);
@@ -910,13 +909,15 @@ void G4TARCHistoManager::RadialFluxHistogram(){
         fAnalysisManager->FillNtupleDColumn(8, 3, fLithium_Radial_True_Mean[ijk2]);
         fAnalysisManager->FillNtupleDColumn(8, 4, fAbsRadFluenceTrueMean);
         fAnalysisManager->AddNtupleRow(8);
+        /*
         radFluFile << radL << "      " << fLithium_Radial_Mean[ijk2] << "    " << fAbsRadFluence
                                 << "      " << fLithium_Radial_True_Mean[ijk2]
                                 << "      " << fAbsRadFluenceTrueMean << G4endl;
+        */
       }
     }
   }
-  radFluFile.close();
+  //radFluFile.close();
 }
 
 // Normalization for no hadron interaction in the target. EM and hadron elastic shuld be inactivated
