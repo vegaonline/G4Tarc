@@ -1,0 +1,39 @@
+\documentclass{beamer}
+
+%\usepackage{default}
+%\usetheme{Berkeley}
+\usetheme{Ilmenau}
+\usecolortheme{beaver}
+\usepackage[utf8]{inputenc}
+\usepackage{caption}
+\usepackage{pslatex}
+\usepackage{textpos}
+\usepackage{tikz}
+%\useoutertheme{split}
+%\useoutertheme{sidebar}
+\usepackage{graphicx}
+\pgfdeclareimage[height=2.25ex, width=2.2\baselineskip]{barcmini}{barc_logo_circle.png}
+\logo{\pgfuseimage{barcmini}}
+\setbeamertemplate{sidebar right}{} %
+\setbeamertemplate{footline}{\raisebox{-1ex}{\pgfuseimage{barcmini}}
+    \usebeamerfont{date in head/foot} \@CERN \;\;\;\; \insertshortdate{}\hfill 
+    \usebeamerfont{author in head/foot}\insertshortauthor{}\hfill
+    \usebeamertemplate{navigation symbols}\hfill 
+    \insertframenumber{}/\inserttotalframenumber
+}
+%\setbeamertemplate{navigation symbols}{}
+\title{TARC Analysis using Geant4}
+\author{Abhijit Bhattacharyya}
+\institute{Bhabha Atomic Research Center \\ Mumbai INDIA}
+\date{\today}
+%\logo{\includegraphics[height=1cm,width=1cm]{barc_logo_circle.png}}
+\begin{document}
+    \begin{frame}
+        \maketitle
+    \end{frame}
+
+    \begin{frame}
+        \frametitle{Outline}
+        \tableofcontents[part=1, pausesections]
+    \end{frame}
+\end{document}
