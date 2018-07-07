@@ -479,6 +479,20 @@ void testRootMacro() {
   c7->Print("TARC_Neutron_Energy_Time.png");
   c7->Close();
 
+  TCanvas*  c7a = new TCanvas("c7a", "TARC Neutron Energy-Time Study", 700, 500);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetLineWidth(0.3);
+  gStyle->SetTitleX(0.2);
+  hgNeutEnergyTime->SetMarkerStyle(7);
+  hgNeutEnergyTime->SetMarkerColor(kBlue);
+  hgNeutEnergyTime->SetLineColor(kBlue);
+  hgNeutEnergyTime->SetTitle("Neutron Energy - Time characteristics");
+  hgNeutEnergyTime->GetXaxis()->SetTitle("log10(Time (#mus))");
+  hgNeutEnergyTime->GetYaxis()->SetTitle("Neutron Energy (eV)");
+  hgNeutEnergyTime->Draw("CONT1Z");
+  c7a->Print("TARC_Neutron_Energy_Time_Contour.png");
+  c7a->Close();
+
   TCanvas*  c8 = new TCanvas("c8", "TARC Other Particles Energy-Time Study", 700, 500);
   gStyle->SetHistLineWidth(3);
   gStyle->SetLineWidth(0.3);
@@ -493,6 +507,19 @@ void testRootMacro() {
   c8->Print("TARC_Other_Energy_Time.png");
   c8->Close();
 
+  TCanvas*  c8a = new TCanvas("ca", "TARC Other Particles Energy-Time Study", 700, 500);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetLineWidth(0.3);
+  gStyle->SetTitleX(0.2);
+  hgOtherEnergyTime->SetMarkerStyle(7);
+  hgOtherEnergyTime->SetMarkerColor(kBlue);
+  hgOtherEnergyTime->SetLineColor(kBlue);
+  hgOtherEnergyTime->SetTitle("Time - Energy characteristics for other particles.");
+  hgOtherEnergyTime->GetXaxis()->SetTitle("Time (#mus)");
+  hgOtherEnergyTime->GetYaxis()->SetTitle("Energy (eV)");
+  hgOtherEnergyTime->Draw("CONT1Z");
+  c8a->Print("TARC_Other_Energy_Time_Contour.png");
+  c8a->Close();  
 
   TCanvas* c9 = new TCanvas("c9","TARC Exiting Neutron Spectrum", 1200, 700);
   c9->Divide(2,1);
@@ -514,39 +541,40 @@ void testRootMacro() {
   c9->Print("TARC_Exiting_Neutron_Spectrum.png");
   c9->Close();
 
-TCanvas* c10 = new TCanvas("c10", "TARC Radial Fluence", 900, 700);
-gStyle->SetHistLineWidth(3);
-gStyle->SetLineWidth(0.3);
-gStyle->SetTitleX(0.2);
-gPad->SetLogy();
-gStyle->SetTitle("fluence");
-gPad->DrawFrame(-220, 1.0e-1, 220.0, 1.0e9, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
-tarcRad->SetMarkerStyle(21);
-tarcRad->SetMarkerColor(kRed);
-tarcRad->SetMarkerSize(0.8);
-tarcRad->Scan();
-tarcRad->Draw("fluence/energy  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
-tarcRadLi->SetMarkerStyle(28);
-tarcRadLi->SetMarkerSize(0.8);
-tarcRadLi->SetMarkerColor(kBlue);
-tarcRadLi->Draw("data : radius / 10.0", "", "SAME");   // changing to cm
-tarcRadHe3->SetMarkerStyle(28);
-tarcRadHe3->SetMarkerSize(0.8);
-tarcRadHe3->SetMarkerColor(kGreen);
-tarcRadHe3->Draw("data : radius / 10.0", "", "SAME");   // changing to cm
-start = 0.11, stop = 0.9;
-xwidth  = 0.28, ywidth = 0.12;
-legend = new TLegend(start, stop - ywidth, start + xwidth, stop);
-legend->SetTextFont(62);
-legend->SetHeader("Radial Fluence distribution","C"); // option "C" allows to center the header
-legend->SetTextFont(42);
-legend->AddEntry(tarcRad,"Distribution for TARC simulation","ep");
-legend->AddEntry(tarcRadHe3,"Distribution for He3 Data","ep");
-legend->AddEntry(tarcRadLi,"Distribution for Li data","ep");   // ep for errors and points
-legend->Draw();
-c10->Print("TARC_Output_radial_X.png");
-c10->Close();
+  TCanvas* c10 = new TCanvas("c10", "TARC Radial Fluence", 900, 700);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetLineWidth(0.3);
+  gStyle->SetTitleX(0.2);
+  gPad->SetLogy();
+  gStyle->SetTitle("fluence");
+  gPad->DrawFrame(-220, 1.0e-1, 220.0, 1.0e9, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+  tarcRad->SetMarkerStyle(21);
+  tarcRad->SetMarkerColor(kRed);
+  tarcRad->SetMarkerSize(0.8);
+  // tarcRad->Scan();
+  tarcRad->Draw("fluence/energy  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
+  tarcRadLi->SetMarkerStyle(28);
+  tarcRadLi->SetMarkerSize(0.8);
+  tarcRadLi->SetMarkerColor(kBlue);
+  tarcRadLi->Draw("data : radius / 10.0", "", "SAME");   // changing to cm
+  tarcRadHe3->SetMarkerStyle(28);
+  tarcRadHe3->SetMarkerSize(0.8);
+  tarcRadHe3->SetMarkerColor(kGreen);
+  tarcRadHe3->Draw("data : radius / 10.0", "", "SAME");   // changing to cm
+  start = 0.11, stop = 0.9;
+  xwidth  = 0.28, ywidth = 0.12;
+  legend = new TLegend(start, stop - ywidth, start + xwidth, stop);
+  legend->SetTextFont(62);
+  legend->SetHeader("Radial Fluence distribution","C"); // option "C" allows to center the header
+  legend->SetTextFont(42);
+  legend->AddEntry(tarcRad,"Distribution for TARC simulation","ep");
+  legend->AddEntry(tarcRadHe3,"Distribution for He3 Data","ep");
+  legend->AddEntry(tarcRadLi,"Distribution for Li data","ep");   // ep for errors and points
+  legend->Draw();
 
-tf1->Close();
+  c10->Print("TARC_Output_radial_X.png");
+  c10->Close();
+
+  tf1->Close();
 
 }
