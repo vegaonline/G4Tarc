@@ -49,7 +49,7 @@ G4TARCHistoManager::~G4TARCHistoManager() {
   // delete fHisto;
   std::vector<G4int>().swap(fFluxTableList);
   std::vector<G4double>().swap(fExptEnergyBin);
-  std::vector<G4double>().swap(fFluxRadTables);
+  //  std::vector<G4double>().swap(fFluxRadTables);
   std::vector<G4double>().swap(fRadList);
   std::vector<G4double>().swap(fOuterRadiusofShell);
   std::vector<G4double>().swap(fInnerRadiusofShell);
@@ -66,7 +66,7 @@ G4TARCHistoManager::~G4TARCHistoManager() {
   std::vector<G4double>().swap(fFlux_Low_Energy_in);
   std::vector<G4double>().swap(fFlux_Low_Data);
   std::vector<G4double>().swap(fFlux_Low_Syst_Err);
-  std::vector<G4double>().swap(fFlux_Lithium);
+  //  std::vector<G4double>().swap(fFlux_Lithium);
 
   std::vector<G4double>().swap(fFlux_Lithium_Radius);
   std::vector<G4double>().swap(fFlux_Lithium_Energy);
@@ -309,12 +309,6 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
     }
   }
 
-  for (G4int ii = 0; ii < fMaxRadCount; ii++){
-    G4double tmp = fExptRadiiTables[8][ii] ;
-    fFluxRadTables.push_back(tmp);
-  }
-
-
   for (std::size_t ijk2 = 0; ijk2 < fExptRadiiTables[3].size(); ijk2++){
     G4double rVal = fExptRadiiTables[3][ijk2];
     if (floatDummy != rVal)   fRadList.push_back(rVal);
@@ -351,6 +345,14 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   fFlux_Lithium_Data_in = fFlux_Lithium_Data;
   fFlux_Lithium_Syst_Err_in = fFlux_Lithium_Syst_Err;
 
+    
+  // This is a test to shrink use of memory
+  std::vector<std::vector<G4double> > ().swap(fExptEnergyTables);
+  std::vector<std::vector<G4double> > ().swap(fExptFluxTables);
+  std::vector<std::vector<G4double> > ().swap(fExptFluxErrTables);
+  // This is end of test block
+
+
   fReadData = true;
 }
 
@@ -369,6 +371,9 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
   }
 
 
+
+
+  
   for (std::size_t ij1 = 8; ij1 <= 16; ij1++){ // 8 ~ 49 to 16 ~ 57
     G4int ijE = ij1 - 7;
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
@@ -376,12 +381,19 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
       fAnalysisManager->FillNtupleDColumn(10, 1, fExptEnergyBin[ijE]);
       fAnalysisManager->FillNtupleDColumn(10, 2, fExptFluenceTables[ij1][ij2] * 100.0);  // transferring to unit n/cm^2/eV/10^9p
       fAnalysisManager->FillNtupleDColumn(10, 3, fExptErrTables[ij1][ij2] * 100.0);
-      //G4cout << "10 " << fExptRadiiTables[ij1][ij2] << "  " << fExptEnergyBin[ij1] << "   "
-      //       << fExptFluenceTables[ij1][ij2] << "   " << fExptErrTables[ij1][ij2] << G4endl;
       fAnalysisManager->AddNtupleRow(10);
+
+      // G4cout << fExptRadiiTables[ij1][ij2] << "  " << fExptEnergyBin[ij1] << "   "
+      //       << fExptFluenceTables[ij1][ij2] << "   " << fExptErrTables[ij1][ij2] << G4endl;
     }
   }
   G4cout << "Experimental data filling complete." << G4endl;
+  
+  // This is testing of erasing unused vectors
+  std::vector<std::vector<G4double> >().swap(fExptFluenceTables);
+  std::vector<std::vector<G4double> >().swap(fExptErrTables);
+  // This is the end of the test
+  
 }
 
 
@@ -580,7 +592,12 @@ void G4TARCHistoManager::BeginOfRun() {
   fAnalysisManager = G4AnalysisManager::Instance();
   //G4String path = getenv("dateStr");
   //fAnalysisFileName = path + "/" + fAnalysisFileName;
+  InitVectors();
+}
 
+
+void G4TARCHistoManager::InitVectors(){
+  
   if (!fHistoBooked) {
     fAnalysisManager->OpenFile(fAnalysisFileName);
     BookHistogram();
@@ -681,7 +698,7 @@ void G4TARCHistoManager::BeginOfRun() {
 
   fFlux_He3.resize(fMaxFluxData, 0.0);
   fFlux_Low.resize(fMaxFluxData, 0.0);
-  fFlux_Lithium.resize(fMaxFluxData, 0.0);
+  //fFlux_Lithium.resize(fMaxFluxData, 0.0);
   fFlux.resize(fMaxTestFluxData, 0.0);
   fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
   fEFlux.resize(fMaxTestFluxData, 0.0);
@@ -738,6 +755,7 @@ void G4TARCHistoManager::BeginOfRun() {
 }
 
 
+
 void G4TARCHistoManager::EndOfRun() {
   G4cout << "G4TARCHistoManager ; End of run actions are started" << G4endl;
   G4cout << "fNevt = " << fNevt << G4endl;
@@ -791,6 +809,8 @@ void G4TARCHistoManager::EndOfEvent() {
 }
 
 void G4TARCHistoManager::NeutronFluxHistogram(){
+
+  std::ofstream outh5("outh11.dat", std::ios::out);
 
   fAbsolute_TotalFlux = (fTotal_flux * 1.0e2 *  1.0e9 / (G4double)fNevt) / (fTestSphereSurfaceArea); // for cm^2 conversion
   for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
@@ -851,7 +871,7 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     fTARC_Integral_E += fFlux_Low_Data[ij1] * 100.0 * fMeanLowEnergy;
 
     fAnalysisManager->FillNtupleDColumn(4, 0, fMeanLowEnergy);
-    fAnalysisManager->FillNtupleDColumn(4, 1, fFlux_Low_Data[ij1] * 100.0);
+    fAnalysisManager->FillNtupleDColumn(4, 1, fFlux_Low_Data_in[ij1] * 100.0);
     fAnalysisManager->FillNtupleDColumn(4, 2, fFlux_Low_Syst_Err[ij1] * 100.0);
     fAnalysisManager->FillNtupleDColumn(4, 3, fAbsLowFlux);
     fAnalysisManager->FillNtupleDColumn(4, 4, fAbsLowFluxPerp);
@@ -863,6 +883,10 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     fAnalysisManager->FillNtupleDColumn(4, 10, 0.0);           // abs low fluence front
     fAnalysisManager->FillNtupleDColumn(4, 11, fAbsLowFluenceShell);           // abs low fluence shell
     fAnalysisManager->AddNtupleRow(4);
+
+    outh5 << fMeanLowEnergy << "  " << fFlux_Low_Data_in[ij1] * 100.0 << "   " << fAbsLowFlux << "  " << fAbsLowFluxPerp
+          << "    " << fAbsLowFluence << "   " << fLow_Flux[ij1] << "  "
+	  << fLow_Fluence_step[ij1] << "    " << fAbsLowFluenceShell << G4endl;
   }
 
   for (G4int ij1 = 0; ij1 < fMaxFluenceData; ij1++){
@@ -904,6 +928,7 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
       fAnalysisManager->AddNtupleRow(13);
     }
   }
+  outh5.close();
 }
 
 void G4TARCHistoManager::RadialFluxHistogram(){
@@ -1621,11 +1646,13 @@ void G4TARCHistoManager::StartProcessing(){
         ++fRadialIndex;
         //fRadialIndex = (fRadialIndex > fMaxRadCount - 1) ? (fMaxRadCount - 1) : fRadialIndex;
     }
+    /*
     if (std::abs(fMeanEnergy / fFlux_Low_Energy_in[kIndex] - 1.0) < 0.05) {
       fFlux_Low_Data[ii]       = fFlux_Low_Data_in[kIndex];
       fFlux_Low_Syst_Err[ii] = fFlux_Low_Syst_Err_in[kIndex];
       ++kIndex;
     }
+    */
     if (std::abs(fLithiumMeanEnergy / fFlux_Lithium_Energy_in[mIndex] - 1.0) < 0.05) {
       fFlux_Lithium_Data[ii]       = fFlux_Lithium_Data_in[mIndex];
       fFlux_Lithium_Syst_Err[ii] = fFlux_Lithium_Data_in[mIndex];
@@ -1806,7 +1833,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
 
     //for (std::size_t ii = 0; ii < fFluxRadTables.size(); ++ii){
     for (G4int ii = 0; ii < fMaxRadCount; ++ii){
-      G4double radValue = fFluxRadTables[ii] / 10.0;
+      G4double radValue = fExptRadiiTables[8][ii];   // fFluxRadTables[ii] / 10.0;
       if ( (radiusPre < radValue && radiusPost > radValue) ||(radiusPre > radValue && radiusPost < radValue)){
           //G4cout << ii << " FluxRad  " << radValue << "  RadPre " << radiusPre <<  " radPost " << radiusPost << G4endl;
         G4double radiusL = radValue;

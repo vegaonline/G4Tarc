@@ -106,6 +106,7 @@ public:
   void GunParticleRun(G4double);
   //void Fill(G4int, G4double, G4double);
 
+  void InitVectors();
   void ReadExperimentalDataFromFile(G4String&);
   void FillRadialExperimentalData();
   void BookHistogram();
@@ -148,6 +149,7 @@ public:
   inline void SetHistoBooked( G4bool val)                 { fHistoBooked = val;}
 
 private:
+  G4bool                      fStartHisto;
   G4bool                      fNtuple_full;
   G4bool                      fReadData;
 
@@ -347,9 +349,9 @@ private:
   G4double floatDummy=0.0;
   G4int      intDummy = 0;
 
-  unsigned                            fMeanEnergyTable = 40;
-  std::vector<G4double>     fMeanEnergyT40List;
-  std::vector<G4int>                fFluxTableList {36, 38};     // , 40}; the energy supplied is E_low
+  unsigned                               fMeanEnergyTable = 40;
+  std::vector<G4double>                  fMeanEnergyT40List;
+  std::vector<G4int>                     fFluxTableList {36, 38};     // , 40}; the energy supplied is E_low
 
   std::vector< std::vector<G4double> >   fExptRadiiTables;
   std::vector< std::vector<G4double> >   fExptFluenceTables;
@@ -362,7 +364,7 @@ private:
 
 
   std::vector< G4double>                 fExptEnergyBin;
-  std::vector<G4double>                  fFluxRadTables;
+  //  std::vector<G4double>                  fFluxRadTables;
   std::vector<G4double>                  fRadList;
   std::vector<G4double>                  fFlux;
   std::vector<G4double>                  fFlux_Energy;
@@ -381,7 +383,7 @@ private:
   std::vector<G4double>                  fFlux_Low_Syst_Err;
   std::vector<G4double>                  fFlux_Low_Syst_Err_in;
 
-  std::vector<G4double>                  fFlux_Lithium;
+  //  std::vector<G4double>                  fFlux_Lithium;
   std::vector<G4double>                  fFlux_Lithium_Radius;
   std::vector<G4double>                  fFlux_Lithium_Energy;
   std::vector<G4double>                  fFlux_Lithium_Energy_in;

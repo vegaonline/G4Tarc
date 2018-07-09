@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.6.26)  26 JUN 2018 21:45
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.6.26)  8 JUL 2018 19:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**CERN_PH-SFT_2018.tex
+**CERN_PH-SFT_2018
 (./CERN_PH-SFT_2018.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 3 language(s) loaded.
@@ -1290,10 +1290,235 @@ LaTeX Font Info:    Font shape `OT1/phv/m/n' will be
 (Font)              scaled to size 3.59998pt on input line 33.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./barc_logo_circle.png>] (
-./CERN_PH-SFT_2018.toc) [2
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <../PICS/barc_logo_circle.p
+ng>] (./CERN_PH-SFT_2018.toc)
+[2
 
 ]
+LaTeX Font Info:    Try loading font information for OML+ptmcm on input line 51
+.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlptmcm.fd
+File: omlptmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ptmcm.
+)
+LaTeX Font Info:    Try loading font information for OMX+psycm on input line 51
+.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxpsycm.fd
+File: omxpsycm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/psycm.
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 51.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 51.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <10.95> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/sl' will be
+(Font)              scaled to size 9.85492pt on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <8> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/sl' will be
+(Font)              scaled to size 7.19995pt on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <6> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/sl' will be
+(Font)              scaled to size 5.39996pt on input line 51.
+<../PICS/NeutEdepBIC.png, id=88, 899.36pt x 473.77pt>
+File: ../PICS/NeutEdepBIC.png Graphic file (type png)
+<use ../PICS/NeutEdepBIC.png>
+Package pdftex.def Info: ../PICS/NeutEdepBIC.png  used on input line 51.
+(pdftex.def)             Requested size: 156.48463pt x 85.35443pt.
+<../PICS/NeutEdepBERT.png, id=89, 899.36pt x 473.77pt>
+File: ../PICS/NeutEdepBERT.png Graphic file (type png)
+<use ../PICS/NeutEdepBERT.png>
+Package pdftex.def Info: ../PICS/NeutEdepBERT.png  used on input line 51.
+(pdftex.def)             Requested size: 156.48463pt x 85.35443pt.
+
+Overfull \hbox (23.15852pt too wide) in paragraph at lines 51--51
+ [] 
+ []
+
+LaTeX Font Info:    Font shape `OT1/phv/m/n' will be
+(Font)              scaled to size 8.99994pt on input line 51.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/n' will be
+(Font)              scaled to size 6.65994pt on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <10> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/sl' will be
+(Font)              scaled to size 8.99994pt on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <7.4> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/m/sl' will be
+(Font)              scaled to size 6.65994pt on input line 51.
+[3
+
+ <../PICS/NeutEdepBIC.png> <../PICS/NeutEdepBERT.png>]
+<../PICS/NeutEnergyTimeBIC.png, id=118, 698.61pt x 473.77pt>
+File: ../PICS/NeutEnergyTimeBIC.png Graphic file (type png)
+<use ../PICS/NeutEnergyTimeBIC.png>
+Package pdftex.def Info: ../PICS/NeutEnergyTimeBIC.png  used on input line 63.
+(pdftex.def)             Requested size: 142.25658pt x 113.80832pt.
+<../PICS/NeutEnergyTimeBERT.png, id=119, 698.61pt x 473.77pt>
+File: ../PICS/NeutEnergyTimeBERT.png Graphic file (type png)
+<use ../PICS/NeutEnergyTimeBERT.png>
+Package pdftex.def Info: ../PICS/NeutEnergyTimeBERT.png  used on input line 63.
+
+(pdftex.def)             Requested size: 170.71855pt x 113.80832pt.
+
+Overfull \hbox (25.90396pt too wide) in paragraph at lines 63--63
+ [] 
+ []
+
+[4
+
+ <../PICS/NeutEnergyTimeBIC.png> <../PICS/NeutEnergyTimeBERT.png>]
+<../PICS/NeutEnergyTimeCONTBIC.png, id=148, 698.61pt x 473.77pt>
+File: ../PICS/NeutEnergyTimeCONTBIC.png Graphic file (type png)
+<use ../PICS/NeutEnergyTimeCONTBIC.png>
+Package pdftex.def Info: ../PICS/NeutEnergyTimeCONTBIC.png  used on input line 
+75.
+(pdftex.def)             Requested size: 142.25658pt x 99.58138pt.
+<../PICS/NeutEnergyTimeCONTBERT.png, id=149, 698.61pt x 473.77pt>
+File: ../PICS/NeutEnergyTimeCONTBERT.png Graphic file (type png)
+<use ../PICS/NeutEnergyTimeCONTBERT.png>
+Package pdftex.def Info: ../PICS/NeutEnergyTimeCONTBERT.png  used on input line
+ 75.
+(pdftex.def)             Requested size: 170.71855pt x 99.58138pt.
+
+Overfull \hbox (25.90396pt too wide) in paragraph at lines 75--75
+ [] 
+ []
+
+[5
+
+ <../PICS/NeutEnergyTimeCONTBIC.png> <../PICS/NeutEnergyTimeCONTBERT.png>]
+<../PICS/NeutEnergyTimeCorrBERT.png, id=177, 481.8pt x 361.35pt>
+File: ../PICS/NeutEnergyTimeCorrBERT.png Graphic file (type png)
+<use ../PICS/NeutEnergyTimeCorrBERT.png>
+Package pdftex.def Info: ../PICS/NeutEnergyTimeCorrBERT.png  used on input line
+ 84.
+(pdftex.def)             Requested size: 284.53154pt x 184.9422pt.
+
+Overfull \vbox (18.09761pt too high) detected at line 84
+ []
+
+[6
+
+ <../PICS/NeutEnergyTimeCorrBERT.png>]
+<../PICS/OtherEnergyTimeBIC.png, id=208, 698.61pt x 473.77pt>
+File: ../PICS/OtherEnergyTimeBIC.png Graphic file (type png)
+<use ../PICS/OtherEnergyTimeBIC.png>
+Package pdftex.def Info: ../PICS/OtherEnergyTimeBIC.png  used on input line 97.
+
+(pdftex.def)             Requested size: 156.48756pt x 113.80832pt.
+<../PICS/OtherEnergyTimeBERT.png, id=209, 698.61pt x 473.77pt>
+File: ../PICS/OtherEnergyTimeBERT.png Graphic file (type png)
+<use ../PICS/OtherEnergyTimeBERT.png>
+Package pdftex.def Info: ../PICS/OtherEnergyTimeBERT.png  used on input line 97
+.
+(pdftex.def)             Requested size: 156.48756pt x 113.80832pt.
+
+Overfull \hbox (25.90396pt too wide) in paragraph at lines 97--97
+ [] 
+ []
+
+[7
+
+ <../PICS/OtherEnergyTimeBIC.png> <../PICS/OtherEnergyTimeBERT.png>]
+<../PICS/OtherEnergyTimeCONTBIC.png, id=238, 698.61pt x 473.77pt>
+File: ../PICS/OtherEnergyTimeCONTBIC.png Graphic file (type png)
+<use ../PICS/OtherEnergyTimeCONTBIC.png>
+Package pdftex.def Info: ../PICS/OtherEnergyTimeCONTBIC.png  used on input line
+ 110.
+(pdftex.def)             Requested size: 156.48756pt x 113.80832pt.
+<../PICS/OtherEnergyTimeCONTBERT.png, id=239, 698.61pt x 473.77pt>
+File: ../PICS/OtherEnergyTimeCONTBERT.png Graphic file (type png)
+<use ../PICS/OtherEnergyTimeCONTBERT.png>
+Package pdftex.def Info: ../PICS/OtherEnergyTimeCONTBERT.png  used on input lin
+e 110.
+(pdftex.def)             Requested size: 156.48756pt x 113.80832pt.
+
+Overfull \hbox (25.90396pt too wide) in paragraph at lines 110--110
+ [] 
+ []
+
+[8
+
+ <../PICS/OtherEnergyTimeCONTBIC.png> <../PICS/OtherEnergyTimeCONTBERT.png>]
+<../PICS/fluenceBIC.png, id=268, 899.36pt x 674.52pt>
+File: ../PICS/fluenceBIC.png Graphic file (type png)
+<use ../PICS/fluenceBIC.png>
+Package pdftex.def Info: ../PICS/fluenceBIC.png  used on input line 121.
+(pdftex.def)             Requested size: 156.48463pt x 113.80232pt.
+<../PICS/fluenceBERT.png, id=269, 899.36pt x 674.52pt>
+File: ../PICS/fluenceBERT.png Graphic file (type png)
+<use ../PICS/fluenceBERT.png>
+Package pdftex.def Info: ../PICS/fluenceBERT.png  used on input line 121.
+(pdftex.def)             Requested size: 156.48463pt x 113.80232pt.
+
+Overfull \hbox (20.41898pt too wide) in paragraph at lines 121--121
+ [] 
+ []
+
+[9
+
+ <../PICS/fluenceBIC.png> <../PICS/fluenceBERT.png>]
+<../PICS/fluenceRadialBIC.png, id=297, 899.36pt x 674.52pt>
+File: ../PICS/fluenceRadialBIC.png Graphic file (type png)
+<use ../PICS/fluenceRadialBIC.png>
+Package pdftex.def Info: ../PICS/fluenceRadialBIC.png  used on input line 132.
+(pdftex.def)             Requested size: 156.48463pt x 113.80232pt.
+<../PICS/fluenceRadialBERT.png, id=298, 899.36pt x 674.52pt>
+File: ../PICS/fluenceRadialBERT.png Graphic file (type png)
+<use ../PICS/fluenceRadialBERT.png>
+Package pdftex.def Info: ../PICS/fluenceRadialBERT.png  used on input line 132.
+
+(pdftex.def)             Requested size: 156.48463pt x 113.80232pt.
+
+Overfull \hbox (20.41898pt too wide) in paragraph at lines 132--132
+ [] 
+ []
+
+[10
+
+ <../PICS/fluenceRadialBIC.png> <../PICS/fluenceRadialBERT.png>]
+<../PICS/fluenceRatioBIC.png, id=325, 899.36pt x 674.52pt>
+File: ../PICS/fluenceRatioBIC.png Graphic file (type png)
+<use ../PICS/fluenceRatioBIC.png>
+Package pdftex.def Info: ../PICS/fluenceRatioBIC.png  used on input line 143.
+(pdftex.def)             Requested size: 156.48463pt x 113.80232pt.
+<../PICS/fluenceRatioBERT.png, id=326, 899.36pt x 674.52pt>
+File: ../PICS/fluenceRatioBERT.png Graphic file (type png)
+<use ../PICS/fluenceRatioBERT.png>
+Package pdftex.def Info: ../PICS/fluenceRatioBERT.png  used on input line 143.
+(pdftex.def)             Requested size: 156.48463pt x 113.80232pt.
+
+Overfull \hbox (20.41896pt too wide) in paragraph at lines 143--143
+ [] 
+ []
+
+
+Overfull \vbox (8.1832pt too high) detected at line 143
+ []
+
+[11
+
+ <../PICS/fluenceRatioBIC.png> <../PICS/fluenceRatioBERT.png>]
 \tf@nav=\write6
 \openout6 = `CERN_PH-SFT_2018.nav'.
 
@@ -1303,29 +1528,33 @@ LaTeX Font Info:    Font shape `OT1/phv/m/n' will be
 \tf@snm=\write8
 \openout8 = `CERN_PH-SFT_2018.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 39.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 39.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 144.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 144.
 
 (./CERN_PH-SFT_2018.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 39.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 39.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 144.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 144.
 Package rerunfilecheck Info: File `CERN_PH-SFT_2018.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 21224 strings out of 494923
- 412187 string characters out of 6180742
- 479091 words of memory out of 5000000
- 24081 multiletter control sequences out of 15000+600000
- 11891 words of font info for 25 fonts, out of 8000000 for 9000
+ 21520 strings out of 494923
+ 418266 string characters out of 6180742
+ 480089 words of memory out of 5000000
+ 24294 multiletter control sequences out of 15000+600000
+ 37415 words of font info for 78 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 48i,15n,54p,783b,487s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 48i,15n,54p,779b,494s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
-e/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb>
-Output written on CERN_PH-SFT_2018.pdf (2 pages, 37079 bytes).
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/urw/helvetic/uhvro8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
+utmri8a.pfb>
+Output written on CERN_PH-SFT_2018.pdf (11 pages, 341745 bytes).
 PDF statistics:
- 94 PDF objects out of 1000 (max. 8388607)
- 61 compressed objects within 1 object stream
- 5 named destinations out of 1000 (max. 500000)
- 48 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 384 PDF objects out of 1000 (max. 8388607)
+ 317 compressed objects within 4 object streams
+ 40 named destinations out of 1000 (max. 500000)
+ 133 words of extra memory for PDF output out of 10000 (max. 10000000)
 
