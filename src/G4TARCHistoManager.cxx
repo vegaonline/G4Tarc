@@ -60,29 +60,29 @@ G4TARCHistoManager::~G4TARCHistoManager() {
   std::vector<G4double>().swap(fFlux_Energy_in);
   std::vector<G4double>().swap(fFlux_Data_in);
   std::vector<G4double>().swap(fFlux_Syst_Err_in);
-  std::vector<G4double>().swap(fFlux_Low);
-  std::vector<G4double>().swap(fFlux_Low_Radius);
+  //std::vector<G4double>().swap(fFlux_Low);
+  //std::vector<G4double>().swap(fFlux_Low_Radius);
   std::vector<G4double>().swap(fFlux_Low_Energy);
   std::vector<G4double>().swap(fFlux_Low_Energy_in);
   std::vector<G4double>().swap(fFlux_Low_Data);
   std::vector<G4double>().swap(fFlux_Low_Syst_Err);
   //  std::vector<G4double>().swap(fFlux_Lithium);
 
-  std::vector<G4double>().swap(fFlux_Lithium_Radius);
+  //std::vector<G4double>().swap(fFlux_Lithium_Radius);
   std::vector<G4double>().swap(fFlux_Lithium_Energy);
   std::vector<G4double>().swap(fFlux_Lithium_Energy_in);
   std::vector<G4double>().swap(fFlux_Lithium_Data);
   std::vector<G4double>().swap(fFlux_Lithium_Syst_Err);
-  std::vector<G4double>().swap(fFluence1D);
-  std::vector<G4double>().swap(fFluence_Radius);
-  std::vector<G4double>().swap(fFluence_Energy);
-  std::vector<G4double>().swap(fFluence_Data);
-  std::vector<G4double>().swap(fFluence_Syst_Err);
+  //std::vector<G4double>().swap(fFluence1D);
+  //std::vector<G4double>().swap(fFluence_Radius);
+  //std::vector<G4double>().swap(fFluence_Energy);
+  //std::vector<G4double>().swap(fFluence_Data);
+  //std::vector<G4double>().swap(fFluence_Syst_Err);
   std::vector<G4double>().swap(fEflux_Data);
-  std::vector<G4double>().swap(fFine_Energy);
+  //std::vector<G4double>().swap(fFine_Energy);
   std::vector<G4double>().swap(fENflux);
   std::vector<G4double>().swap(fNeutflux);
-  std::vector<G4double>().swap(fFluence_Spectrum);
+  //std::vector<G4double>().swap(fFluence_Spectrum);
   std::vector<G4double>().swap(fLithium_Radial_Energy_Lower);
   std::vector<G4double>().swap(fLithium_Radial_Energy_Upper);
 
@@ -345,7 +345,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
   fFlux_Lithium_Data_in = fFlux_Lithium_Data;
   fFlux_Lithium_Syst_Err_in = fFlux_Lithium_Syst_Err;
 
-    
+
   // This is a test to shrink use of memory
   std::vector<std::vector<G4double> > ().swap(fExptEnergyTables);
   std::vector<std::vector<G4double> > ().swap(fExptFluxTables);
@@ -370,10 +370,6 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
     }
   }
 
-
-
-
-  
   for (std::size_t ij1 = 8; ij1 <= 16; ij1++){ // 8 ~ 49 to 16 ~ 57
     G4int ijE = ij1 - 7;
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
@@ -388,12 +384,12 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
     }
   }
   G4cout << "Experimental data filling complete." << G4endl;
-  
+
   // This is testing of erasing unused vectors
   std::vector<std::vector<G4double> >().swap(fExptFluenceTables);
   std::vector<std::vector<G4double> >().swap(fExptErrTables);
   // This is the end of the test
-  
+
 }
 
 
@@ -463,8 +459,8 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("gstep");      // 10
   fAnalysisManager->CreateNtupleDColumn("gfl_cyl");    // 11
   fAnalysisManager->CreateNtupleDColumn("g4front");    // 12
-  fAnalysisManager->CreateNtupleDColumn("g4_shell");   // 13
-  fAnalysisManager->CreateNtupleDColumn("g4_shell_err");   // 14
+  fAnalysisManager->CreateNtupleDColumn("g4shell");   // 13
+  fAnalysisManager->CreateNtupleDColumn("g4shellerr");   // 14
   fAnalysisManager->FinishNtuple(); // ntupleID: 3
 
   fAnalysisManager->CreateNtuple("h5_Flux_4004", "Neutrons G4TARC flux");
@@ -479,7 +475,8 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("gstep");
   fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
   fAnalysisManager->CreateNtupleDColumn("g4front");
-  fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->CreateNtupleDColumn("g4shell");
+  fAnalysisManager->CreateNtupleDColumn("g4shellerr");
   fAnalysisManager->FinishNtuple(); // ntupleID: 4
 
 
@@ -498,7 +495,7 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("gstep");
   fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
   fAnalysisManager->CreateNtupleDColumn("g4front");
-  fAnalysisManager->CreateNtupleDColumn("g4_shell");
+  fAnalysisManager->CreateNtupleDColumn("g4shell");
   //fAnalysisManager->CreateNtupleDColumn("g4_shell_err");
   fAnalysisManager->FinishNtuple(); // ntupleID: 5
 
@@ -597,7 +594,7 @@ void G4TARCHistoManager::BeginOfRun() {
 
 
 void G4TARCHistoManager::InitVectors(){
-  
+
   if (!fHistoBooked) {
     fAnalysisManager->OpenFile(fAnalysisFileName);
     BookHistogram();
@@ -684,8 +681,8 @@ void G4TARCHistoManager::InitVectors(){
   number_generations = 0;
   fFracBinWidth = 0.2;
 
-  fFluence_Spectrum.resize(1000, 0.0);
-  fFluence.resize(fMaxFluenceTable, std::vector<G4double>(fMaxEBin, 0.0));
+  //fFluence_Spectrum.resize(1000, 0.0);
+  //fFluence.resize(fMaxFluenceTable, std::vector<G4double>(fMaxEBin, 0.0));
   fFluence_Step_Shell.resize(fMaxTestFluxData, 0.0);
   fFluence_Cyl.resize(fMaxTestFluxData, 0.0);
   fFluence_step.resize(fMaxTestFluxData, 0.0);
@@ -696,8 +693,8 @@ void G4TARCHistoManager::InitVectors(){
   //fRadialFluenceStep.resize(fMaxTestFluxData, std::vector<G4double>(fMaxRadCount, 0.0));
   fRadialFluenceStep.resize(fRefShellNumber, std::vector<G4double>(fMaxRadCount, 0.0));
 
-  fFlux_He3.resize(fMaxFluxData, 0.0);
-  fFlux_Low.resize(fMaxFluxData, 0.0);
+  //fFlux_He3.resize(fMaxFluxData, 0.0);
+  //fFlux_Low.resize(fMaxFluxData, 0.0);
   //fFlux_Lithium.resize(fMaxFluxData, 0.0);
   fFlux.resize(fMaxTestFluxData, 0.0);
   fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
@@ -721,7 +718,7 @@ void G4TARCHistoManager::InitVectors(){
   fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
 
   fET.resize(fNbin, std::vector<G4double>(fNbin, 0.0));
-  fEdNdE.resize(fNbin, std::vector<G4double>(fNbin, 0.0));
+  //fEdNdE.resize(fNbin, std::vector<G4double>(fNbin, 0.0));
 
   fGunParticleX   = G4DataVector(fLMax, 0.0);
   fGunParticleY   = G4DataVector(fLMax, 0.0);
@@ -734,7 +731,7 @@ void G4TARCHistoManager::InitVectors(){
   fRangeVector    = G4DataVector(fLMax, 0.0);
   fRhoVector      = G4DataVector(fLMax, 0.0);
   fDeltaVector    = G4DataVector(fLMax, 0.0);
-  fNEfluxBin      = G4DataVector(fMaxBin, 0.0);
+  //fNEfluxBin      = G4DataVector(fMaxBin, 0.0);
   for( G4int ii = 0; ii < fLMax; ii++ ) {
     fRangeVector[ii] = ii * fLBin - 0.5 * fRange; //
     fRhoVector[ii]   = ii * fRho / fLBin;
@@ -810,7 +807,7 @@ void G4TARCHistoManager::EndOfEvent() {
 
 void G4TARCHistoManager::NeutronFluxHistogram(){
 
-  std::ofstream outh5("outh11.dat", std::ios::out);
+  //std::ofstream outh5("outh11.dat", std::ios::out);
 
   fAbsolute_TotalFlux = (fTotal_flux * 1.0e2 *  1.0e9 / (G4double)fNevt) / (fTestSphereSurfaceArea); // for cm^2 conversion
   for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
@@ -882,11 +879,12 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     fAnalysisManager->FillNtupleDColumn(4, 9, 0.0);        // abs low fluence cyl
     fAnalysisManager->FillNtupleDColumn(4, 10, 0.0);           // abs low fluence front
     fAnalysisManager->FillNtupleDColumn(4, 11, fAbsLowFluenceShell);           // abs low fluence shell
+    fAnalysisManager->FillNtupleDColumn(4, 11, fAbsLowFluenceShellError);           // abs low fluence shell error
     fAnalysisManager->AddNtupleRow(4);
 
-    outh5 << fMeanLowEnergy << "  " << fFlux_Low_Data_in[ij1] * 100.0 << "   " << fAbsLowFlux << "  " << fAbsLowFluxPerp
-          << "    " << fAbsLowFluence << "   " << fLow_Flux[ij1] << "  "
-	  << fLow_Fluence_step[ij1] << "    " << fAbsLowFluenceShell << G4endl;
+    //outh5 << fMeanLowEnergy << "  " << fFlux_Low_Data_in[ij1] * 100.0 << "   " << fAbsLowFlux << "  " << fAbsLowFluxPerp
+    //      << "    " << fAbsLowFluence << "   " << fLow_Flux[ij1] << "  "
+	  //  << fLow_Fluence_step[ij1] << "    " << fAbsLowFluenceShell << G4endl;
   }
 
   for (G4int ij1 = 0; ij1 < fMaxFluenceData; ij1++){
@@ -914,7 +912,7 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
     fAnalysisManager->FillNtupleDColumn(5, 4, fAbsLithiumFluxPerp);
     fAnalysisManager->FillNtupleDColumn(5, 5, fAbsLithiumFluence);
     fAnalysisManager->FillNtupleDColumn(5, 6, fAbsErrorLi);
-    fAnalysisManager->FillNtupleDColumn(5, 7, fLithium_Flux[ij1]);
+    fAnalysisManager->FillNtupleDColumn(5, 7, fLithium_Flux[ij1] * 100.0);
     fAnalysisManager->FillNtupleDColumn(5, 8, fLithium_Fluence_Step[ij1]);
     fAnalysisManager->FillNtupleDColumn(5, 9, 0.0);
     fAnalysisManager->FillNtupleDColumn(5, 10, 0.0);
@@ -928,7 +926,7 @@ void G4TARCHistoManager::NeutronFluxHistogram(){
       fAnalysisManager->AddNtupleRow(13);
     }
   }
-  outh5.close();
+  //outh5.close();
 }
 
 void G4TARCHistoManager::RadialFluxHistogram(){
@@ -1202,8 +1200,10 @@ void G4TARCHistoManager::NeutFinalState(const G4Track* myTrack){   //}, const G4
   G4int ii, jj;
 
   if (myTrack->GetDynamicParticle()->GetDefinition()->GetParticleName() == "neutron"){
-	if ((myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log")
-       || (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockA_log")) fNeutronSum+= 1.0;
+	//if ((myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockB_log")
+  //     || (myTrack->GetLogicalVolumeAtVertex()->GetName() == "blockA_log"))
+  if (myTrack->GetLogicalVolumeAtVertex()->GetName() == "sampleSphere_log") fNeutronBreed += 1.0;
+       fNeutronSum+= 1.0;
 
     // future plan for neutron breed at breeder with X
     TKin = myTrack->GetDynamicParticle()->GetKineticEnergy();
@@ -1399,15 +1399,18 @@ void G4TARCHistoManager::WriteEventRange(G4ThreeVector rsum, G4double lsum, G4do
 template <typename T>
 void G4TARCHistoManager::Check10s(T inVal, T &outVal, G4String &uniStr){
   G4int iresult = 0;
-  div_t divresult = div((inVal / MeV), 1000);
+  //G4cout << "IN ---->" << inVal << "       ";
+  //inVal /= eV;
+  //G4cout << "  ==   " << inVal << "       ";
+  div_t divresult = div(inVal, 1000000000);
   if (divresult.quot >= 1){
     iresult = 9;  // unit = Giga
   } else {
-    divresult = div((inVal / keV), 1000);
+    divresult = div(inVal, 1000000);
     if (divresult.quot >=1){
       iresult = 6;   // Mega
     } else {
-      divresult = div((inVal / eV), 1000);
+      divresult = div(inVal, 1000);
       if (divresult.quot >= 1) {
         iresult = 3;   // kilo
       } else {
@@ -1415,12 +1418,18 @@ void G4TARCHistoManager::Check10s(T inVal, T &outVal, G4String &uniStr){
       }
     }
   }
-  switch(iresult){
+  switch(iresult){/*
     case 9: outVal = inVal / GeV; uniStr = " GeV"; break;
     case 6: outVal = inVal / MeV; uniStr = " MeV"; break;
     case 3: outVal = inVal / keV; uniStr = " keV"; break;
     case 1: outVal = inVal; uniStr = " eV"; break;
+    */
+    case 9: outVal = inVal / 1.0e9; uniStr = " GeV"; break;
+    case 6: outVal = inVal / 1.0e6; uniStr = " MeV"; break;
+    case 3: outVal = inVal / 1.0e3; uniStr = " keV"; break;
+    case 1: outVal = inVal; uniStr = " eV"; break;
   }
+  //G4cout << "Out---->" << outVal << "    " << uniStr << G4endl;
 }
 
 void G4TARCHistoManager::TrackRun(G4double x) {
@@ -1453,7 +1462,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   G4double trVal = 0.0;
   G4String enerUnit = "";
   Check10s(fEdepSum, trVal, enerUnit);
-  trackout << "  Per event data:" << G4endl;
+  trackout << "Per event data:" << G4endl;
   trackout << std::setprecision(4) << "Energy Deposited <mean> " << trVal << enerUnit;
   Check10s(fEdepSum2, trVal, enerUnit);
   trackout << "  <rms> " << trVal << enerUnit <<  G4endl;
@@ -1461,7 +1470,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << "Beam energy = " << trVal << enerUnit << G4endl;
   trackout << "                                                                        "  << G4endl;
 
-  trackout << " Production in Target (per event):"        << "                                     "  << G4endl;
+  trackout << "Production in Target (per event):"        << "                                     "  << G4endl;
   trackout << std::setprecision(4) << "Average Number of steps: "       << xStep             << G4endl;
   trackout << std::setprecision(4) << "Average Number of Gammas: "      << xGamma            << G4endl;
   trackout << std::setprecision(4) << "Average Number of Electrons: "   << xElectron         << G4endl;
@@ -1475,7 +1484,7 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << std::setprecision(4) << "Average Number of ions: "        << xIons             << G4endl;
   trackout << "                                                      "  << "              "  << G4endl;
 
-  trackout << " Leakage from the system (per event): "                                            << G4endl;
+  trackout << "Leakage from the system (per event): "                                            << G4endl;
   trackout << std::setprecision(4) << "Average Number of forward Neutrons: "      << xneuF        << G4endl;
   trackout << std::setprecision(4) << "Average Number of reflected Neutrons: "    << xneuB        << G4endl;
   //trackout << std::setprecision(4) << "Average Number of other leaked Neutrons " << xNeutronLeak << G4endl;
@@ -1491,12 +1500,16 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << "Exiting flux : " << fExiting_Flux << G4endl;
   Check10s(fExiting_Energy, trVal, enerUnit);
   trackout << "Total Exiting Energy : " << trVal << enerUnit << G4endl;
+
+  //G4cout << Check10s(fAnalysisManager->GetH1(1)->mean(), trVal, enerUnit) << G4endl;;
+  G4cout << fAnalysisManager->GetH1(1)->mean() << G4endl;
   Check10s(fAnalysisManager->GetH1(1)->mean(), trVal, enerUnit);
-  trackout << " Gamma Edep <mean> : " << trVal << enerUnit;
+  G4cout << trVal << "  " << enerUnit << G4endl;
+  trackout << "Gamma Edep <mean> : " << trVal << enerUnit;
   Check10s(fAnalysisManager->GetH1(1)->rms(), trVal, enerUnit);
-   trackout << " rms: " << trVal << enerUnit << G4endl;
-  trackout << "Neutron Lethargy <mean> : " << fAnalysisManager->GetH1(2)->mean() << " rms: " << fAnalysisManager->GetH1(2)->rms()  << G4endl;
-  trackout << " Integral Neutron Flux at 46 cm: " << fIntegral_flux_46cm << G4endl;
+   trackout << " RMS: " << trVal << enerUnit << G4endl;
+  trackout << "Neutron Lethargy <mean> : " << fAnalysisManager->GetH1(2)->mean() << " RMS: " << fAnalysisManager->GetH1(2)->rms()  << G4endl;
+  trackout << "Integral Neutron Flux at 46 cm: " << fIntegral_flux_46cm << G4endl << G4endl;
   //trackout << " Integral Neutron Flux at 5 cm: " << fIntegral_flux_5cm << G4endl;
   trackout << "==========================================================" << G4endl;
 
@@ -1512,6 +1525,17 @@ void G4TARCHistoManager::TrackRun(G4double x) {
   trackout << " kEffective = "        << kEffective         << ",  Rho = "            << rho                << G4endl;
   trackout << " Estimated reactivity = " << react                                    << G4endl             << G4endl;
   trackout << "==========================================================================================" << G4endl;
+  trackout << G4endl;
+
+  kEffective = (fNeutronInit!= 0.0) ? fNeutronBreed / fNeutronInit : 0.0;
+  rho        =  (kEffective != 0.0) ? (kEffective - 1.0) / kEffective : 0.0;  // reactivity :: deviation from criticality
+  rat        = (kEffective != 0.0) ? std::log(kEffective) : 0.0;
+  react      = rat / (1.0 + rat);
+  trackout << " IMP Parameters : "    << G4endl;
+  trackout << " NeutronBreed/p = "    << fNeutronBreed* perN << ",  Neutron_Init/p = " << fNeutronInit * perN << G4endl;
+  trackout << " kEffective = "        << kEffective         << ",  Rho = "            << rho                << G4endl;
+  trackout << " Estimated reactivity = " << react                                    << G4endl             << G4endl;
+  trackout << "==========================================================" << G4endl;
   trackout << G4endl;
 
   //G4cout << "T:: max  " << testMax1 << "  min " << testMin1 << " E:: max " << testMax2 << "  min " << testMin2 << G4endl;
@@ -1606,14 +1630,14 @@ void G4TARCHistoManager::GunParticleRun(G4double x) {
 
 void G4TARCHistoManager::StartProcessing(){
   G4double fMeanEnergy = 0.0;
-  G4int j = 0;
+  //G4int j = 0;
 
   //G4cout << "Entered in StartProcessing. " << " MaxTestFluxData: " << fMaxTestFluxData << G4endl;
   for (G4int ii1 = 0; ii1 < (fMaxTestFluxData - 1); ii1++){
     fMeanEnergy = 0.5 * (fFlux_Energy[ii1] + fFlux_Energy_in[ii1 + 1]);
     fEflux_Data.push_back(fMeanEnergy * fFlux_Data_in[ii1]);
     fEflux_Integral += fFlux_Data_in[ii1] * fMeanEnergy;      ///1.0e6;
-    fFine_Energy.push_back(fMeanEnergy);
+    //fFine_Energy.push_back(fMeanEnergy);
   }
   //fEflux_Data.push_back(fFlux_Energy[fMaxTestFluxData - 1] * fFlux_Data_in[fMaxTestFluxData - 1]);
 
@@ -1628,7 +1652,8 @@ void G4TARCHistoManager::StartProcessing(){
   //G4cout << "LowE: " << fFlux_Low_Energy.size() << " Li_E: " << fFlux_Lithium_Energy.size()
   //     << "  BINWidth:   " << fBinWidth << G4endl; //exit(0);
 
-  G4int kIndex= 0, mIndex = 0;
+  //G4int kIndex= 0;
+  G4int mIndex = 0;
   for (std::size_t ii = 0; ii < fFlux_Low_Energy.size(); ii++)  fFlux_Low_Energy[ii + 1] = std::exp(fBinWidth + std::log(fFlux_Low_Energy[ii]));
 
   for(std::size_t ii = 0; ii <= fFlux_Lithium_Energy.size(); ii++){  // this = is imp as it generates the last item that satisfies the condition
@@ -1731,7 +1756,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
   G4double fParticleEnergy = myStep->GetPreStepPoint()->GetKineticEnergy();
   G4double fParticleTime   = myStep->GetPreStepPoint()->GetGlobalTime();
   G4double fParticleMomentum = myStep->GetPreStepPoint()->GetMomentum().mag();
-  G4double fZMomentum = myStep->GetPreStepPoint()->GetMomentum().z();
+  //G4double fZMomentum = myStep->GetPreStepPoint()->GetMomentum().z();
   G4double angle = myStep->GetPreStepPoint()->GetMomentum().angle(myStep->GetPreStepPoint()->GetPosition());
   G4double cosAngle = std::abs(cos(angle));
   //G4int thisTrackID = myStep->GetTrack()->GetTrackID();
@@ -1827,8 +1852,7 @@ void G4TARCHistoManager::ProcessStepping(const G4Step* myStep){
 
     if (vol == "sample_phys" || vol == "sampleTube_phys" || vol == "sample_phys2"){
       G4double radValue = fRefShellOuterRad;
-      analyseNeutronFluence(fParticleEnergy, fParticleName, fParticleTime, fZMomentum, thisTrackID, radValue, StepLength,
-        parentTrackID, primEnergy, 0.0, fParticleName, true, number_generations);
+      analyseNeutronFluence(fParticleEnergy, fParticleTime,  thisTrackID, radValue, StepLength,  parentTrackID, primEnergy,  fParticleName);
     }
 
     //for (std::size_t ii = 0; ii < fFluxRadTables.size(); ++ii){
@@ -1973,7 +1997,7 @@ void G4TARCHistoManager::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackI
         G4int nVal = (G4int)((2.0 + std::log10(tempEnergy)) / 0.09);
         if (nVal < 0) nVal = 0;
         if (nVal < fMaxFluxData) {
-          fFluence_Spectrum[nVal] += 1.0 /std::abs(cosAngleL);
+          //fFluence_Spectrum[nVal] += 1.0 /std::abs(cosAngleL);
           if (nVal > fNmax) fNmax = nVal;
         }
         if (tempEnergy > 0.0194 && tempEnergy < 1.0e5){
@@ -2060,9 +2084,12 @@ void G4TARCHistoManager::analyseNeutronShellFluence(G4double energyL, G4double S
   }
 
 
-void G4TARCHistoManager::analyseNeutronFluence(G4double energyL, G4String& nameL, G4double timeL, G4double momentumL,
-  G4int thisTrackIDL, G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double primaryEnergyL,
-  G4double parentEnergyL, G4String& parentParticleL, G4bool reduced_fluxL,  G4int number_generationsL){
+//void G4TARCHistoManager::analyseNeutronFluence(G4double energyL, G4String& nameL, G4double timeL, G4double momentumL,
+//  G4int thisTrackIDL, G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double primaryEnergyL,
+//  G4double parentEnergyL, G4String& parentParticleL, G4bool reduced_fluxL,  G4int number_generationsL){
+
+void G4TARCHistoManager::analyseNeutronFluence(G4double energyL, G4double timeL, G4int thisTrackIDL,
+  G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL){
 
     G4int iParent = 0;
     G4double fTempT    = timeL / microsecond;

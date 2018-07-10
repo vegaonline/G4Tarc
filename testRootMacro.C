@@ -93,9 +93,9 @@ void testRootMacro() {
     flux4002->GetEntry(irow);
     flux4002->SetBranchAddress("eflux", &eflux);
     flux4002->GetEntry(irow);
-    flux4002->SetBranchAddress("g4_shell", &g4shell);
+    flux4002->SetBranchAddress("g4shell", &g4shell);
     flux4002->GetEntry(irow);
-    flux4002->SetBranchAddress("g4_shell_err", &g4shellerr);
+    flux4002->SetBranchAddress("g4shellerr", &g4shellerr);
     flux4002->GetEntry(irow);
 
     TARCDataFluenceHi->Fill(energy, tarcflux);
@@ -133,7 +133,7 @@ void testRootMacro() {
     flux4004->GetEntry(irow);
     flux4004->SetBranchAddress("rawflux", &rawflux);
     flux4004->GetEntry(irow);
-    flux4004->SetBranchAddress("g4_shell", &g4shell);
+    flux4004->SetBranchAddress("g4shell", &g4shell);
     flux4004->GetEntry(irow);
     //flux4004->SetBranchAddress("g4err", &g4Err);
     //flux4004->GetEntry(irow);
@@ -179,7 +179,7 @@ void testRootMacro() {
     flux4005->GetEntry(irow);
     //flux4005->SetBranchAddress("g4err", &g4Err);
     //flux4005->GetEntry(irow);
-    flux4005->SetBranchAddress("g4_shell", &g4shell);
+    flux4005->SetBranchAddress("g4shell", &g4shell);
     flux4005->GetEntry(irow);
 
     TARCDataFluenceLi->Fill(energy, tarcflux);
