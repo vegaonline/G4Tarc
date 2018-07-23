@@ -65,7 +65,7 @@ class G4TARCVolumeSD;
 class G4TARCParallelWorld : public G4VUserParallelWorld {
 public:
   G4TARCParallelWorld (G4String&);
-  virtual ~G4TARCParallelWorld() { std::vector<G4LogicalVolume*>().swap(fLVvector); };
+  virtual ~G4TARCParallelWorld();
 
 public:
   virtual void Construct();

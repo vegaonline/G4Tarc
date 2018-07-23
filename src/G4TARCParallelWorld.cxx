@@ -11,6 +11,12 @@ G4TARCParallelWorld::G4TARCParallelWorld( G4String& tarcParallelWorld)
 : G4VUserParallelWorld( tarcParallelWorld), fConstructed(false) {
 }
 
+G4TARCParallelWorld::~G4TARCParallelWorld() {
+  std::vector<G4LogicalVolume*>().swap(fLVvector);
+  std::vector<G4double>().swap(fInnerRadiusofShell);
+  std::vector<G4double>().swap(fOuterRadiusofShell);
+}
+
 // Here defining concentric shells of finite thickness
 void G4TARCParallelWorld::DefineShellsBlocks() {
   fHalfXBlockB           =     0.5 * 300 * mm;

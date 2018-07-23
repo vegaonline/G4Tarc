@@ -81,7 +81,7 @@ void PrintUsage() {
          << G4endl;
   G4cerr << "\t \t Here -t option is available for multithreaded mode only." << G4endl;
   G4cerr << "The geometry that can be used from GeomData directory is :" << G4endl;
-  G4cerr << system("ls -l GeomData/");
+  G4cerr << system("ls -l Data/GeomData/");
   G4cerr << G4endl;
 }
 

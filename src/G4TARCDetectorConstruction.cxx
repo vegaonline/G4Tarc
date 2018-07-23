@@ -43,6 +43,8 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
 
   // Declaring SD for whole volume
   fLVS = G4LogicalVolumeStore::GetInstance();
+  G4String sslog  = "sampleSphere_log";
+  G4String sslog2 = "sampleSphere_log2";
   for(fLVciter = fLVS->begin(); fLVciter != fLVS->end(); fLVciter++) {
     G4String LVName = (*fLVciter)->GetName();
     std::size_t found1 = LVName.find("blockA_log");
@@ -54,7 +56,7 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
      || (found3 != std::string::npos) || (found4 != std::string::npos)
      || (found5 != std::string::npos)
     ){
-      if (LVName.find("sampleSphere_log") != std::string::npos){
+      if ((LVName.find(sslog) != std::string::npos) || (LVName.find(sslog2) != std::string::npos)){
         (*fLVciter)->SetMaterial(fTc99);
         (*fLVciter)->SetVisAttributes(new G4Colour(1.0, 0.5, 0.5));
       }
@@ -87,6 +89,9 @@ void G4TARCDetectorConstruction::ConstructSDandField() {
   G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
   static G4ThreadLocal G4bool initialized = false;
 
+  G4String sslog  = "sampleSphere_log";
+  G4String sslog2 = "sampleSphere_log2";
+
   if (!initialized){
     G4TARCVolumeSD* fAllBlocksSD = new G4TARCVolumeSD("AllVolSD");
     (G4SDManager::GetSDMpointer())->AddNewDetector(fAllBlocksSD);
@@ -100,7 +105,7 @@ void G4TARCDetectorConstruction::ConstructSDandField() {
     for (std::vector<G4LogicalVolume*>::iterator it = fLVvectorMini.begin(); it != fLVvectorMini.end(); ++it) {
       if ((*it)->GetName().find("blockB_log")!=std::string::npos){
         SetSensitiveDetector( (*it)->GetName(), fBlockBSD);
-      } else if ((*it)->GetName().find("sampleSphere_log")!=std::string::npos) {
+      } else if (((*it)->GetName().find(sslog)!=std::string::npos) ||((*it)->GetName().find(sslog2) != std::string::npos)){
         SetSensitiveDetector( (*it)->GetName(), fTransmutSD);
       } else {
         SetSensitiveDetector( (*it)->GetName(), fAllBlocksSD);

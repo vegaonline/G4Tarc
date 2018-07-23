@@ -14,13 +14,15 @@ void testRootMacro() {
   TFile*   tf1 = TFile::Open("res.root");
 
   TH2* hgGamma                  = (TH2*) tf1->Get("Gamma");
-  TH2* hgNeutEnergy           = (TH2*) tf1->Get("NeutronEnergy");
-  TH2* hgElectronEnergy     = (TH2*) tf1->Get("ElectronEdep");
-  TH2* hgPositEnergy          = (TH2*) tf1->Get("PositronEdep");
-  TH2* hgNeutEnergyTime  = (TH2*) tf1->Get("NeutronEnergyTime");
-  TH2* hgOtherEnergyTime = (TH2*) tf1->Get("OtherParticleEnergyTime");
-  TH2* histo1                        = (TH2*)tf1->Get("Gamma");
-  TH2* histo2                        = (TH2*)tf1->Get("NeutronEnergy");
+  TH2* hgNeutEnergy             = (TH2*) tf1->Get("NeutronEnergy");
+  TH2* hgElectronEnergy         = (TH2*) tf1->Get("ElectronEdep");
+  TH2* hgPositEnergy            = (TH2*) tf1->Get("PositronEdep");
+  TH2* hgNeutEnergyTime         = (TH2*) tf1->Get("NeutronET");
+  TH2* hgOtherEnergyTime        = (TH2*) tf1->Get("OtherPartET");
+  TH2* hgOtherEnergy            = (TH2*) tf1->Get("OtherEdep");
+  TH2* hgNeutronStack           = (TH2*) tf1->Get("ParticleStack");
+  TH2* histo1                   = (TH2*)tf1->Get("Gamma");
+  TH2* histo2                   = (TH2*)tf1->Get("NeutronEnergy");
 
   TNtuple* exitingTuple        = (TNtuple*) tf1->Get("h3_N_Exiting");
   TNtuple* flux4002             = (TNtuple*) tf1->Get("h4_Flux_4002");
@@ -45,7 +47,7 @@ void testRootMacro() {
     fXbinLo[i] = std::exp(fBinWidth + std::log(fXbinLo[i-1]));
   }
 
-  TH1F* ExitingSpec            = new TH1F("ExitSpect", "TARC Exiting Neutron Spectrum", 100, 0.01, 2.0);
+  TH1F* ExitingSpec            = new TH1F("ExitSpect", "TARC Exiting Neutron Spectrum", 300, 0.01, 1.5);
 
   TH1F* TARCDataFluenceHi      =  new TH1F("FluenceDataHi", "TARC Fluence Data (High)", (xHiCnt - 1), fXbinHi);
   TH1F* TARCDataFluenceHe3     =  new TH1F("FluenceDataHe", "TARC Fluence Data (He3)", (xLoCnt - 1), fXbinLo);
@@ -271,12 +273,12 @@ void testRootMacro() {
 
   c0->cd(4); // Bottom Right gPad
   gPad->SetLogx();
-  //gPad->SetLogy();
+  gPad->SetLogy();
   //hgGamma->Draw("COLZ");
   hgNeutEnergy->SetTitle("Neutron Deposition");
   hgNeutEnergy->SetLineColor(kRed);
   hgNeutEnergy->SetMarkerColor(kRed);
-  hgNeutEnergy->Draw("COLZ");
+  hgNeutEnergy->Draw("SAME COLZ");
   hgNeutEnergy->GetXaxis()->SetTitle("log10(Energy (eV))");
   hgNeutEnergy->GetXaxis()->SetTitleSize(0.03);
   hgNeutEnergy->GetXaxis()->SetTitleOffset(1.2);
@@ -456,6 +458,8 @@ void testRootMacro() {
   gStyle->SetHistLineWidth(3);
   gStyle->SetLineWidth(0.3);
   gStyle->SetTitleX(0.2);
+  //gPad->SetLogx();
+  gPad->SetLogy();
   hgPositEnergy->SetTitle("Positron Deposition");
   hgPositEnergy->SetMarkerStyle(7);
   hgPositEnergy->SetMarkerColor(kBlue);
@@ -511,6 +515,7 @@ void testRootMacro() {
   gStyle->SetHistLineWidth(3);
   gStyle->SetLineWidth(0.3);
   gStyle->SetTitleX(0.2);
+  //gPad->DrawFrame(-2, 4, -3, 5, "; Energy(eV), Time (#mus)")->GetXaxis()->SetTitleOffset(1.2);
   hgOtherEnergyTime->SetMarkerStyle(7);
   hgOtherEnergyTime->SetMarkerColor(kBlue);
   hgOtherEnergyTime->SetLineColor(kBlue);
@@ -571,9 +576,45 @@ void testRootMacro() {
   legend->AddEntry(tarcRadHe3,"Distribution for He3 Data","ep");
   legend->AddEntry(tarcRadLi,"Distribution for Li data","ep");   // ep for errors and points
   legend->Draw();
-
   c10->Print("TARC_Output_radial_X.png");
   c10->Close();
+
+  TCanvas* c11 = new TCanvas("c11", "TARC Neutron Stack", 800, 600);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetLineWidth(0.3);
+  gStyle->SetTitleX(0.2);
+  hgNeutronStack->Print();
+  gPad->SetLogx();
+  gPad->SetLogy();
+  hgNeutronStack->SetMarkerStyle(7);
+  hgNeutronStack->SetMarkerColor(kBlue);
+  hgNeutronStack->GetXaxis()->SetTitle("Time (#mus)");
+  hgNeutronStack->GetYaxis()->SetTitle("Counts/10#{^9} p");
+  hgNeutronStack->Draw();
+  c11->Print("TARC_Neutron_Stack.png");
+  c11->Close();
+
+  TCanvas* c12 = new TCanvas("c12", "TARC Other Energy Deposition", 800, 600);
+  c12->Divide(2,1);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetLineWidth(0.3);
+  gStyle->SetTitleX(0.2);
+  hgOtherEnergy->SetMarkerStyle(7);
+  hgOtherEnergy->SetMarkerColor(kBlue);
+  hgOtherEnergy->GetXaxis()->SetTitle("Energy (eV)");
+//  hgOtherEnergy->GetYaxis()->SetTitle("");
+  c12->cd(1);
+  gPad->SetLogx();
+  hgOtherEnergy->Draw();
+  c12->cd(2);
+  gPad->SetLogx();
+  gPad->SetLogy();
+  h1 = hgOtherEnergy->DrawCopy();
+  h1->GetXaxis()->SetTitle("log10(Energy (eV)");
+  c1->cd(0);
+  c12->Print("TARC_Other_Edep.png");
+  c12->Close();
+
 
   tf1->Close();
 

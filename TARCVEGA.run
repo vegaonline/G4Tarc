@@ -29,4 +29,4 @@ export PHYSLIST="QGSP_BIC_HP"
 #export dateStr="histo"_`date +%d_%m_%Y`
 #mkdir -p $dateStr
 
-./tarcVega Data/GeomData/tarc_geometry.gdml -m $1
+time ./tarcVega Data/GeomData/tarc_geometry.gdml -m $1

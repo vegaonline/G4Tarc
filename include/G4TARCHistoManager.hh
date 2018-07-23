@@ -94,7 +94,7 @@ public:
 
   void TargetProfile(const G4Track*);   // , const G4Step*);
   void AddEnergyTime(const G4Track*);   //, const G4Step*);
-  void AddEnergyTimeHole(const G4Track*, const G4Step*);
+  void AddEnergyTimeHole(const G4Track*);    //      , const G4Step*);
   void AddNzero( const G4Track*);
   void GunParticleDistribution ( const G4Step* );
   void WriteEventRange(G4ThreeVector, G4double, G4double);
@@ -151,6 +151,7 @@ private:
   G4bool                      fStartHisto;
   G4bool                      fNtuple_full;
   G4bool                      fReadData;
+  G4bool                      fInitialized;
 
   G4String                    fRootFileName;
   static G4TARCHistoManager*  fHistoManager;
@@ -161,16 +162,17 @@ private:
   const G4ParticleDefinition* fProton;
 
   G4double fTotVolVBox  = (150.0 * mm) * (150.0 * mm) * (300.0 * mm);  // volume of virtual box around holes
-  G4double fMaxLVal     = 5000.0 * mm;
-  G4double fMaxEVal     = 8000.0 * CLHEP::MeV;
-  G4double fEVal0       = 4000.0 * CLHEP::MeV;
-  G4int    fNumMax      = 1000;  // for fE/Msecond etc.
-  G4int    fMaxBin      = 100;
-  G4int    fMaxEBin     = 10000;
-  G4int    fStepE       = (fMaxEVal / fMaxBin);
+  G4double fMaxLVal     = 3000.0 * mm;
+  G4double fMaxEVal     = 3000.0 * CLHEP::MeV;
+  G4double fEVal0       = 3000.0 * CLHEP::MeV;
+  //G4int    fNumMax      = 200;  // for fE/Msecond etc.
+  G4int    fMaxBin      = 500;
+  G4int    fNbin        = fMaxBin;
+  // G4int    fMaxEBin     = 200;
+  //G4int    fStepE       = (fMaxEVal / fMaxBin);
   G4int    fMaxSlices   = 3 * fMaxBin;
   //G4int    fNHisto      = 25;
-  G4int    fMaxNdx      = 10000;
+  //G4int    fMaxNdx      = 500;
   G4int    fMaxFluenceTable = 0;
   G4double fMyTol       = 1.0e-9*mm;
   G4double fMyRadTol    = 1.0e-6*mm;
@@ -229,6 +231,7 @@ private:
   G4int fNneu_leak;
   G4int fNneu_back;
   G4int fNeutronStack;
+  G4int fNeutCap;
   G4int fNpions;
   G4int fNpi0;
   G4int fNkaons;
@@ -280,8 +283,6 @@ private:
 
   G4PhysicsLogVector fNEsecond;
   G4PhysicsLogVector fNTsecond;
-
-  G4int             fNbin;
 //--------------------------------------------------------
   G4AnalysisManager*                    fAnalysisManager;
   G4String                                        fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
@@ -420,14 +421,14 @@ private:
   std::vector<G4double>                  fFluence_Step_Shell;
   std::vector<G4double>                  fFluence_step;
   std::vector<G4double>                  fLithium_Flux;
-  std::vector<G4double>                  fHe3_Flux;
-  std::vector<G4double>                  fCos_He3_Flux;
+  //std::vector<G4double>                  fHe3_Flux;
+  // std::vector<G4double>                  fCos_He3_Flux;
   std::vector<G4double>                  fCos_Lithium_Flux;
   std::vector<G4double>                  fLow_Flux;
   std::vector<G4double>                  fCos_Low_Flux;
   std::vector<G4double>                  fCos_Flux;
   std::vector<G4double>                  fEFlux;
-  std::vector<G4double>                  fFluence_Cyl;
+  //std::vector<G4double>                  fFluence_Cyl;
   std::vector<G4double>                  fLow_Fluence_step;
 
 //  G4double testMax1 = -99999999.99e8, testMax2 = testMax1, testMin1 = -testMax1, testMin2 = testMin1;    // for histo check
