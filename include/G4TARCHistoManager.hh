@@ -104,6 +104,7 @@ public:
   void TrackRun(G4double);
   void NeutronRun(G4double);
   void GunParticleRun(G4double);
+
   //void Fill(G4int, G4double, G4double);
 
   void InitVectors();
@@ -148,6 +149,16 @@ public:
   inline void SetHistoBooked( G4bool val)                 { fHistoBooked = val;}
 
 private:
+
+  std::ofstream dumpResult1;
+  std::ofstream dumpResult2;
+  std::ofstream dumpResult3;
+  std::ofstream dumpResult4;
+  std::ofstream dumpResult5;
+  std::ofstream dumpResult6;
+  std::ofstream dumpResult7;
+  std::ofstream dumpResult8;
+
   G4bool                      fStartHisto;
   G4bool                      fNtuple_full;
   G4bool                      fReadData;
@@ -328,7 +339,7 @@ private:
   G4double                               fTARC_Integral, fTARC_Integral_E, fTARC_lithium, fTARC_lithium_IntegralData, fTARC_lithium_E;
   G4double                               fTARC_helium, fTARC_helium_E, fEflux_Integral, fTARC_Integral_Eflux_46cm;
   G4double                               fTotal_flux;
-  G4double fAbs_Int_Scint_E;
+  G4double                               fAbs_Int_Scint_E;
 
   G4bool flag;
   std::map<G4int, G4double, std::less<G4int> > fParentEnergy;
@@ -361,6 +372,17 @@ private:
   std::vector< std::vector<G4double> >   fExptFluxErrTables;
   std::vector< std::vector<G4double> >   fFlux_Radius;
   std::vector<std::vector<G4double> >    fRadialFluenceStep;
+
+  G4long fI4002 = 0, fI4004 = 0, fI4005 = 0, fIRSF = 0, fINET = 0, fIOET = 0, fISecPart = 0, fIspallNeut = 0;
+
+  std::vector<std::vector<G4double> > fVecFlux4002;   //  Ntuple::3
+  std::vector<std::vector<G4double> > fVecFlux4004;   //  NTuple::4
+  std::vector<std::vector<G4double> > fVecFlux4005;   // NTuple::5
+  std::vector<std::vector<G4double> > fVecRadShellFluence;   // NTuple::8
+  std::vector<std::vector<G4double> > fVecNeutronET;  // Ntuple 1
+  std::vector<std::vector<G4double> > fVecOtherET;  // Ntuple 14
+  std::vector<std::vector<G4double> > fVecSecPart;
+  std::vector<std::vector<G4double> > fVecSpallNeut;
 
 
   std::vector< G4double>                 fExptEnergyBin;
