@@ -222,12 +222,13 @@ void RootMacroNew() {
   c0->cd(2); // Right Top gPad
   gPad->SetLogx();
   gPad->SetLogy();
-  TARCG4FluenceLi->SetTitle("G4 Fluence Li Data");
+  TARCG4FluenceLi->SetTitle("G4 Flux Li Data");
+  TARCG4FluenceLi->SetMarkerStyle(3);
   TARCG4FluenceLi->GetXaxis()->SetTitle("Energy / eV");
   TARCG4FluenceLi->GetYaxis()->SetTitle("Flux ( dN/dE / source gamma)");
   TARCG4FluenceLi->GetYaxis()->SetTitleOffset(1.4);
   TARCG4FluenceLi->SetLineColor(kBlue - 2);
-  TARCG4FluenceLi->Draw("SAME");
+  TARCG4FluenceLi->Draw("SAME E1");
    
   c0->cd(3); // Left Bottom gPad
   gPad->SetLogx();
@@ -274,9 +275,10 @@ void RootMacroNew() {
   NeutEnergy->SetMarkerColor(kRed);
   NeutEnergy->Draw("SAME COLZ");
   NeutEnergy->GetXaxis()->SetTitle("log10(Energy (eV))");
+  NeutEnergy->GetYaxis()->SetTitle("log10(Flux(dN/dE))");
   NeutEnergy->GetXaxis()->SetTitleSize(0.03);
   NeutEnergy->GetXaxis()->SetTitleOffset(1.2);
-  NeutEnergy->GetYaxis()->SetTitle("Neutrons");
+  //NeutEnergy->GetYaxis()->SetTitle("Neutrons");
   NeutEnergy->GetYaxis()->SetTitleOffset(1.3);
 
   c0->Print("TARC_Report_Summary.png");
@@ -339,7 +341,7 @@ void RootMacroNew() {
   tlx->SetNDC(kTRUE);
   tlx->Draw();
    
-  gPad->DrawFrame(5.0e-2, 1.0e-5, 5e6, 1.0e-1,"; log10(Energy/eV); G4 Shell / Data")->GetXaxis()->SetTitleOffset(1.2);
+  gPad->DrawFrame(5.0e-4, 1.0e-5, 5e6, 5.0e-2,"; log10(Energy/eV); G4 Shell / Data")->GetXaxis()->SetTitleOffset(1.2);
   //gPad->DrawFrame(4e4, 1.0e-3, 5e6, 5.0e-1,"; Energy/eV; G4/Data")->GetXaxis()->SetTitleOffset(1.2);  // for the Hi Data
   TARCG4RatioHi->SetMarkerColor(kRed);
   TARCG4RatioHi->SetMarkerStyle(kFullCircle);
