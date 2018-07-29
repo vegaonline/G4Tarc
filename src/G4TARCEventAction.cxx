@@ -1,15 +1,7 @@
 #include "G4TARCEventAction.hh"
 
 G4TARCEventAction::G4TARCEventAction()
-: G4UserEventAction()
-//  ,fEventMessenger(0),
-//  fUITARC(0),
-//  fHisto(0),
-//  fSelectedEvents(0),
-//  fPrintModulo(1),
-//  fSelected(0),
-//  fDebugStarted(false)
-  {
+: G4UserEventAction() fNeutronStack(0)  {
     fDebugStarted = false;
     fEventMessenger = new G4TARCEventActionMessenger (this);
     fUITARC = G4UImanager::GetUIpointer();
@@ -23,8 +15,14 @@ G4TARCEventAction::~G4TARCEventAction() {
 }
 
 void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
-  G4int nEvt = evt->GetEventID();
+  fEventID = evt->GetEventID();
+  fNeutronStack = 0;
 
+  if (fEventID % fPrintModulo == 0) G4cout << " Begin of Event:  " << fEventID << G4endl;
+
+
+
+/*
   if ( fSelected > 0 ){
     for (G4int i = 0; i < fSelected; ++i ) {
       if ( nEvt == fSelectedEvents[i] ){
@@ -39,10 +37,18 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
     G4cout << "EventAction: Event # " << nEvt << " started "  << G4endl;
   }
   fHisto->BeginOfEvent(nEvt);
+*/
 }
 
 
 void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
+  G4TARCRun* thisRun = static_cast<G4Run*> (G4G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+
+  thisRun->FillPerEvent(999.);
+  G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+  fAnalysisManager->FillH1(6, fNeutronStack);
+  if (fEventID % fPrintModulo == 0) G4cout << " End of event: " << fEventID << G4endl;
+  /*
   G4int nEvt = evt->GetEventID();
   if ( fDebugStarted ){
     fUITARC->ApplyCommand("/tracking/verbose 0");
@@ -51,4 +57,5 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
   }
   fHisto->EndOfEvent();
   if (fHisto->GetVerbose() > 1) G4cout << "   EventAction: Event # " << nEvt << " ended." <<G4endl;
+  */
 }

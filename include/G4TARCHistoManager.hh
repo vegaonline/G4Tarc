@@ -108,31 +108,29 @@ public:
   //void Fill(G4int, G4double, G4double);
 
   void InitVectors();
-  void ReadExperimentalDataFromFile(G4String&);
-  void FillRadialExperimentalData();
-  void BookHistogram();
-  void CreateTuples();
-  void NeutronFluxHistogram();
-  void RadialFluxHistogram();
-  void StartProcessing();
-  void ProcessStepping(const G4Step*);
-  void analysePS(G4double, G4String, G4double); // , G4double, G4double);
+  //  void ReadExperimentalDataFromFile(G4String&);
+  // void FillRadialExperimentalData();
+  // void BookHistogram();
+  // void CreateTuples();
+  // void NeutronFluxHistogram();
+  // void RadialFluxHistogram();
+  // void StartProcessing();
+  //void ProcessStepping(const G4Step*);
+  // void analysePS(G4double, G4String, G4double); // , G4double, G4double);
   void analyseNeutronFluence(G4double, G4double, G4int, G4double, G4double, G4int, G4double,  G4String&);
 
-  void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
-  void analyseNeutronShellFluence(G4double, G4double);
-  void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
-  void analyseSecondaries(G4double, G4String, G4double, G4double, G4int, G4double, G4double, G4String, G4bool, G4int);
-  void NeutronEnergyTime(G4double, G4double, G4double);
-  void otherEnergyTime(G4double, G4double, G4double);
-  void exitingTally(G4bool, G4double);
+  // void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
+  // void analyseNeutronShellFluence(G4double, G4double);
+  // void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
+  // void analyseSecondaries(G4double, G4String, G4double, G4double, G4int, G4double, G4double, G4String, G4bool, G4int);
+  // void NeutronEnergyTime(G4double, G4double, G4double);
+  // void otherEnergyTime(G4double, G4double, G4double);
+  // void exitingTally(G4bool, G4double);
 
-  void DefineShellBlocks();
+  // void DefineShellBlocks();
 
   template <typename T>  void Check10s(T, T&, G4String&);
 
-  inline void exitingTallyCheck(G4bool exiting_flag_check){if(exiting_flag_check) fExiting_check_Flux++; }
-  inline void CalcExitingFlux(G4double exitingE)           { fExiting_Flux++;   fExiting_Energy += exitingE;}
   inline G4int GetVerbose()               const           { return fVerbose; }
   inline G4double GetLength()             const           { return fLength; }
   inline G4double GetGPSEnergy()          const           { return fPrimaryKineticEnergy; }
@@ -296,8 +294,8 @@ private:
   G4PhysicsLogVector fNTsecond;
 //--------------------------------------------------------
   G4AnalysisManager*                    fAnalysisManager;
-  G4String                                        fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
-  G4String                                        fAnalysisFileName = "G4TARC_output";
+  // G4String                                        fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
+  // G4String                                        fAnalysisFileName = "G4TARC_output";
   G4TARCEventAction*                 fEventAction;
 
   G4double                               fTestSphereRadius;
@@ -327,18 +325,18 @@ private:
   G4double                               fRadCyl;
   G4double                               fLenCyl;
 
-  G4int                                  fMaxFluxData;
-  G4int                                  fMaxFluenceData;
-  G4int                                  fMaxTestFluxData;
-  G4int                                  fIFluxCountRef;
-  G4int                                  fMaxRadCount;
-  G4int                                  fIntegral_flux_5cm, fIntegral_flux_10cm, fIntegral_flux_46cm,
+  //G4int                                  fMaxFluxData;
+  //G4int                                  fMaxFluenceData;
+  //G4int                                  fMaxTestFluxData;
+  //G4int                                  fIFluxCountRef;
+  //G4int                                  fMaxRadCount;
+  //G4int                                  fIntegral_flux_5cm, fIntegral_flux_10cm, fIntegral_flux_46cm,
                                   fIntegral_flux_70cm, fIntegral_flux_100cm, fIntegral_flux_120cm;
                                   //fLithium_flux_5cm;
 
   G4double                               fTARC_Integral, fTARC_Integral_E, fTARC_lithium, fTARC_lithium_IntegralData, fTARC_lithium_E;
   G4double                               fTARC_helium, fTARC_helium_E, fEflux_Integral, fTARC_Integral_Eflux_46cm;
-  G4double                               fTotal_flux;
+  // G4double                               fTotal_flux;
   G4double                               fAbs_Int_Scint_E;
 
   G4bool flag;
@@ -348,18 +346,19 @@ private:
   G4int number_generations, fNmax;
   G4double fEnergy0, fTime0, fFracBinWidth;
 
+/*
   std::vector<G4double>                  fOuterRadiusofShell;
   std::vector<G4double>                  fInnerRadiusofShell;
 
   std::vector<G4double>                  fRadiusReference {200.0 * cm, 190.0 * cm, 185.0 * cm, 175.0 * cm, 165.0 * cm, 150.0 * cm,
     140.0 * cm, 130.0 * cm, 120.0 * cm, 110.0 * cm, 100.0 * cm, 90.0 * cm, 80.0 * cm, 70.0 * cm, 60.0 * cm, 50.0 * cm, 45.7 * cm,
     40.0 * cm, 30.0 * cm, 25.0 * cm, 20.0 * cm, 15.0 * cm, 10.0 * cm, 8.0 * cm, 5.0 * cm, 3.0 * cm};
-
+*/
   G4double                                               fAbsolute_TotalFlux, fAbsolute_Flux;
 
   G4double floatDummy=0.0;
   G4int      intDummy = 0;
-
+/*
   unsigned                                                 fMeanEnergyTable = 40;
   std::vector<G4double>                          fMeanEnergyT40List;
   std::vector<G4int>                                 fFluxTableList {36, 38};     // , 40}; the energy supplied is E_low
@@ -372,7 +371,7 @@ private:
   std::vector< std::vector<G4double> >   fExptFluxErrTables;
   std::vector< std::vector<G4double> >   fFlux_Radius;
   std::vector<std::vector<G4double> >    fRadialFluenceStep;
-
+*/
   G4long fI4002 = 0, fI4004 = 0, fI4005 = 0, fIRSF = 0, fINET = 0, fIOET = 0, fISecPart = 0, fIspallNeut = 0;
 
   std::vector<std::vector<G4double> > fVecFlux4002;   //  Ntuple::3
@@ -389,7 +388,7 @@ private:
   //  std::vector<G4double>                  fFluxRadTables;
   std::vector<G4double>                  fRadList;
   std::vector<G4double>                  fFlux;
-  std::vector<G4double>                  fFlux_Energy;
+  // std::vector<G4double>                  fFlux_Energy;
   std::vector<G4double>                  fFlux_Data;
   std::vector<G4double>                  fFlux_Syst_Err;
   std::vector<G4double>                  fFlux_Energy_in;
@@ -432,7 +431,7 @@ private:
   std::vector<G4double>                  fENflux;
   std::vector<G4double>                  fNeutflux;
 
-  //std::vector<G4double>                  fFluence_Spectrum;
+  // std::vector<G4double>                  fFluence_Spectrum;
   std::vector<G4double>                  fLithium_Radial_Energy_Lower;
   std::vector<G4double>                  fLithium_Radial_Energy_Upper;
   std::vector<G4double>                  fLithium_Radial_Mean;

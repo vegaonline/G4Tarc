@@ -1,0 +1,270 @@
+#include "G4TARCRun.hh"
+
+G4TARCRun::G4TARCRun(): G4Run() {
+  fFracBinWidth = 0.2;
+
+}
+
+
+void G4TARCRun::StartProcessing(){
+  G4double fMeanEnergy = 0.0;
+  //G4int j = 0;
+
+  //G4cout << "Entered in StartProcessing. " << " MaxTestFluxData: " << fMaxTestFluxData << G4endl;
+  for (G4int ii1 = 0; ii1 < (fMaxTestFluxData - 1); ii1++){
+    fMeanEnergy = 0.5 * (fFlux_Energy[ii1] + fFlux_Energy_in[ii1 + 1]);
+    fEflux_Data.push_back(fMeanEnergy * fFlux_Data_in[ii1]);
+    // fEflux_Integral += fFlux_Data_in[ii1] * fMeanEnergy;      ///1.0e6;
+    //fFine_Energy.push_back(fMeanEnergy);
+  }
+  //fEflux_Data.push_back(fFlux_Energy[fMaxTestFluxData - 1] * fFlux_Data_in[fMaxTestFluxData - 1]);
+
+  G4double fScale = 100.0;
+  fEnergy0 = 0.01;
+  G4double fBinWidth = (std::log(1.0e5) - std::log(fEnergy0)) / fScale; // as per definition in NIM paper
+  G4int fRadialIndex = 0;
+
+  fFlux_Lithium_Energy[0] = fEnergy0;
+  fFlux_Low_Energy[0] = fEnergy0;
+
+  //G4cout << "LowE: " << fFlux_Low_Energy.size() << " Li_E: " << fFlux_Lithium_Energy.size()
+  //     << "  BINWidth:   " << fBinWidth << G4endl; //exit(0);
+
+  //G4int kIndex= 0;
+  G4int mIndex = 0;
+  for (std::size_t ii = 0; ii < fFlux_Low_Energy.size(); ii++)  fFlux_Low_Energy[ii + 1] = std::exp(fBinWidth + std::log(fFlux_Low_Energy[ii]));
+
+  for(std::size_t ii = 0; ii <= fFlux_Lithium_Energy.size(); ii++){  // this = is imp as it generates the last item that satisfies the condition
+    fFlux_Lithium_Energy[ii + 1] = std::exp(fBinWidth + std::log(fFlux_Lithium_Energy[ii]));
+    fMeanEnergy = std::exp(0.5 * (std::log(fFlux_Low_Energy[ii + 1]) + std::log(fFlux_Low_Energy[ii])));
+    G4double fLithiumMeanEnergy = std::exp(0.5 * (std::log(fFlux_Lithium_Energy[ii + 1]) + std::log(fFlux_Lithium_Energy[ii])));
+
+    if (fFlux_Lithium_Energy[ii] < fExptEnergyBin[fRadialIndex]
+      && fFlux_Lithium_Energy[ii + 1] > fExptEnergyBin[fRadialIndex]){
+        fLithium_Radial_Energy_Lower[fRadialIndex] = fFlux_Lithium_Energy[ii];
+        fLithium_Radial_Energy_Upper[fRadialIndex] = fFlux_Lithium_Energy[ii+1];;
+        fLithium_Radial_Mean[fRadialIndex] = fExptEnergyBin[fRadialIndex];
+        fLithium_Radial_True_Mean[fRadialIndex] = fLithiumMeanEnergy;
+        //G4cout << fRadialIndex << "      " << fLithium_Radial_Mean[fRadialIndex] << G4endl;
+        ++fRadialIndex;
+        //fRadialIndex = (fRadialIndex > fMaxRadCount - 1) ? (fMaxRadCount - 1) : fRadialIndex;
+    }
+    /*
+    if (std::abs(fMeanEnergy / fFlux_Low_Energy_in[kIndex] - 1.0) < 0.05) {
+      fFlux_Low_Data[ii]       = fFlux_Low_Data_in[kIndex];
+      fFlux_Low_Syst_Err[ii] = fFlux_Low_Syst_Err_in[kIndex];
+      ++kIndex;
+    }
+    */
+    if (std::abs(fLithiumMeanEnergy / fFlux_Lithium_Energy_in[mIndex] - 1.0) < 0.05) {
+      fFlux_Lithium_Data[ii]       = fFlux_Lithium_Data_in[mIndex];
+      fFlux_Lithium_Syst_Err[ii] = fFlux_Lithium_Data_in[mIndex];
+      fTARC_lithium_IntegralData += fFlux_Lithium_Data_in[mIndex];
+      fTARC_lithium_E                  += fFlux_Lithium_Data_in[mIndex] * fLithiumMeanEnergy / 1.0e6;   // check 10^6
+      ++mIndex;
+    }
+  }
+}
+
+
+void G4TARCRun::AddFlux(G4String particleName) {
+  if(particleName == "gamma")               fGamma_flux++;
+  if(particleName == "neutron")               fNeutron_flux++;
+  if(particleName == "e-")                        fElectron_flux++;
+  if(particleName == "pi-")                       fPiminus_flux++;
+  if(particleName == "pi+")                      fPiplus_flux++;
+  if(particleName == "pi0")                      fPizero_flux++;
+  if(particleName == "e+")                       fPositron_flux++;
+  if(particleName == "proton")                 fProton_flux++;
+  if(particleName == "mu-")                     fMuon_flux++;
+  if(particleName == "mu+")                    fMuon_flux++;
+  if(particleName == "other")                   fOther_flux++;
+  if(particleName == "neutron_check")    fNeutron_check++;
+  if(particleName == "neutron_fluence")  fNeutron_fluence++;
+}
+
+void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4double radiusL, G4double cosAngleL, G4String fParticleNameL)
+  //G4double zPosL,G4double cosAngleL, G4String fParticleNameL)
+  {
+    G4double OnebyCosAngle = 1.0 / std::abs(cosAngleL);
+    if (fParticleNameL == "neutron"){
+      if (thisTrackIDL == fOldTrackID && std::abs(radiusL - 456.0) <= 0.01){
+        ++fDuplicate_neutrons;
+      } else {
+        fDuplicate_neutrons = 0;
+      }
+      fOldTrackID = thisTrackIDL;
+    }
+    G4double tempEnergy = n_EnergyL / eV;
+    if (fParticleNameL == "neutron"){
+      for (G4int ii1 = 0; ii1 < fMaxRadCount; ii1++){
+        if (std::abs(radiusL - fRadList[ii1]) <= 0.01){
+          for (G4int ii2 = 0; ii2 < fMaxRadCount; ii2++){
+            // if (std::abs(n_EnergyL - fExptEnergyBin[ii2]) < fractional_fBinWidth * fExptEnergyBin[ii2])
+            if (std::abs(tempEnergy - fExptEnergyBin[ii2]) < (fFracBinWidth * fExptEnergyBin[ii2]))
+              fFlux_Radius[ii1][ii2] += OnebyCosAngle;
+          }
+        }
+      }
+
+      if (std::abs(radiusL - 456.0) <= 0.01){
+        // if (n_EnergyL > 0.345*eV && n_EnergyL < 1.0e5*eV){
+        if (tempEnergy > 0.345 && tempEnergy < 1.0e5){
+          fTARC_Integral   += OnebyCosAngle;
+          fTARC_Integral_E += tempEnergy * OnebyCosAngle;
+        }
+        //G4int nVal = (G4int)((2.0 + std::log10(n_EnergyL / eV)) / 0.09);
+        G4int nVal = (G4int)((2.0 + std::log10(tempEnergy)) / 0.09);
+        if (nVal < 0) nVal = 0;
+        if (nVal < fMaxFluxData) {
+          //fFluence_Spectrum[nVal] += 1.0 /std::abs(cosAngleL);
+          if (nVal > fNmax) fNmax = nVal;
+        }
+        if (tempEnergy > 0.0194 && tempEnergy < 1.0e5){
+          fTARC_lithium   += OnebyCosAngle;
+          fTARC_lithium_E += tempEnergy * OnebyCosAngle; // / std::abs(cosAngleL);
+        }
+        if (tempEnergy > 59500.0 && tempEnergy < 1825092.0){
+          fTARC_helium   +=OnebyCosAngle;
+          fTARC_helium_E += tempEnergy * OnebyCosAngle; // / std::abs(cosAngleL);
+        }
+      }
+
+      std::size_t LithiumMax = fFlux_Lithium_Energy.size();
+/*
+      for (std::size_t iii = 0; iii < LithiumMax; iii++){
+        if (tempEnergy < fFlux_Lithium_Energy[iii])  G4cout << tempEnergy << "     " << fFlux_Lithium_Energy[iii] << G4endl;
+      }
+*/
+
+      //if (std::abs(radiusLmm - 50.0) <= 0.01) ++fIntegral_flux_5cm;
+      //if (std::abs(radiusLmm - 100.0) <= 0.01) ++fIntegral_flux_10cm;
+      //if (std::abs(radiusLmm - 700.0) <= 0.01) ++fIntegral_flux_70cm;
+      //if (std::abs(radiusLmm - 1000.0) <= 0.01) ++fIntegral_flux_100cm;
+      //if (std::abs(radiusLmm - 1200.0) <= 0.01) ++fIntegral_flux_120cm;
+
+      if (std::abs(radiusL - 456.0) <= 0.01){
+        ++fIntegral_flux_46cm;
+        fTARC_Integral_Eflux_46cm += tempEnergy;
+        fTotal_flux++;
+        if (tempEnergy < fFlux_Energy[0]) fLocal_Energy_Integral[0] += tempEnergy;
+        if (tempEnergy < fFlux_Lithium_Energy[LithiumMax-1]){
+          for (std::size_t ijk1 = 0; ijk1 < LithiumMax; ijk1++){
+            if(tempEnergy > fFlux_Lithium_Energy[ijk1] && tempEnergy < fFlux_Lithium_Energy[ijk1 + 1]){
+              fLithium_Flux[ijk1] += 1.0;
+              fCos_Lithium_Flux[ijk1] = OnebyCosAngle;
+            }
+          }
+        }
+        if (tempEnergy < fFlux_Low_Energy[fMaxFluxData]){
+          for (G4int ijk1 = 0; ijk1 < fMaxFluxData; ijk1++){
+            if (tempEnergy >fFlux_Low_Energy[ijk1] && tempEnergy < fFlux_Low_Energy[ijk1 + 1]){
+              fLow_Flux[ijk1] += 1.0;
+              fCos_Low_Flux[ijk1] += OnebyCosAngle;
+            }
+          }
+        } else if ( tempEnergy > fFlux_Energy[0]) {
+            for(G4int ijk1 = 0; ijk1 < fMaxTestFluxData; ijk1++){
+              if (tempEnergy > fFlux_Energy[ijk1] && tempEnergy < fFlux_Energy[ijk1 + 1]){
+                fLocal_Energy_Integral[1] += tempEnergy;
+                fFlux[ijk1]++;
+                if (cosAngleL != 0.0) fCos_Flux[ijk1] += 1.0 / std::abs(cosAngleL);
+                fCos_Low_Flux[ijk1] = fCos_Flux[ijk1];
+                fEFlux[ijk1] += tempEnergy;
+              }
+            }
+        }
+      }
+    }
+}
+
+
+void G4TARCRun::analyseNeutronShellFluence(G4double energyL, G4double StepLengthL){
+    G4double tempE = energyL / eV;
+
+    if (tempE < fFlux_Lithium_Energy[fMaxFluxData - 1]){
+      for (G4int ii1 = 0; ii1 < fMaxFluxData; ii1++){
+        if (tempE > fFlux_Lithium_Energy[ii1] && tempE < fFlux_Lithium_Energy[ii1 + 1]) fLithium_Fluence_Step_Shell[ii1] += StepLengthL;
+      }
+    }
+    std::size_t lastTagLowEFlux = fFlux_Low_Energy.size();
+    if (tempE < fFlux_Low_Energy[lastTagLowEFlux - 1]){
+      for (std::size_t ii1 = 0; ii1 < lastTagLowEFlux; ii1++){
+        if (tempE > fFlux_Low_Energy[ii1] && tempE < fFlux_Low_Energy[ii1 + 1]) fLow_Fluence_Step_Shell[ii1] += StepLengthL;
+      }
+    }
+    std::size_t lastTagFluxE = fFlux_Energy.size();
+    if (tempE > fFlux_Energy[0]){
+      for (std::size_t ii1 = 0; ii1 < lastTagFluxE; ii1++){
+        if (tempE > fFlux_Energy[ii1] && tempE < fFlux_Energy[ii1 + 1]) fFluence_Step_Shell[ii1] += StepLengthL;
+      }
+    }
+  }
+
+
+void G4TARCRun::analyseNeutronRadialFluence(G4double fParticleEnergyL, //G4double fParticleTimeL,
+  G4double StepLengthL, G4int ishellL){
+    if (ishellL < 0 || ishellL > fRefShellNumber) G4cout << "WARNING! radial index is wrong !!!!!!!" << G4endl;
+    G4double tempEnergy = fParticleEnergyL / eV;
+    if (tempEnergy <= fLithium_Radial_Energy_Upper[9] && tempEnergy >= fLithium_Radial_Energy_Lower[0]){
+      for (G4int i = 0 ; i <= fMaxRadCount; ++i) {
+        if (tempEnergy >= fLithium_Radial_Energy_Lower[i] && tempEnergy <= fLithium_Radial_Energy_Upper[i]){
+          fRadialFluenceStep[ishellL][i] += StepLengthL;  //  (StepLengthL / mm);  steplength is in mm
+        }
+      }
+    }
+}
+
+void G4TARCRun::Merge(const G4Run* thisRun) {
+  const G4TARCRun *localRun = static_cast<const G4TARCRun *> (thisRun);
+  G4int fNColl = localRun->fCollID.size();
+  for (G4int ii = 0; ii < fNColl; ii++) {
+    if (localRun->fCollID[ii] >= 0)    *fRunMap[ii] += *localRun->fRunMap[ii];
+  }
+  fExiting_Flux            += localRun->fExiting_Flux;
+  fExiting_Energy        += localRun->fExiting_Energy;
+  fExiting_check_Flux += localRun->fExiting_check_Flux;
+  fGamma_flux            += localRun->fGamma_flux;
+  fNeutron_flux            += localRun->fNeutron_flux;
+  fElectron_flux           += localRun-> fElectron_flux;
+  fPiminus_flux           += localRun->fPiminus_flux;
+  fPiPlus_flux              += localRun->fPiPlus_flux;
+  fPizero_flux              += localRun->fPizero_flux;
+  fPositron_flux           += localRun->fPositron_flux;
+  fProton_flux              += localRun->fProton_flux;
+  fMuon_flux               += localRun->fMuon_flux;
+  fOther_flux               += localRun->fOther_flux;
+  fNeutron_check        += localRun->fNeutron_check;
+  fNeutron_fluence      += localRun->fNeutron_fluence;
+  fIntegral_flux_46cm += localRun->fIntegral_flux_46cm;
+  fTARC_Integral_Eflux_46cm += localRun->fTARC_Integral_Eflux_46cm;
+  fTotal_flux                += localRun->fTotal_flux;
+
+  for (G4int ii = 0; ii < fMaxTestFluxData; ii++) {
+    fFlux[ii]                          += localRun->fFlux[ii];
+    fCos_Flux[ii]                  += localRun->fCos_Flux[ii];
+    fFluence_step[ii]            += localRun->fFluence_step[ii];
+    fFluence_Step_cyll[ii]   += localRun->fFluence_Step_cyll[ii];
+    fFluence_Step_Shell[ii] += localRun->fFluence_Step_Shell[ii];
+    fEFlux[ii]                       += localRun->fEFlux[ii];
+  }
+
+  for (G4int ii = 0; ii < fMaxFluxData; ii++) {
+    fLow_Flux[ii]                += localRun->fLow_Flux[ii];
+    fCos_Low_Flux[ii]        += localRun->fCos_Low_Flux[ii];
+    fLow_Fluence_step[ii]   += localRun->fLow_Fluence_step[ii];
+    fLow_Fluence_cyl[ii]     += localRun->fLow_Fluence_cyl[ii];
+    fLow_Fluence_Step_Shell[ii] += localRun->fLow_Fluence_Step_Shell[ii];
+
+    fLithium_Flux[ii]          += localRun->fLithium_Flux[ii];
+    fCos_Lithium_Flux[ii]  += localRun->fCos_Lithium_Flux[ii];
+    fLithium_Fluence_Step[ii] += localRun->fLithium_Fluence_Step[ii];
+
+    for (G4int i = 0; i < fShellNumber; i++){
+      for (G4int j = 0; j < fMaxRadCount; j++) {
+        fRadialFluenceStep[j][i] += localRun->fRadialFluenceStep[j][i];
+      }
+    }
+  }
+  G4Run::Merge(thisRun);
+}

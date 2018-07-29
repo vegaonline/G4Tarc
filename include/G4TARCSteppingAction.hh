@@ -28,9 +28,11 @@ public:
   virtual ~G4TARCSteppingAction(){};
 
   virtual void UserSteppingAction(const G4Step*);
+  void ProcessStepping(const G4Step*);
+
 
 private:
-  G4TARCHistoManager*  fHisto;
+  //G4TARCHistoManager*  fHisto;
   G4TARCEventAction*   fEventAction;
 };
 
