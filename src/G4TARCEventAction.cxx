@@ -1,11 +1,10 @@
 #include "G4TARCEventAction.hh"
 
-G4TARCEventAction::G4TARCEventAction()
-: G4UserEventAction() fNeutronStack(0)  {
+G4TARCEventAction::G4TARCEventAction(): fNeutronStack(0)  {
     fDebugStarted = false;
     fEventMessenger = new G4TARCEventActionMessenger (this);
     fUITARC = G4UImanager::GetUIpointer();
-    fHisto = G4TARCHistoManager::GetPointer();
+    //fHisto = G4TARCHistoManager::GetPointer();
     fSelected = 0;
     SetPrintModulo(1);
 }
@@ -42,9 +41,9 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
 
 
 void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
-  G4TARCRun* thisRun = static_cast<G4Run*> (G4G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-  thisRun->FillPerEvent(999.);
+  //thisRun->FillPerEvent(999.);
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->FillH1(6, fNeutronStack);
   if (fEventID % fPrintModulo == 0) G4cout << " End of event: " << fEventID << G4endl;

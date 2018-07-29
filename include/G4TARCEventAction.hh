@@ -26,18 +26,20 @@
 #include "G4THitsMap.hh"
 #include "G4RunManager.hh"
 #include "G4PhysicalConstants.hh"
+#include "G4Run.hh"
 
 #include "G4ios.hh"
 #include "globals.hh"
 
+#include "G4TARCRun.hh"
 #include "G4TARCEventActionMessenger.hh"
-#include "G4G4TARCAnalysis.hh"
+#include "G4TARCAnalysis.hh"
 //#include "G4TARCHistoManager.hh"
 
 
-class G4Event;
-class G4UImanager;
-class G4TARCEventActionMessenger;
+//class G4Event;
+//class G4UImanager;
+//class G4TARCEventActionMessenger;
 //class G4TARCHistoManager;
 
 class G4TARCEventAction : public G4UserEventAction {
@@ -64,7 +66,7 @@ public:
 private:
   G4TARCEventAction& operator=(const G4TARCEventAction& right);
   G4TARCEventAction ( const G4TARCEventAction& );
-  G4TARCHistoManager*                      fHisto;
+  //G4TARCHistoManager*                      fHisto;
   G4TARCEventActionMessenger*        fEventMessenger;
   G4UImanager*                                      fUITARC;
   std::vector<G4int>                                fSelectedEvents;
@@ -73,6 +75,7 @@ private:
   G4int                                                     fSelected;
   G4int                                                     fEventID;
   G4int                                                     fNeutronStack;
+
 };
 
 #endif

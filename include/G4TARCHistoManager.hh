@@ -331,8 +331,8 @@ private:
   //G4int                                  fIFluxCountRef;
   //G4int                                  fMaxRadCount;
   //G4int                                  fIntegral_flux_5cm, fIntegral_flux_10cm, fIntegral_flux_46cm,
-                                  fIntegral_flux_70cm, fIntegral_flux_100cm, fIntegral_flux_120cm;
-                                  //fLithium_flux_5cm;
+//                                  fIntegral_flux_70cm, fIntegral_flux_100cm, fIntegral_flux_120cm;
+//                                  //fLithium_flux_5cm;
 
   G4double                               fTARC_Integral, fTARC_Integral_E, fTARC_lithium, fTARC_lithium_IntegralData, fTARC_lithium_E;
   G4double                               fTARC_helium, fTARC_helium_E, fEflux_Integral, fTARC_Integral_Eflux_46cm;

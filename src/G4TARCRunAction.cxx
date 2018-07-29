@@ -20,6 +20,9 @@ G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
 G4TARCRunAction::~G4TARCRunAction() {
 }
 
+G4Run* G4TARCRunAction::GenerateRun(){
+   return new G4TARCRun;
+}
 
 void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
   auto id = aRun->GetRunID();

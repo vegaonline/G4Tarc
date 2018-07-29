@@ -4,6 +4,12 @@
 
 #include "G4Run.hh"
 #include "G4Event.hh"
+#include "G4EventManager.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4VHitsCollection.hh"
+#include "G4TrajectoryContainer.hh"
+#include "G4Trajectory.hh"
+#include "G4VVisManager.hh"
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
 #include "G4MultiFunctionalDetector.hh"
@@ -14,7 +20,7 @@
 #include "G4TARCRun.hh"
 #include <vector>
 
-G4TARCRun::G4TARCRun():G4Run() {
+class G4TARCRun : G4Run {
 
 public:
   G4TARCRun();
@@ -26,14 +32,14 @@ public:
 
   void StartProcessing();
   virtual void RecordEvent(const G4Event*);
-  G4int GetNumberOfHitsMap()  const (return fRunMap.size());
-  /*
-  G4THitsMap<G4double>* GetHitsMap(G4int idx) { return fRunMap[idx]};
+  G4int GetNumberOfHitsMap()  const {return fRunMap.size();}
+
+  G4THitsMap<G4double>* GetHitsMap(G4int idx) { return fRunMap[idx];}
   G4THitsMap<G4double>* GetHitsMap(const G4String& detName, const G4String& colName);
   G4THitsMap<G4double>* GetHitsMap(const G4String& fullName);
 
   void DumpAllScorer();
-  */
+
 
   virtual void Merge(const G4Run*);
 
@@ -53,7 +59,7 @@ public:
   G4int GetIntegralEFlux_46cm() const {return fTARC_Integral_Eflux_46cm;}
 
 private:
-  std::vector<G4String fCollName;
+  std::vector<G4String> fCollName;
   std::vector<G4int> fCollID;
   std::vector<G4THitsMap<G4double> *> fRunMap;
 
@@ -75,7 +81,7 @@ public:
   G4int                                                      fIntegral_flux_70cm;
   G4int                                                      fIntegral_flux_100cm;
   G4int                                                      fIntegral_flux_120cm;
-  G4int                                                      fTARC_Integral_Eflux_46cm
+  G4int                                                      fTARC_Integral_Eflux_46cm;
   G4int                                                      fDuplicate_neutrons;
   G4int                                                      fOldTrackID;
   G4int                                                      fGamma_flux;
@@ -100,7 +106,6 @@ public:
   G4double                                               fTARC_helium;
   G4double                                               fTARC_helium_E;
   G4double                                               fEflux_Integral;
-  G4double                                               fTARC_Integral_Eflux_46cm;
   G4double                                               fExiting_Energy;
   G4double                                               fFracBinWidth;
 
@@ -143,8 +148,6 @@ public:
   std::vector<G4double>                          fLithium_Flux_Energy;
   std::vector<G4double>                          fLithium_Flux_Data;
   std::vector<G4double>                          fLithium_Flux_Syst_Err;
-
-  std::vector< std::vector<G4double> >   fFlux_Radius;
 
   std::vector< std::vector<G4double> >   fExptRadiiTables;
   std::vector< std::vector<G4double> >   fExptFluenceTables;

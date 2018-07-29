@@ -42,7 +42,7 @@ public:
   virtual ~G4TARCRunAction();
 
 public:
-  virtual G4Run* GenerateRun()  {return new G4TARCRun;};
+  virtual G4Run* GenerateRun();
   virtual void BeginOfRunAction( const G4Run* ); // booking of histogram
   virtual void EndOfRunAction( const G4Run* );  // method fills histogram
 
@@ -90,7 +90,7 @@ private:
   G4int                                  fMaxTestFluxData;
   G4int                                  fIFluxCountRef;
   G4int                                  fMaxRadCount;
-  G4int                                  fRadiusReference.size();
+  G4int                                  fRefShellNumber = fRadiusReference.size();
   G4int                                  fShellNumber;
 
   std::vector<G4double>                  fOuterRadiusofShell;
