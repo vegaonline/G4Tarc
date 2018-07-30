@@ -94,3 +94,36 @@ void G4TARCEventAction::exitingTally(G4bool exiting_flag, G4double energyL){
     fAnalysisManager->AddNtupleRow(2);
   }
 }
+
+void G4TARCEventAction::analysePS(G4double fParticleEnergy, G4String fParticleName, G4double fParticleMomentum
+){
+
+  if(fParticleName == "gamma") {
+    fAnalysisManager->FillH1(1, fParticleEnergy/eV);
+  } else if(fParticleName == "neutron") {
+    //++fNeutCap;
+    //G4cout << fNeutCap << "     " << fNeutronStack << G4endl;
+    //fAnalysisManager->FillH2(3, fNeutCap * 1e9, fParticleTime / microsecond, 1.0);
+    fAnalysisManager->FillH1(2, fParticleEnergy / eV, 1.0 / fParticleMomentum);
+    if(fParticleEnergy / MeV < 2.0) {
+      fNeutflux[0] += 1.0;
+      fENflux[0] += fParticleEnergy;
+    } else if(fParticleEnergy / MeV >= 2.0 && fParticleEnergy / MeV < 20.0) {
+      fNeutflux[1] += 1.0;
+      fENflux[1] += fParticleEnergy / MeV;
+    } else if(fParticleEnergy / MeV >= 20.0) {
+      fNeutflux[2] += 1.0;
+      fENflux[2] += fParticleEnergy / MeV;
+    }
+    if(fParticleEnergy / MeV >= 1000.0) {
+      fNeutflux[3] += 1.0;
+      fENflux[3] += fParticleEnergy / MeV;
+    }
+  } else if(fParticleName == "e-") {
+    fAnalysisManager->FillH1(3, fParticleEnergy / eV);
+  } else if(fParticleName == "e+") {
+    fAnalysisManager->FillH1(4, fParticleEnergy / eV);
+  } else {   //(fParticleName == "other") {
+    fAnalysisManager->FillH1(5, fParticleEnergy / eV);
+  }
+}

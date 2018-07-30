@@ -34,6 +34,10 @@ public:
 private:
   //G4TARCHistoManager*  fHisto;
   G4TARCEventAction*   fEventAction;
+  G4bool flag;
+  std::map<G4int, G4double, std::less<G4int> > fParentEnergy;
+  std::map<G4int, G4String, std::less<G4int> > fParentParticle;
+  std::map<G4int, G4int, std::less<G4int> > fParentParticleID;
 };
 
 #endif

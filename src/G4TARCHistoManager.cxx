@@ -1489,7 +1489,7 @@ void G4TARCHistoManager::GunParticleRun(G4double x) {
   }
 }
 
-
+/*
 void G4TARCHistoManager::analysePS(G4double fParticleEnergy, G4String fParticleName, G4double fParticleMomentum
 ){
 
@@ -1522,7 +1522,8 @@ void G4TARCHistoManager::analysePS(G4double fParticleEnergy, G4String fParticleN
     fAnalysisManager->FillH1(5, fParticleEnergy / eV);
   }
 }
-
+*/
+/*
 void G4TARCHistoManager::analyseSecondaries(G4double energyL, G4String nameL, G4double timeL, G4double momentumL,
   G4int ParentIDL, G4double primaryEnergyL, G4double parentEnergyL, G4String parentParticleL, G4bool reduced_fluxL,
   G4int number_generationsL){
@@ -1597,12 +1598,13 @@ void G4TARCHistoManager::analyseSecondaries(G4double energyL, G4String nameL, G4
     fAnalysisManager->FillNtupleIColumn(0,9, fNevent_id);
     fAnalysisManager->AddNtupleRow(0);
 }
-
+*/
 
 //void G4TARCHistoManager::analyseNeutronFluence(G4double energyL, G4String& nameL, G4double timeL, G4double momentumL,
 //  G4int thisTrackIDL, G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double primaryEnergyL,
 //  G4double parentEnergyL, G4String& parentParticleL, G4bool reduced_fluxL,  G4int number_generationsL){
 
+/*
 void G4TARCHistoManager::analyseNeutronFluence(G4double energyL, G4double timeL, G4int thisTrackIDL,
   G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL){
 
@@ -1644,3 +1646,4 @@ void G4TARCHistoManager::analyseNeutronFluence(G4double energyL, G4double timeL,
     fAnalysisManager->FillNtupleIColumn(3, 13, 0);
     fAnalysisManager->AddNtupleRow(3);
 }
+*/

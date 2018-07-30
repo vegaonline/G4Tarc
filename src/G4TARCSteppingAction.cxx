@@ -31,7 +31,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
   G4String fParticleName = fParticleType->GetParticleName();
   G4double primEnergy = 0.0;
 
-  analysePS(fParticleEnergy, fParticleName, fParticleMomentum);      //  , fParticleTime, fParticleMomentum, zMomentum);
+  fEventAction->analysePS(fParticleEnergy, fParticleName, fParticleMomentum);      //  , fParticleTime, fParticleMomentum, zMomentum);
 
   if (StepNo == 1){
     if (thisTrackID == 1){

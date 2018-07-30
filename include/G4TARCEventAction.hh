@@ -77,6 +77,13 @@ private:
   G4int                                                     fSelected;
   G4int                                                     fEventID;
   G4int                                                     fNeutronStack;
+  G4int                                        fExiting_Flux;
+  G4double                         fExiting_Energy;
+  std::vector<G4double>                  fEflux_Data;
+  //std::vector<G4double>                  fFine_Energy;
+
+  std::vector<G4double>                  fENflux;
+  std::vector<G4double>                  fNeutflux;
 
 };
 

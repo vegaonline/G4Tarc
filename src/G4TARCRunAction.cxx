@@ -307,42 +307,29 @@ void G4TARCRunAction::ReadExperimentalDataFromFile(G4String& exptFileName){
 
 
 void G4TARCRunAction::FillRadialExperimentalData(){
-  /*
-  std::ofstream dumpResult;
-  dumpResult.open("ExptLiData.dat", std::ios::out);
+
   for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  fExptRadiiTables.size(); ij1++){  0~ 41 to 7 ~ 48
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
-      dumpResult << fExptRadiiTables[ij1][ij2] << "    " << fExptEnergyBin[ij1] << "    "
-		 << fExptFluenceTables[ij1][ij2] << "    " << fExptErrTables[ij1][ij2] << std::endl;
-*/
       fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[ij1][ij2] );  //  converted to mm
       fAnalysisManager->FillNtupleDColumn(9, 1, fExptEnergyBin[ij1]);
       fAnalysisManager->FillNtupleDColumn(9, 2, fExptFluenceTables[ij1][ij2] * 100.0);   // transferring to unit n/cm^2/eV/10^9p
       fAnalysisManager->FillNtupleDColumn(9, 3, fExptErrTables[ij1][ij2] * 100.0);
       fAnalysisManager->AddNtupleRow(9);
-/*
     }
   }
-  dumpResult.close();
 
-  dumpResult.open("ExptHe3Data.dat", std::ios::out);
+
   for (std::size_t ij1 = 8; ij1 <= 16; ij1++){ // 8 ~ 49 to 16 ~ 57
     G4int ijE = ij1 - 7;
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
-      dumpResult << fExptRadiiTables[ij1][ij2] << "    " << fExptEnergyBin[ijE] << "    "
-		 << fExptFluenceTables[ij1][ij2] << "    " << fExptErrTables[ij1][ij2]  << std::endl;
-      */
       fAnalysisManager->FillNtupleDColumn(10, 0, fExptRadiiTables[ij1][ij2] );   // converted to mm
       fAnalysisManager->FillNtupleDColumn(10, 1, fExptEnergyBin[ijE]);
       fAnalysisManager->FillNtupleDColumn(10, 2, fExptFluenceTables[ij1][ij2] * 100.0);  // transferring to unit n/cm^2/eV/10^9p
       fAnalysisManager->FillNtupleDColumn(10, 3, fExptErrTables[ij1][ij2] * 100.0);
       fAnalysisManager->AddNtupleRow(10);
-/*
     }
   }
 
-  dumpResult.close();
-  */
   G4cout << "Experimental data filling complete." << G4endl;
 
   // This is testing of erasing unused vectors
@@ -690,7 +677,7 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
   //outh5.close();
 }
 
-void G4TARCHistoManager::RadialFluxHistogram(G4int fNevents, G4TARCRun* aRun){
+void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* aRun){
 
   const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
 
