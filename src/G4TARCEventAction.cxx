@@ -44,7 +44,7 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
   G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   //thisRun->FillPerEvent(999.);
-  G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+  //G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->FillH1(6, fNeutronStack);
   if (fEventID % fPrintModulo == 0) G4cout << " End of event: " << fEventID << G4endl;
   /*
@@ -57,4 +57,40 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
   fHisto->EndOfEvent();
   if (fHisto->GetVerbose() > 1) G4cout << "   EventAction: Event # " << nEvt << " ended." <<G4endl;
   */
+}
+
+
+
+void G4TARCEventAction::NeutronEnergyTime(G4double thisE, G4double thisT, G4double E0){
+  G4double tempT = thisT / microsecond;
+  G4double tempE = thisE / eV;
+  G4double tempE0 = E0 / eV;
+
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
+  fAnalysisManager->FillNtupleDColumn(1, 0, tempE);
+  fAnalysisManager->FillNtupleDColumn(1, 1, tempT);
+  fAnalysisManager->FillNtupleDColumn(1, 2, tempE0);
+  fAnalysisManager->AddNtupleRow(1);
+}
+
+void G4TARCEventAction::otherEnergyTime(G4double thisE, G4double thisT, G4double E0){
+  //G4cout << fNtuple_full << "  OTHERS-------> thisE : " << thisE << "  thisT : " << thisT << G4endl;
+  G4double tempT = thisT / microsecond;
+  G4double tempE = thisE / eV;
+  G4double tempE0 = E0 / eV;
+
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
+    fAnalysisManager->FillNtupleDColumn(4, 0, tempE);
+    fAnalysisManager->FillNtupleDColumn(4, 1, tempT);
+    fAnalysisManager->FillNtupleDColumn(4, 2, tempE0);
+    fAnalysisManager->AddNtupleRow(4);
+}
+
+
+void G4TARCEventAction::exitingTally(G4bool exiting_flag, G4double energyL){
+  if(exiting_flag) {
+    CalcExitingFlux(energyL);
+    fAnalysisManager->FillNtupleDColumn(2, 0, energyL / eV);
+    fAnalysisManager->AddNtupleRow(2);
+  }
 }

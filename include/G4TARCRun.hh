@@ -20,7 +20,7 @@
 #include "G4TARCRun.hh"
 #include <vector>
 
-class G4TARCRun : G4Run {
+class G4TARCRun : public G4Run {
 
 public:
   G4TARCRun();

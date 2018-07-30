@@ -39,7 +39,7 @@
 
 //class G4Event;
 //class G4UImanager;
-//class G4TARCEventActionMessenger;
+class G4TARCEventActionMessenger;
 //class G4TARCHistoManager;
 
 class G4TARCEventAction : public G4UserEventAction {
@@ -57,6 +57,7 @@ public:
   void NeutronEnergyTime(G4double, G4double, G4double);
   void otherEnergyTime(G4double, G4double, G4double);
   void exitingTally(G4bool, G4double);
+  inline void CalcExitingFlux(G4double exitingE)                   { fExiting_Flux++;   fExiting_Energy += exitingE;}
 
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
   void analyseNeutronShellFluence(G4double, G4double);
@@ -67,6 +68,7 @@ private:
   G4TARCEventAction& operator=(const G4TARCEventAction& right);
   G4TARCEventAction ( const G4TARCEventAction& );
   //G4TARCHistoManager*                      fHisto;
+  G4AnalysisManager*                           fAnalysisManager;
   G4TARCEventActionMessenger*        fEventMessenger;
   G4UImanager*                                      fUITARC;
   std::vector<G4int>                                fSelectedEvents;

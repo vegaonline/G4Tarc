@@ -11,7 +11,7 @@ G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
   //fHistoM = G4TARCHistoManager::GetPointer();
   fAnalysisManager = G4AnalysisManager::Instance();
   DefineShellBlocks();
-  ReadExperimentalDataFromFile();
+  ReadExperimentalDataFromFile(fExptlDataFileName);
   BookHistogram();
   CreateTuples();
 
