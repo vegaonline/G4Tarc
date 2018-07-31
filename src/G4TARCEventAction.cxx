@@ -57,8 +57,6 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
   */
 }
 
-
-
 void G4TARCEventAction::NeutronEnergyTime(G4double thisE, G4double thisT, G4double E0){
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   G4double tempT = thisT / microsecond;

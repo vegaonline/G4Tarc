@@ -47,11 +47,12 @@ private:
   G4double fRefShellThickness;
   G4double fShellThickness;
 
-  G4int number_generations, fNmax;
+  G4int  fNmax;
    G4int                                  fIFluxCountRef;
    G4int                                  fRefShellNumber = fRadiusReference.size();
    G4int                                  fShellNumber;
-   G4int                                                      fMaxRadCount;
+   G4int                                  fMaxRadCount;
+   G4int fNumberGenerations;
 
    std::vector<G4double>                  fOuterRadiusofShell;
    std::vector<G4double>                  fInnerRadiusofShell;

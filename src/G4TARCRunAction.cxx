@@ -9,6 +9,7 @@
 //: G4UserRunAction(), fDetector(det), fPrimary(prim), fHisto(0){
 G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
   //fHistoM = G4TARCHistoManager::GetPointer();
+
   fAnalysisManager = G4AnalysisManager::Instance();
   DefineShellBlocks();
   ReadExperimentalDataFromFile(fExptlDataFileName);
@@ -101,6 +102,7 @@ void G4TARCRunAction::DefineShellBlocks() {
   fTestShellVol          = (4.0 / 3.0) * CLHEP::pi * (std::pow(fRefShellOuterRad, 3.0) - std::pow(fRefShellInnerRad, 3.0));
 
   fEnergy0 = 0.01;
+  G4cout << "DefineShellBlocks in RunAction done." << G4endl;
 }
 
 void G4TARCRunAction::ReadExperimentalDataFromFile(G4String& exptFileName){
@@ -303,6 +305,7 @@ void G4TARCRunAction::ReadExperimentalDataFromFile(G4String& exptFileName){
   std::vector<std::vector<G4double> > ().swap(fExptFluxErrTables);
   // This is end of test block
   fReadData = true;
+  G4cout << "ReadData in RunAction done." << G4endl;
 }
 
 
@@ -366,6 +369,7 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateH2("OtherPartET","log(OTHER particle Energy <eV>) vs. log(Time <us>)", 50, -3.0, 4.0, 50, -4.0, 6.0); // H2:2
   //11
   //fAnalysisManager->CreateH2("NeutronCapture", "Neutron Capture / 10^9 p", 700, 0, 10000, 400, 0, 1e9);  //H2:3
+  G4cout << "BookHisto in RunAction done." << G4endl;
 }
 
 

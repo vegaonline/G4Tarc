@@ -61,8 +61,6 @@ private:
   G4bool                      fNtuple_full;
   G4bool                      fReadData;
   G4bool                      fInitialized;
-
-
   G4String                                             fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
   G4String                                             fAnalysisFileName = "G4TARC_output";
   G4AnalysisManager*                         fAnalysisManager;
