@@ -63,7 +63,7 @@ private:
   G4bool                      fInitialized;
   G4String                                             fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
   G4String                                             fAnalysisFileName = "G4TARC_output";
-  G4AnalysisManager*                         fAnalysisManager;
+  //G4AnalysisManager*                         fAnalysisManager;
   G4TARCEventAction*                      fEventAction;
   //G4TARCDetectorConstruction*      fDetector;
   G4TARCPrimaryGeneratorAction*  fPrimary;

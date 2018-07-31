@@ -72,7 +72,7 @@ private:
   G4TARCEventAction& operator=(const G4TARCEventAction& right);
   G4TARCEventAction ( const G4TARCEventAction& );
   //G4TARCHistoManager*                      fHisto;
-  G4AnalysisManager*                           fAnalysisManager;
+  //G4AnalysisManager*                           fAnalysisManager;
   G4TARCEventActionMessenger*        fEventMessenger;
   G4UImanager*                                      fUITARC;
   std::vector<G4int>                                fSelectedEvents;

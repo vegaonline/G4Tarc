@@ -41,7 +41,6 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
 void G4TARCEventAction::EndOfEventAction( const G4Event* evt ) {
   G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-  //thisRun->FillPerEvent(999.);
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->FillH1(6, fNeutronStack);
   if (fEventID % fPrintModulo == 0) G4cout << " End of event: " << fEventID << G4endl;
@@ -86,12 +85,17 @@ void G4TARCEventAction::otherEnergyTime(G4double thisE, G4double thisT, G4double
 
 
 void G4TARCEventAction::exitingTally(G4bool exiting_flag, G4double energyL){
+  G4cout << "exiting tally " << G4endl;
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+  G4cout << "exiting tally Analysis Manager activated" << G4endl;
   if(exiting_flag) {
     G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+    G4cout << "exiting tally Run activated" << G4endl;
     thisRun->CalcExitingFlux(energyL);
+    G4cout << "exiting tally calced" << G4endl;
     fAnalysisManager->FillNtupleDColumn(2, 0, energyL / eV);
     fAnalysisManager->AddNtupleRow(2);
+    G4cout << "exiting tally returning" << G4endl;
   }
 }
 

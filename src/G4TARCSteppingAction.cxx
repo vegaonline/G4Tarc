@@ -95,25 +95,23 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
   G4TouchableHistory* thePreTouchable  = (G4TouchableHistory*) (myStep->GetPreStepPoint()->GetTouchable());
   G4TouchableHistory* thePostTouchable = (G4TouchableHistory*) (myStep->GetPostStepPoint()->GetTouchable());
 
-G4cout << "----> HERE" << G4endl;
-
+ G4cout << vol << "   " << fParticleName << G4endl;
   if (fParticleName == "neutron"){
+
     if (myStep->GetTrack()->GetNextVolume()){
       G4String PreVol = thePreTouchable->GetVolume()->GetName();
       G4String PostVol = thePostTouchable->GetVolume()->GetName();
 
       if (PreVol == "lab_phys" && PostVol == "world_log_PV"){
         fEventAction->exitingTally(true, fParticleEnergy);
-      }
-      if (PostVol == "world_log_PV"){
+      } else if (PostVol == "world_log_PV"){
         fEventAction->exitingTallyCheck(true);
       }
     }
 
-
-
     G4bool pre_inside = false;
     G4bool post_inside = false;
+    G4cout << "----> HERE" << G4endl;
 
     if  ((radiusPre <= (fRefShellOuterRad + fMyTol)) && (radiusPre >= (fRefShellInnerRad - fMyTol)) ) pre_inside = true;
     if  ((radiusPost <= (fRefShellOuterRad + fMyTol)) && (radiusPost >= (fRefShellInnerRad - fMyTol))) post_inside = true;

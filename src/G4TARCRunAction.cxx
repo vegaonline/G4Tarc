@@ -10,7 +10,7 @@
 G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
   //fHistoM = G4TARCHistoManager::GetPointer();
 
-  fAnalysisManager = G4AnalysisManager::Instance();
+
   DefineShellBlocks();
   ReadExperimentalDataFromFile(fExptlDataFileName);
   BookHistogram();
@@ -26,6 +26,7 @@ G4Run* G4TARCRunAction::GenerateRun(){
 }
 
 void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   auto id = aRun->GetRunID();
   G4cout << "Run # " << id << " starts." << G4endl;
   fAnalysisManager->OpenFile(fAnalysisFileName);
@@ -43,7 +44,7 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
 
 
 void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
-  auto analysisManager = G4AnalysisManager::Instance();
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   FillRadialExperimentalData();
   G4cout << " Number of events: " << aRun->GetNumberOfEvent() << G4endl;
 
@@ -310,7 +311,7 @@ void G4TARCRunAction::ReadExperimentalDataFromFile(G4String& exptFileName){
 
 
 void G4TARCRunAction::FillRadialExperimentalData(){
-
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  fExptRadiiTables.size(); ij1++){  0~ 41 to 7 ~ 48
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
       fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[ij1][ij2] );  //  converted to mm
@@ -345,6 +346,7 @@ void G4TARCRunAction::FillRadialExperimentalData(){
 
 
 void G4TARCRunAction::BookHistogram() {
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   fHistoBooked = true;
   fAnalysisManager->SetFirstHistoId(1);
   //1
@@ -374,6 +376,7 @@ void G4TARCRunAction::BookHistogram() {
 
 
 void G4TARCRunAction::CreateTuples(){
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->CreateNtuple("h1_Secondary", "Secondary Particle Info");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
@@ -544,6 +547,7 @@ void G4TARCRunAction::CreateTuples(){
 
 
 void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarcRun){
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   G4cout << "SA:" << fTestSphereSurfaceArea << G4endl;
   fAbsolute_TotalFlux = (tarcRun->fTotal_flux *  1.0e9 / (G4double)fNevents) / (fTestSphereSurfaceArea); // per cm^2
   for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
@@ -683,7 +687,7 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
 }
 
 void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* aRun){
-
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
 
   for (G4int ijk1 = 0; ijk1 < fRefShellNumber; ijk1++) {  // ijk1 < fMaxTestFluxData; ijk1++){
