@@ -292,7 +292,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
     }
   }
 
-  //*
+  / *
   for (std::size_t i = 0; i < fExptFluenceTables.size(); i++){
     for (std::size_t j = 0; j < fExptFluenceTables[i].size(); j++){
       fExptFluenceTables[i][j] /=100.0;   //    in unit of n/mm^2/eV/10^9p
@@ -313,7 +313,7 @@ void G4TARCHistoManager::ReadExperimentalDataFromFile(G4String& exptFileName){
       fExptFluxErrTables[i][j] /=100.0;   //    in unit of n/mm^2/eV/10^9p
     }
   }
-  // *
+  / *
 
   for (std::size_t ijk2 = 0; ijk2 < fExptRadiiTables[3].size(); ijk2++){
     G4double rVal = fExptRadiiTables[3][ijk2];
@@ -370,13 +370,13 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
       dumpResult << fExptRadiiTables[ij1][ij2] << "    " << fExptEnergyBin[ij1] << "    "
 		 << fExptFluenceTables[ij1][ij2] << "    " << fExptErrTables[ij1][ij2] << std::endl;
-// *
+/  *
       fAnalysisManager->FillNtupleDColumn(9, 0, fExptRadiiTables[ij1][ij2] );  //  converted to mm
       fAnalysisManager->FillNtupleDColumn(9, 1, fExptEnergyBin[ij1]);
       fAnalysisManager->FillNtupleDColumn(9, 2, fExptFluenceTables[ij1][ij2] * 100.0);   // transferring to unit n/cm^2/eV/10^9p
       fAnalysisManager->FillNtupleDColumn(9, 3, fExptErrTables[ij1][ij2] * 100.0);
       fAnalysisManager->AddNtupleRow(9);
-  // *
+  / *
     }
   }
   dumpResult.close();
@@ -387,13 +387,13 @@ void G4TARCHistoManager::FillRadialExperimentalData(){
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
       dumpResult << fExptRadiiTables[ij1][ij2] << "    " << fExptEnergyBin[ijE] << "    "
 		 << fExptFluenceTables[ij1][ij2] << "    " << fExptErrTables[ij1][ij2]  << std::endl;
-      // *
+      / *
       fAnalysisManager->FillNtupleDColumn(10, 0, fExptRadiiTables[ij1][ij2] );   // converted to mm
       fAnalysisManager->FillNtupleDColumn(10, 1, fExptEnergyBin[ijE]);
       fAnalysisManager->FillNtupleDColumn(10, 2, fExptFluenceTables[ij1][ij2] * 100.0);  // transferring to unit n/cm^2/eV/10^9p
       fAnalysisManager->FillNtupleDColumn(10, 3, fExptErrTables[ij1][ij2] * 100.0);
       fAnalysisManager->AddNtupleRow(10);
-      // *
+      / *
     }
   }
   dumpResult.close();
@@ -521,7 +521,7 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("momentum");
   fAnalysisManager->CreateNtupleDColumn("zmom");
   fAnalysisManager->FinishNtuple(); // ntupleID: 6
-  //*
+  / *
 
   fAnalysisManager->CreateNtuple("h8_Created_N", "Created Neutrons");
   fAnalysisManager->CreateNtupleDColumn("energy");
@@ -539,7 +539,7 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("step");
   fAnalysisManager->CreateNtupleIColumn("dupli");
   fAnalysisManager->FinishNtuple(); // ntupleID: 7      : 3
-//  /*
+//  *
 
   fAnalysisManager->CreateNtuple("h9_Rad_Shell_Fluence", "Radial Shell Fluence");
   fAnalysisManager->CreateNtupleDColumn("radius");
@@ -594,12 +594,12 @@ void G4TARCHistoManager::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleDColumn("primary");
   fAnalysisManager->FinishNtuple(); // ntupleID: 14              : 4
-///*
+/ *
   fAnalysisManager->CreateNtuple("h16", "log10(En)");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->FinishNtuple(); // ntupleID: 15 for neutron
 
-  //*
+  /  *
 
   G4cout << "Ntuples created." << G4endl;
 }

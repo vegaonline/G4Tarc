@@ -57,7 +57,7 @@ public:
   void NeutronEnergyTime(G4double, G4double, G4double);
   void otherEnergyTime(G4double, G4double, G4double);
   void exitingTally(G4bool, G4double);
-  inline void CalcExitingFlux(G4double exitingE)                   { fExiting_Flux++;   fExiting_Energy += exitingE;}
+  void exitingTallyCheck(G4bool exiting_flag_check);
 
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
   void analyseNeutronShellFluence(G4double, G4double);
@@ -77,13 +77,30 @@ private:
   G4int                                                     fSelected;
   G4int                                                     fEventID;
   G4int                                                     fNeutronStack;
+  G4int                                                      fGamma_flux;
+  G4int                                                      fNeutron_flux;
+  G4int                                                      fNeutron_check;
+  G4int                                                      fElectron_flux;
+  G4int                                                      fPiMinus_flux;
+  G4int                                                      fPiPlus_flux;
+  G4int                                                      fPiZero_flux;
+  G4int                                                      fPositron_flux;
+  G4int                                                      fProton_flux;
+  G4int                                                      fMuon_flux;
+  G4int                                                      fNeutron_fluence;
+  G4int                                                      fOther_flux;
   G4int                                        fExiting_Flux;
+  G4int                                                      fMaxRadCount;
+  G4int                      fRefShellNumber;
   G4double                         fExiting_Energy;
   std::vector<G4double>                  fEflux_Data;
   //std::vector<G4double>                  fFine_Energy;
 
   std::vector<G4double>                  fENflux;
   std::vector<G4double>                  fNeutflux;
+  std::vector<G4double>                          fLithium_Radial_Energy_Lower;
+  std::vector<G4double>                          fLithium_Radial_Energy_Upper;
+  std::vector<std::vector<G4double> >    fRadialFluenceStep;
 
 };
 

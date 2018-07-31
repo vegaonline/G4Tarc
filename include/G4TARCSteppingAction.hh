@@ -18,6 +18,7 @@
 #include <map>
 
 #include "G4TARCParallelWorld.hh"
+#include "G4TARCEventAction.hh"
 
 class G4TARCEventAction;
 class G4TARCParallelWorld;
@@ -35,6 +36,10 @@ private:
   //G4TARCHistoManager*  fHisto;
   G4TARCEventAction*   fEventAction;
   G4bool flag;
+  G4int number_generations, fNmax;
+
+  G4double fEnergy0, fTime0;
+
   std::map<G4int, G4double, std::less<G4int> > fParentEnergy;
   std::map<G4int, G4String, std::less<G4int> > fParentParticle;
   std::map<G4int, G4int, std::less<G4int> > fParentParticleID;

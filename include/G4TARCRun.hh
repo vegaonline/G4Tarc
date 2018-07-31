@@ -58,6 +58,7 @@ public:
   G4int GetExitingCheckFlux() const    {return fExiting_check_Flux;}
   G4int GetIntegralFlux_46cm() const   {return fIntegral_flux_46cm;}
   G4int GetIntegralEFlux_46cm() const {return fTARC_Integral_Eflux_46cm;}
+  G4int GetRefShellNumber() const       {return fRefShellNumber;}
 
 private:
   std::vector<G4String> fCollName;

@@ -65,14 +65,14 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       reduced_tally = true;
       fParentParticle.erase(parentTrackID);
     }
-    analyseSecondaries (fParticleEnergy, fParticleName, fParticleTime, fParticleMomentum, parentTrackID, primEnergy,
+    fEventAction->analyseSecondaries (fParticleEnergy, fParticleName, fParticleTime, fParticleMomentum, parentTrackID, primEnergy,
       fParentEnergy[parentTrackID], fParentParticle[parentTrackID], reduced_tally, number_generations);
   }
 
   if (fParticleName == "neutron"){
-    NeutronEnergyTime(fParticleEnergy, fParticleTime, fEnergy0);
+    fEventAction->NeutronEnergyTime(fParticleEnergy, fParticleTime, fEnergy0);
   } else {
-    if (fParticleName == "Pb207" || fParticleName == "Pb208")  otherEnergyTime(fParticleEnergy, fParticleTime, fEnergy0);
+    if (fParticleName == "Pb207" || fParticleName == "Pb208")  fEventAction->otherEnergyTime(fParticleEnergy, fParticleTime, fEnergy0);
   }
   G4double radiusPre = myStep->GetPreStepPoint()->GetPosition().mag();
   G4double radiusPost = myStep->GetPostStepPoint()->GetPosition().mag();
@@ -89,10 +89,10 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       G4String PostVol = thePostTouchable->GetVolume()->GetName();
 
       if (PreVol == "lab_phys" && PostVol == "world_log_PV"){
-        exitingTally(true, fParticleEnergy);
+        fEventAction->exitingTally(true, fParticleEnergy);
       }
       if (PostVol == "world_log_PV"){
-        exitingTallyCheck(true);
+        fEventAction->exitingTallyCheck(true);
       }
     }
 
@@ -101,7 +101,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
 
     if  ((radiusPre <= (fRefShellOuterRad + fMyTol)) && (radiusPre >= (fRefShellInnerRad - fMyTol)) ) pre_inside = true;
     if  ((radiusPost <= (fRefShellOuterRad + fMyTol)) && (radiusPost >= (fRefShellInnerRad - fMyTol))) post_inside = true;
-    if (pre_inside && post_inside) analyseNeutronShellFluence(fParticleEnergy, StepLength);
+    if (pre_inside && post_inside) fEventAction->analyseNeutronShellFluence(fParticleEnergy, StepLength);
 
     for (G4int ishell = 0; ishell < fRefShellNumber; ishell++){
       G4bool pre_inside_radial = false;
