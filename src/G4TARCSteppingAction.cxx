@@ -5,10 +5,19 @@ G4TARCSteppingAction::G4TARCSteppingAction(G4TARCEventAction* anEvent)
 {
   fEventAction = anEvent;
   //fHisto = G4TARCHistoManager::GetPointer();
+  fRefShellThickness = 2.0 * mm;
+  fRefShellOuterRad = 456.0 * mm;
+  fRefShellInnerRad = fRefShellOuterRad - fRefShellThickness;
+  fMaxOuterRadiusofShell = 1500.0 * mm;
+  fMinInnerRadiusofShell = 10.0 * mm;
+  fEnergy0 = 0.0;
+  fShellNumber = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
+
 }
 
 void G4TARCSteppingAction::UserSteppingAction(const G4Step* myStep){
   //fHisto->ProcessStepping(myStep);
+  ProcessStepping(myStep);
 }
 
 
@@ -110,13 +119,13 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       G4double radIn  = fInnerRadiusofShell[ishell];
       if ((radiusPre <= (radOut + fMyRadTol)) && (radiusPre >= (radIn - fMyRadTol))) pre_inside_radial = true;
       if ((radiusPost <= (radOut + fMyRadTol)) && (radiusPost >= (radIn - fMyRadTol)) ) post_inside_radial = true;
-      if (pre_inside_radial && post_inside_radial) analyseNeutronRadialFluence(fParticleEnergy, StepLength, ishell);  // fParticleTime, StepLength, ishell);
+      if (pre_inside_radial && post_inside_radial) fEventAction->analyseNeutronRadialFluence(fParticleEnergy, StepLength, ishell);  // fParticleTime, StepLength, ishell);
 
     }
 
     if (vol == "sample_phys" || vol == "sampleTube_phys" || vol == "sample_phys2"){
       G4double radValue = fRefShellOuterRad;
-      analyseNeutronFluence(fParticleEnergy, fParticleTime,  thisTrackID, radValue, StepLength,  parentTrackID, primEnergy,  fParticleName);
+      fEventAction->analyseNeutronFluence(fParticleEnergy, fParticleTime,  thisTrackID, radValue, StepLength,  parentTrackID, primEnergy,  fParticleName);
     }
 
     //for (std::size_t ii = 0; ii < fFluxRadTables.size(); ++ii){
@@ -125,7 +134,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       if ( (radiusPre < radValue && radiusPost > radValue) ||(radiusPre > radValue && radiusPost < radValue)){
           //G4cout << ii << " FluxRad  " << radValue << "  RadPre " << radiusPre <<  " radPost " << radiusPost << G4endl;
         G4double radiusL = radValue;
-        analyseNeutronFlux(fParticleEnergy, thisTrackID, radiusL, cosAngle, fParticleName);
+        fEventAction->analyseNeutronFlux(fParticleEnergy, thisTrackID, radiusL, cosAngle, fParticleName);
       }
     }
   }

@@ -42,7 +42,7 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
 
 
 void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
-  //auto analysisManager = G4AnalysisManager::Instance();
+  auto analysisManager = G4AnalysisManager::Instance();
   FillRadialExperimentalData();
   G4cout << " Number of events: " << aRun->GetNumberOfEvent() << G4endl;
 
@@ -52,9 +52,9 @@ void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
   G4double fTARCExitingCheckFlux = tarcRun->GetExitingCheckFlux();
 
   if (IsMaster()) {
-    NeutronFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
-    RadialFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
-    G4cout << "Integral neutron Flux @46 cm " << tarcRun->GetIntegralFlux_46cm()
+    //NeutronFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
+    //RadialFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
+    G4cout << "Integral neutron Flux @46 cm " << tarcRun->GetIntegralFlux_46cm() << G4endl
             << "Integral EFLUX @ 46 cm " << tarcRun->GetIntegralEFlux_46cm()
             << G4endl;
   } else {
@@ -540,6 +540,7 @@ void G4TARCRunAction::CreateTuples(){
 
 
 void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarcRun){
+  G4cout << "SA:" << fTestSphereSurfaceArea << G4endl;
   fAbsolute_TotalFlux = (tarcRun->fTotal_flux *  1.0e9 / (G4double)fNevents) / (fTestSphereSurfaceArea); // per cm^2
   for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
     G4double fMeanEnergy   = 0.5 * (tarcRun->fFlux_Energy[ij1 + 1] + tarcRun->fFlux_Energy[ij1]);   // eV

@@ -58,11 +58,15 @@ public:
   void otherEnergyTime(G4double, G4double, G4double);
   void exitingTally(G4bool, G4double);
   void exitingTallyCheck(G4bool exiting_flag_check);
+  void Adding2NeutronStack() {++fNeutronStack;}
 
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
+  void analyseNeutronFluence(G4double energyL, G4double timeL, G4int thisTrackIDL,
+    G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL);
+
 
 private:
   G4TARCEventAction& operator=(const G4TARCEventAction& right);
@@ -90,11 +94,21 @@ private:
   G4int                                                      fNeutron_fluence;
   G4int                                                      fOther_flux;
   G4int                                        fExiting_Flux;
+
+    G4int                                  fMaxFluxData;
+    G4int                                  fMaxFluenceData;
+    G4int                                  fMaxTestFluxData;
+    G4int                                  fIFluxCountRef;
+
   G4int                                                      fMaxRadCount;
   G4int                      fRefShellNumber;
+
+  G4double fEnergy0, fTime0;
   G4double                         fExiting_Energy;
   std::vector<G4double>                  fEflux_Data;
   //std::vector<G4double>                  fFine_Energy;
+  std::vector<G4double>                  fFlux_Energy;
+  std::vector<G4double>                          fFluence_step;
 
   std::vector<G4double>                  fENflux;
   std::vector<G4double>                  fNeutflux;

@@ -2,7 +2,8 @@
 
 G4TARCRun::G4TARCRun(): G4Run() {
   fFracBinWidth = 0.2;
-
+  DefineShellBlocks();
+  ReadExperimentalDataFromFile(fExptlDataFileName);
 }
 
 
@@ -371,11 +372,11 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
       }
 */
 
-      //if (std::abs(radiusLmm - 50.0) <= 0.01) ++fIntegral_flux_5cm;
-      //if (std::abs(radiusLmm - 100.0) <= 0.01) ++fIntegral_flux_10cm;
-      //if (std::abs(radiusLmm - 700.0) <= 0.01) ++fIntegral_flux_70cm;
-      //if (std::abs(radiusLmm - 1000.0) <= 0.01) ++fIntegral_flux_100cm;
-      //if (std::abs(radiusLmm - 1200.0) <= 0.01) ++fIntegral_flux_120cm;
+      if (std::abs(radiusL - 50.0) <= 0.01) ++fIntegral_flux_5cm;
+      if (std::abs(radiusL - 100.0) <= 0.01) ++fIntegral_flux_10cm;
+      if (std::abs(radiusL - 700.0) <= 0.01) ++fIntegral_flux_70cm;
+      if (std::abs(radiusL - 1000.0) <= 0.01) ++fIntegral_flux_100cm;
+      if (std::abs(radiusL - 1200.0) <= 0.01) ++fIntegral_flux_120cm;
 
       if (std::abs(radiusL - 456.0) <= 0.01){
         ++fIntegral_flux_46cm;
@@ -402,7 +403,7 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
               if (tempEnergy > fFlux_Energy[ijk1] && tempEnergy < fFlux_Energy[ijk1 + 1]){
                 fLocal_Energy_Integral[1] += tempEnergy;
                 fFlux[ijk1]++;
-                if (cosAngleL != 0.0) fCos_Flux[ijk1] += 1.0 / std::abs(cosAngleL);
+                if (cosAngleL != 0.0) fCos_Flux[ijk1] += OnebyCosAngle;
                 fCos_Low_Flux[ijk1] = fCos_Flux[ijk1];
                 fEFlux[ijk1] += tempEnergy;
               }
@@ -448,6 +449,24 @@ void G4TARCRun::analyseNeutronRadialFluence(G4double fParticleEnergyL, //G4doubl
       }
     }
 }
+
+
+
+  void G4TARCRun::analyseNeutronFluence(G4double energyL, G4double thisStepL) {
+    //   , G4double timeL, G4int thisTrackIDL,
+    //G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL){
+
+      G4double fTempE = energyL / eV;
+
+
+      //if (fTempE >= fFlux_Energy[fFlux_Energy.size()-1]){
+      if (fTempE >= fFlux_Energy[0]){
+        for (G4int ii = 0; ii < fMaxTestFluxData; ii++){
+          if (fTempE > fFlux_Energy[ii] && fTempE < fFlux_Energy[ii + 1]) fFluence_step[ii] += thisStepL;
+          // G4cout << fTempE << "   " << fFlux_Energy[0] << "   " << thisStepL / mm << "       " << fFluence_step[ii] << G4endl;
+        }
+      }
+  }
 
 void G4TARCRun::Merge(const G4Run* thisRun) {
   const G4TARCRun *localRun = static_cast<const G4TARCRun *> (thisRun);
@@ -501,4 +520,29 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
     }
   }
   G4Run::Merge(thisRun);
+}
+
+void G4TARCRun::RecordEvent(const G4Event* thisEvent) {
+  ++fNevt;
+
+  G4HCofThisEvent* HCE = thisEvent->GetHCofThisEvent();
+  if (!HCE) return;
+
+  //=======================================================
+  // Sum up HitsMap of this Event  into HitsMap of this RUN
+  //=======================================================
+  G4int Ncol = fCollID.size();
+  for ( G4int i = 0; i < Ncol ; i++ ){  // Loop over HitsCollection
+    G4THitsMap<G4double>* EvtMap=0;
+    if ( fCollID[i] >= 0 ){           // Collection is attached to HCE
+      EvtMap = (G4THitsMap<G4double>*)(HCE->GetHC(fCollID[i]));
+    }else{
+      G4cout <<" Error EvtMap Not Found "<< i << G4endl;
+    }
+    if ( EvtMap )  {
+      //=== Sum up HitsMap of this event to HitsMap of RUN.===
+      *fRunMap[i] += *EvtMap;
+      //======================================================
+    }
+  }
 }

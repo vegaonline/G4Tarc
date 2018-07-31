@@ -25,7 +25,7 @@ class G4TARCRun : public G4Run {
 
 public:
   G4TARCRun();
-  virtual ~G4TARCRun();
+  virtual ~G4TARCRun(){};
 
 public:
   void DefineShellBlocks();
@@ -52,6 +52,8 @@ public:
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
+  void analyseNeutronFluence(G4double, G4double );
+
 
   G4int GetExitingFlux() const              {return fExiting_Flux;}
   G4int GetExitingEnergy() const          {return fExiting_Energy;}
@@ -71,12 +73,15 @@ public:
   G4bool                      fReadData;
   G4bool                      fInitialized;
 
+  G4String                                             fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
+
   unsigned                                                 fMeanEnergyTable = 40;
 
   G4int                                                      fMaxRadCount;
   G4int                                                      fMaxTestFluxData;
   G4int                                                      fMaxFluxData;
   G4int                                                      fMaxFluenceData;
+  G4int                                         fNevt;
 
   G4int                                                      fTotal_flux;
   G4int                                                      fNmax;
@@ -116,7 +121,7 @@ public:
   G4double                                               fExiting_Energy;
   G4double                                               fFracBinWidth;
 
-G4double floatDummy=0;
+  G4double floatDummy=0;
 
     G4double fTotVolVBox  = (150.0 * mm) * (150.0 * mm) * (300.0 * mm);  // volume of virtual box around holes
     G4double fMaxLVal     = 3000.0 * mm;
