@@ -19,9 +19,11 @@
 
 #include "G4TARCParallelWorld.hh"
 #include "G4TARCEventAction.hh"
+#include "G4TARCRunAction.hh"
 
 class G4TARCEventAction;
 class G4TARCParallelWorld;
+class G4G4TARCRunAction;
 
 class G4TARCSteppingAction : public G4UserSteppingAction {
 public:
@@ -30,12 +32,16 @@ public:
 
   virtual void UserSteppingAction(const G4Step*);
   void ProcessStepping(const G4Step*);
+  void ReadExperimentalDataFromFile(G4String& );
 
 
 private:
+  G4String                                             fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
   //G4TARCHistoManager*  fHisto;
   G4TARCEventAction*   fEventAction;
   G4bool flag;
+  G4bool fReadData;
+  G4int fMaxFluxData, fMaxFluenceData, fMaxTestFluxData;
 
   G4double            fRefShellOuterRad;
   G4double         fRefShellInnerRad;
@@ -69,6 +75,11 @@ private:
     std::vector< std::vector<G4double> >   fFlux_Radius;
     std::vector<std::vector<G4double> >    fRadialFluenceStep;
 
+    unsigned                                                 fMeanEnergyTable = 40;
+    std::vector<G4double>                          fMeanEnergyT40List;
+    std::vector<G4int>                                 fFluxTableList {36, 38};     // , 40}; the energy supplied is E_low
+
+    std::vector< G4double>                 fExptEnergyBin;
 
   std::map<G4int, G4double, std::less<G4int> > fParentEnergy;
   std::map<G4int, G4String, std::less<G4int> > fParentParticle;

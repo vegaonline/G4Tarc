@@ -9,13 +9,11 @@
 //: G4UserRunAction(), fDetector(det), fPrimary(prim), fHisto(0){
 G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
   //fHistoM = G4TARCHistoManager::GetPointer();
-
-
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   DefineShellBlocks();
   ReadExperimentalDataFromFile(fExptlDataFileName);
   BookHistogram();
   CreateTuples();
-
 }
 
 G4TARCRunAction::~G4TARCRunAction() {
@@ -28,11 +26,12 @@ G4Run* G4TARCRunAction::GenerateRun(){
 void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
   auto fAnalysisManager = G4AnalysisManager::Instance();
   auto id = aRun->GetRunID();
-  G4cout << "Run # " << id << " starts." << G4endl;
+
   fAnalysisManager->OpenFile(fAnalysisFileName);
   G4NuclearLevelData::GetInstance();
+  G4cout << "Run # " << id << " starts." << G4endl;
   //fHistoM->BeginOfRun();
-
+/*
 #ifdef G4VIS_USE
   auto UI = G4UImanager::GetUIpointer();
   auto pVVisManager = G4VVisManager::GetConcreteInstance();
@@ -40,10 +39,12 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
     UI->ApplyCommand("/vis/scene/notifyHandlers");    // this crashes the code .....
   }
 #endif
+*/
 }
 
 
 void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
+  G4cout << "End of RunAction started. " << G4endl;
   auto fAnalysisManager = G4AnalysisManager::Instance();
   FillRadialExperimentalData();
   G4cout << " Number of events: " << aRun->GetNumberOfEvent() << G4endl;
