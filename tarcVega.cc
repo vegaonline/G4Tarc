@@ -21,9 +21,9 @@
 #include "G4TARCParallelWorld.hh"
 #include "G4TARCPhysicsList.hh"
 //#include "G4TARCPhysicsListMessenger.hh"
-#include "G4TARCPrimaryGeneratorAction.hh"
+// #include "G4TARCPrimaryGeneratorAction.hh"
 #include "G4TARCActionInitialization.hh"
-#include "G4TARCRunAction.hh"
+//  #include "G4TARCRunAction.hh"
 #include "G4TARCEventAction.hh"
 #include "G4TARCSteppingAction.hh"
 #include "G4TARCStackingAction.hh"
@@ -34,7 +34,7 @@
 #include "G4ImportanceBiasing.hh"
 #include "G4IStore.hh"
 #include "G4VWeightWindowStore.hh"
-#include "G4VWeightWindowAlgorithm.hh"
+#include "G4WeightWindowAlgorithm.hh"
 
 
 // I am adding all these and later we may be selective to pick effective ones
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
   char*                       physnameInput = getenv("PHYSLIST");
   G4String                    physicsName   = "";
   if (physnameInput)          physicsName   = G4String(physnameInput);
-  if (!physicsName.size())    physicsName   = "QGSP_BIX_HP";
+  if (!physicsName.size())    physicsName   = "QGSP_BIc_HP";
 
   if (physicsName.size() && physFactory.IsReferencePhysList(physicsName)){
       phys = physFactory.GetReferencePhysList(physicsName);
@@ -212,6 +212,9 @@ int main(int argc, char** argv) {
       delete ui;
     #endif
   }
+
+  G4GeometryManager::GetInstance()->OpenGeometry();
+  pgsN.ClearSampling();
 
   //termination of job
   #ifdef G4VIS_USE

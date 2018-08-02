@@ -22,6 +22,8 @@
 #include "G4TARCRun.hh"
 //#include "G4TARCEventAction.hh"
 #include "G4TARCAnalysis.hh"
+#include "G4TARCHistoManager.hh"
+#include "G4TARCPrimaryGeneratorAction.hh"
 
 #include "Randomize.hh"
 #include <fstream>
@@ -29,9 +31,10 @@
 
 class G4Run;
 class G4TARCRun;
+class G4TARCHistoManager;
 // class G4TARCEventAction;
 //class G4TARCDetectorConstruction;
-//class G4TARCPrimaryGeneratorAction;
+class G4TARCPrimaryGeneratorAction;
 //class G4UserRunAction;
 
 
@@ -52,6 +55,7 @@ public:
   void BookHistogram();
   void CreateTuples();
   void FillRadialExperimentalData();
+
   void NeutronFluxHistogram(G4int, const G4TARCRun*);
   void RadialFluxHistogram(G4int, const G4TARCRun*);
 
@@ -65,11 +69,11 @@ private:
   G4String                                             fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
   G4String                                             fAnalysisFileName = "G4TARC_output";
   //G4AnalysisManager*                         fAnalysisManager;
-  G4TARCEventAction*                      fEventAction;
+  //           G4TARCEventAction*                      fEventAction;
   //G4TARCDetectorConstruction*      fDetector;
-  G4TARCPrimaryGeneratorAction*  fPrimary;
-  G4TARCRunAction*                        fRun;
-  //G4TARCHistoManager*                   fHistoM;
+  //             G4TARCPrimaryGeneratorAction*  fPrimary;
+  //G4TARCRunAction*                        fRun;
+  G4TARCHistoManager*                   fHistoM;
 
 
 

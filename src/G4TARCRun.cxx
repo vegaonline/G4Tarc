@@ -2,10 +2,39 @@
 
 G4TARCRun::G4TARCRun(): G4Run() {
   fFracBinWidth = 0.2;
-  DefineShellBlocks();
-  ReadExperimentalDataFromFile(fExptlDataFileName);
+  if (!fReadData){
+    DefineShellBlocks();
+    ReadExperimentalDataFromFile(fExptlDataFileName);
+  }
+  initVecs();
+  StartProcessing();
 }
 
+void G4TARCRun::initVecs(){
+  fNmax = 0;
+  fTotal_flux = 0.0;
+  fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
+  fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
+  fTARC_Integral_Eflux_46cm = 0.0;
+  fExiting_Flux = 0;
+  fExiting_check_Flux = 0;
+  fExiting_Energy = 0.0;
+  fLocal_Energy_Integral = G4DataVector(4, 0.0);
+
+  fEnergy0 = 0.0;
+  flag = false;
+  number_generations = 0;
+  fFracBinWidth = 0.2;
+  fLithium_Flux.resize(fMaxFluxData, 0.0);
+  fLithium_Radial_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_True_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Lower.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
+  fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
+  fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+
+
+}
 
 void G4TARCRun::DefineShellBlocks() {
   fShellThickness        =     50.0 * mm;

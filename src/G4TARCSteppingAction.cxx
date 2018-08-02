@@ -30,7 +30,7 @@ void G4TARCSteppingAction::UserSteppingAction(const G4Step* myStep){
 
 // User Stepping Action
 void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
-    G4cout << ".................. Stepping started" << G4endl;
+    //G4cout << ".................. Stepping started" << G4endl;
 
   G4Track* myTrack = myStep->GetTrack();
   G4int StepNo = myTrack->GetCurrentStepNumber();
@@ -50,6 +50,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
   G4double primEnergy = 0.0;
 
   fEventAction->analysePS(fParticleEnergy, fParticleName, fParticleMomentum);      //  , fParticleTime, fParticleMomentum, zMomentum);
+
 
   if (StepNo == 1){
     if (thisTrackID == 1){
@@ -83,10 +84,13 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       reduced_tally = true;
       fParentParticle.erase(parentTrackID);
     }
-    fEventAction->analyseSecondaries (fParticleEnergy, fParticleName, fParticleTime, fParticleMomentum, parentTrackID, primEnergy,
+
+     fEventAction->analyseSecondaries (fParticleEnergy, fParticleName, fParticleTime, fParticleMomentum, parentTrackID, primEnergy,
       fParentEnergy[parentTrackID], fParentParticle[parentTrackID], reduced_tally, fNumberGenerations);
+
+
   } else {
-    G4cout << " Not entering AnalysePS conditionally" << G4endl;
+    // G4cout << " Not entering AnalyseSecondary conditionally" << G4endl;
   }
 
   if (fParticleName == "neutron"){
@@ -149,7 +153,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       }
     }
   }
-  G4cout << ".......................... Exiting ProcessStepping. " << G4endl;
+  //G4cout << ".......................... Exiting ProcessStepping. " << G4endl;
 }
 
 

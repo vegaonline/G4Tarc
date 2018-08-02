@@ -11,7 +11,7 @@ G4TARCPrimaryGeneratorAction::G4TARCPrimaryGeneratorAction()
  ,fGunMess(0), fBeamFlag(false), fCurrent(0)
 {
     fGPS = new G4GeneralParticleSource();
-    fHisto = G4TARCHistoManager::GetPointer();
+    //fHisto = G4TARCHistoManager::GetPointer();
     fGunMess = new G4TARCPrimaryMessenger(this);
     //fGunMess = new G4TARCPrimaryMessenger();
 }
@@ -28,7 +28,7 @@ void G4TARCPrimaryGeneratorAction::GeneratePrimaries( G4Event* anEvent ){
   fGPS->GeneratePrimaryVertex(anEvent);
   tmp = fGPS->GetParticleEnergy();
   if (!GetEnergy())  SetEnergy(tmp);
-  fHisto->SetGPSEnergyIN(tmp);
+  //fHisto->SetGPSEnergyIN(tmp);
   //tmp = fGPS->GetParticleMomentum();
   //if (!GetMomentum()) SetMomentum(tmp);
   //fHisto->SetGPSMomentumIN(tmp);

@@ -30,6 +30,7 @@ public:
 public:
   void DefineShellBlocks();
   void ReadExperimentalDataFromFile(G4String&);
+  void initVecs();
 
   void StartProcessing();
   virtual void RecordEvent(const G4Event*);
@@ -40,7 +41,6 @@ public:
   G4THitsMap<G4double>* GetHitsMap(const G4String& fullName);
 
   void DumpAllScorer();
-
 
   virtual void Merge(const G4Run*);
 
@@ -72,6 +72,7 @@ public:
   G4bool                      fNtuple_full;
   G4bool                      fReadData;
   G4bool                      fInitialized;
+  G4bool                      flag;
 
   G4String                                             fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
 
@@ -82,6 +83,7 @@ public:
   G4int                                                      fMaxFluxData;
   G4int                                                      fMaxFluenceData;
   G4int                                         fNevt;
+  G4int number_generations;
 
   G4int                                                      fTotal_flux;
   G4int                                                      fNmax;

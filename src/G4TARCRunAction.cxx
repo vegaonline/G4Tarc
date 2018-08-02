@@ -10,16 +10,23 @@
 G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
   //fHistoM = G4TARCHistoManager::GetPointer();
   auto fAnalysisManager = G4AnalysisManager::Instance();
-  DefineShellBlocks();
-  ReadExperimentalDataFromFile(fExptlDataFileName);
-  BookHistogram();
-  CreateTuples();
+
+  if (!fReadData){
+    DefineShellBlocks();
+    ReadExperimentalDataFromFile(fExptlDataFileName);
+  }
+  if (!fHistoBooked){
+    BookHistogram();
+    CreateTuples();
+  }
+
 }
 
 G4TARCRunAction::~G4TARCRunAction() {
 }
 
 G4Run* G4TARCRunAction::GenerateRun(){
+  G4cout << "GenerateRun" << G4endl;
    return new G4TARCRun;
 }
 
@@ -27,11 +34,23 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
   auto fAnalysisManager = G4AnalysisManager::Instance();
   auto id = aRun->GetRunID();
 
-  fAnalysisManager->OpenFile(fAnalysisFileName);
-  G4NuclearLevelData::GetInstance();
+  if (!fReadData){
+    DefineShellBlocks();
+    ReadExperimentalDataFromFile(fExptlDataFileName);
+  }
+  if (!fHistoBooked){
+    BookHistogram();
+    CreateTuples();
+  }
+
+  if (fAnalysisManager->IsActive())   fAnalysisManager->OpenFile(fAnalysisFileName);
+
+  //G4NuclearLevelData::GetInstance();
   G4cout << "Run # " << id << " starts." << G4endl;
   //fHistoM->BeginOfRun();
-/*
+  //G4cout  << "Came back from Histo" << G4endl;
+  G4cout << "BORunAction" << G4endl;
+
 #ifdef G4VIS_USE
   auto UI = G4UImanager::GetUIpointer();
   auto pVVisManager = G4VVisManager::GetConcreteInstance();
@@ -39,7 +58,7 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
     UI->ApplyCommand("/vis/scene/notifyHandlers");    // this crashes the code .....
   }
 #endif
-*/
+
 }
 
 
@@ -55,8 +74,8 @@ void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
   G4double fTARCExitingCheckFlux = tarcRun->GetExitingCheckFlux();
 
   if (IsMaster()) {
-    //NeutronFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
-    //RadialFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
+    NeutronFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
+    RadialFluxHistogram(aRun->GetNumberOfEvent(), tarcRun);
     G4cout << "Integral neutron Flux @46 cm " << tarcRun->GetIntegralFlux_46cm() << G4endl
             << "Integral EFLUX @ 46 cm " << tarcRun->GetIntegralEFlux_46cm()
             << G4endl;
@@ -64,8 +83,11 @@ void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
     G4cout << " Total number of events : " << aRun->GetNumberOfEvent() << G4endl;
   }
 
-  fAnalysisManager->Write();
-  fAnalysisManager->CloseFile();
+  if (fAnalysisManager->IsActive()){
+    fAnalysisManager->Write();
+    fAnalysisManager->CloseFile();  
+  }
+
 
   //fHistoM->EndOfRun();
   #ifdef G4VIS_USE
@@ -347,7 +369,7 @@ void G4TARCRunAction::FillRadialExperimentalData(){
 
 
 void G4TARCRunAction::BookHistogram() {
-  auto fAnalysisManager = G4AnalysisManager::Instance();
+  G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   fHistoBooked = true;
   fAnalysisManager->SetFirstHistoId(1);
   //1
@@ -377,7 +399,7 @@ void G4TARCRunAction::BookHistogram() {
 
 
 void G4TARCRunAction::CreateTuples(){
-  auto fAnalysisManager = G4AnalysisManager::Instance();
+  G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->CreateNtuple("h1_Secondary", "Secondary Particle Info");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
