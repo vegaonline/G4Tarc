@@ -19,6 +19,8 @@ G4TARCStackingAction::~G4TARCStackingAction() {
   delete fStackMessenger;
 }
 
+
+
 G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* myTrack) {
   G4ClassificationOfNewTrack status = fWaiting;     //fUrgent;
 

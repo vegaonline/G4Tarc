@@ -69,13 +69,16 @@ public:
 
 
 private:
+
   G4TARCEventAction& operator=(const G4TARCEventAction& right);
   G4TARCEventAction ( const G4TARCEventAction& );
-  //G4TARCHistoManager*                      fHisto;
-  //G4AnalysisManager*                           fAnalysisManager;
-  G4TARCEventActionMessenger*        fEventMessenger;
-  G4UImanager*                                      fUITARC;
-  std::vector<G4int>                                fSelectedEvents;
+
+  //G4TARCHistoManager*                        fHisto;
+  //G4AnalysisManager*                         fAnalysisManager;
+
+  G4TARCEventActionMessenger*                  fEventMessenger;
+  G4UImanager*                                 fUITARC;
+  std::vector<G4int>                           fSelectedEvents;
   G4bool                                                  fDebugStarted;
   G4int                                                     fPrintModulo;
   G4int                                                     fSelected;
@@ -95,25 +98,25 @@ private:
   G4int                                                      fOther_flux;
   G4int                                        fExiting_Flux;
 
-    G4int                                  fMaxFluxData;
-    G4int                                  fMaxFluenceData;
-    G4int                                  fMaxTestFluxData;
-    G4int                                  fIFluxCountRef;
+  G4int                                  fMaxFluxData;
+  G4int                                  fMaxFluenceData;
+  G4int                                  fMaxTestFluxData;
+  G4int                                  fIFluxCountRef;
 
-  G4int                                                      fMaxRadCount;
-  G4int                      fRefShellNumber;
+  G4int                                  fMaxRadCount;
+  G4int                                  fRefShellNumber;
 
-  G4double fEnergy0, fTime0;
-  G4double                         fExiting_Energy;
+  G4double                               fEnergy0, fTime0;
+  G4double                               fExiting_Energy;
   std::vector<G4double>                  fEflux_Data;
-  //std::vector<G4double>                  fFine_Energy;
+  //std::vector<G4double>                fFine_Energy;
   std::vector<G4double>                  fFlux_Energy;
-  std::vector<G4double>                          fFluence_step;
+  std::vector<G4double>                  fFluence_step;
 
   std::vector<G4double>                  fENflux;
   std::vector<G4double>                  fNeutflux;
-  std::vector<G4double>                          fLithium_Radial_Energy_Lower;
-  std::vector<G4double>                          fLithium_Radial_Energy_Upper;
+  std::vector<G4double>                  fLithium_Radial_Energy_Lower;
+  std::vector<G4double>                  fLithium_Radial_Energy_Upper;
   std::vector<std::vector<G4double> >    fRadialFluenceStep;
 
 };

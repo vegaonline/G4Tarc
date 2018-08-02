@@ -16,6 +16,9 @@ G4TARCSteppingAction::G4TARCSteppingAction(G4TARCEventAction* anEvent)
   fNumberGenerations = 0;
   fShellNumber = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
 
+  // G4TARCRun* thisRA = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+
+  // thisRA->ReadExperimentalDataFromFile(fExptlDataFileName);
   ReadExperimentalDataFromFile(fExptlDataFileName);
 }
 

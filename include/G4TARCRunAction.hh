@@ -10,6 +10,7 @@
 #include "G4UserRunAction.hh"
 #include "G4NuclearLevelData.hh"
 #include "G4Run.hh"
+#include "G4RunManager.hh"
 #include "G4ios.hh"
 #include "G4UserRunAction.hh"
 #include "G4UImanager.hh"
@@ -19,7 +20,7 @@
 #include "globals.hh"
 
 #include "G4TARCRun.hh"
-#include "G4TARCEventAction.hh"
+//#include "G4TARCEventAction.hh"
 #include "G4TARCAnalysis.hh"
 
 #include "Randomize.hh"
@@ -28,10 +29,10 @@
 
 class G4Run;
 class G4TARCRun;
-class G4TARCEventAction;
+// class G4TARCEventAction;
 //class G4TARCDetectorConstruction;
-class G4TARCPrimaryGeneratorAction;
-class G4UserRunAction;
+//class G4TARCPrimaryGeneratorAction;
+//class G4UserRunAction;
 
 
 class G4TARCRunAction : public G4UserRunAction {

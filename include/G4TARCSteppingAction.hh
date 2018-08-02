@@ -83,7 +83,7 @@ private:
 
   std::map<G4int, G4double, std::less<G4int> > fParentEnergy;
   std::map<G4int, G4String, std::less<G4int> > fParentParticle;
-  std::map<G4int, G4int, std::less<G4int> > fParentParticleID;
+  std::map<G4int, G4int,    std::less<G4int> > fParentParticleID;
 };
 
 #endif

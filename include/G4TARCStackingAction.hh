@@ -43,6 +43,7 @@ public:
   inline void SetKillGammas(G4bool val)  { fKillGammas = val; }
   virtual G4ClassificationOfNewTrack ClassfyNewTrack(const G4Track*);
 
+
 private:
   G4TARCHistoManager*         fHistoManager;
   G4TARCStackingMessenger*    fStackMessenger;
