@@ -17,13 +17,13 @@
 #include "globals.hh"
 #include <map>
 
-#include "G4TARCParallelWorld.hh"
+// #include "G4TARCParallelWorld.hh"
 #include "G4TARCEventAction.hh"
-#include "G4TARCRunAction.hh"
+// #include "G4TARCRunAction.hh"
 
 class G4TARCEventAction;
-class G4TARCParallelWorld;
-class G4G4TARCRunAction;
+//class G4TARCParallelWorld;
+//class G4G4TARCRunAction;
 
 class G4TARCSteppingAction : public G4UserSteppingAction {
 public:

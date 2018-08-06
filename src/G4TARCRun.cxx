@@ -2,41 +2,19 @@
 
 G4TARCRun::G4TARCRun(): G4Run() {
   fFracBinWidth = 0.2;
+
   if (!fReadData){
     DefineShellBlocks();
     ReadExperimentalDataFromFile(fExptlDataFileName);
+    initVecs();
+    G4cout << "Return from InitVecs" << G4endl;
   }
-  initVecs();
+
   StartProcessing();
 }
 
-void G4TARCRun::initVecs(){
-  fNmax = 0;
-  fTotal_flux = 0.0;
-  fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
-  fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
-  fTARC_Integral_Eflux_46cm = 0.0;
-  fExiting_Flux = 0;
-  fExiting_check_Flux = 0;
-  fExiting_Energy = 0.0;
-  fLocal_Energy_Integral = G4DataVector(4, 0.0);
-
-  fEnergy0 = 0.0;
-  flag = false;
-  number_generations = 0;
-  fFracBinWidth = 0.2;
-  fLithium_Flux.resize(fMaxFluxData, 0.0);
-  fLithium_Radial_Mean.resize(fMaxRadCount, 0.0);
-  fLithium_Radial_True_Mean.resize(fMaxRadCount, 0.0);
-  fLithium_Radial_Energy_Lower.resize(fMaxRadCount, 0.0);
-  fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
-  fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
-  fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
-
-
-}
-
 void G4TARCRun::DefineShellBlocks() {
+  G4cout << " DefineShellBlocks in RUN" << G4endl;
   fShellThickness        =     50.0 * mm;
   fRefShellThickness     =     2.0 * mm;
   fRefShellOuterRad      =  456.0 * mm;
@@ -65,10 +43,12 @@ void G4TARCRun::DefineShellBlocks() {
   fTestShellVol          = (4.0 / 3.0) * CLHEP::pi * (std::pow(fRefShellOuterRad, 3.0) - std::pow(fRefShellInnerRad, 3.0));
 
   fEnergy0 = 0.01;
+      G4cout << " DefineShellBlocks in RUN exiting " << G4endl;
 }
 
 void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
-  fReadData = false;
+      G4cout << " ReadData in RUN  " << G4endl;
+  //fReadData = false;
   std::ifstream exptIN(exptFileName, std::ios::in);
   G4String lineIN;
   unsigned NCount = 0, restCount = 0, file0 = 0, iTableNum = 0;
@@ -267,14 +247,79 @@ void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
   std::vector<std::vector<G4double> > ().swap(fExptFluxErrTables);
   // This is end of test block
   fReadData = true;
+  G4cout << " ReadData in RUN exiting " << G4endl;
+}
+
+
+void G4TARCRun::initVecs(){
+  fNmax = 0;
+  fTotal_flux = 0.0;
+  fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
+  fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
+  fTARC_Integral_Eflux_46cm = 0.0;
+  fExiting_Flux = 0;
+  fExiting_check_Flux = 0;
+  fExiting_Energy = 0.0;
+  fLocal_Energy_Integral = G4DataVector(4, 0.0);
+
+  fEnergy0 = 0.0;
+  flag = false;
+  number_generations = 0;
+
+  fFracBinWidth = 0.2;
+  fFluence_Spectrum.resize(1000, 0.0);
+  fFluence.resize(fMaxFluenceTable, std::vector<G4double>(fMaxEBin, 0.0));
+  fFluence_Step_Shell.resize(fMaxTestFluxData, 0.0);
+  fFluence_Cyl.resize(fMaxTestFluxData, 0.0);
+  fFluence_step.resize(fMaxTestFluxData, 0.0);
+
+  fLow_Fluence_step.resize(fMaxFluenceData, 0.0);
+  fLow_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+
+  fRadialFluenceStep.resize(fMaxTestFluxData, std::vector<G4double>(fMaxRadCount, 0.0));
+  fRadialFluenceStep.resize(fRefShellNumber, std::vector<G4double>(fMaxRadCount, 0.0));
+
+  fFlux_He3.resize(fMaxFluxData, 0.0);
+  fFlux_Low.resize(fMaxFluxData, 0.0);
+  fFlux_Lithium.resize(fMaxFluxData, 0.0);
+  fFlux.resize(fMaxTestFluxData, 0.0);
+  fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
+  fEFlux.resize(fMaxTestFluxData, 0.0);
+  fLow_Flux.resize(fMaxFluxData, 0.0);
+  fENflux.resize(4, 0.0);
+  fNeutflux.resize(4, 0.0);
+
+  fCos_Lithium_Flux.resize(fMaxFluxData, 0.0);
+  fCos_Low_Flux.resize(fMaxFluxData, 0.0);
+  fCos_Flux.resize(fMaxFluxData, 0.0);
+  fCos_He3_Flux.resize(fMaxFluxData, 0.0);
+
+
+  fLithium_Flux.resize(fMaxFluxData, 0.0);
+  fLithium_Radial_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_True_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Lower.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
+  fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
+  fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+
+  fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
+  fLithium_Flux.resize(fMaxFluxData, 0.0);
+  fLithium_Radial_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_True_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Lower.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
+  fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
+  fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
 }
 
 
 void G4TARCRun::StartProcessing(){
+  G4cout << "StartProcessing starts " << G4endl;
   G4double fMeanEnergy = 0.0;
   //G4int j = 0;
 
-  //G4cout << "Entered in StartProcessing. " << " MaxTestFluxData: " << fMaxTestFluxData << G4endl;
+  G4cout << "Entered in StartProcessing. " << " MaxTestFluxData: " << fMaxTestFluxData << G4endl;
   for (G4int ii1 = 0; ii1 < (fMaxTestFluxData - 1); ii1++){
     fMeanEnergy = 0.5 * (fFlux_Energy[ii1] + fFlux_Energy_in[ii1 + 1]);
     fEflux_Data.push_back(fMeanEnergy * fFlux_Data_in[ii1]);
@@ -291,8 +336,8 @@ void G4TARCRun::StartProcessing(){
   fFlux_Lithium_Energy[0] = fEnergy0;
   fFlux_Low_Energy[0] = fEnergy0;
 
-  //G4cout << "LowE: " << fFlux_Low_Energy.size() << " Li_E: " << fFlux_Lithium_Energy.size()
-  //     << "  BINWidth:   " << fBinWidth << G4endl; //exit(0);
+  G4cout << "LowE: " << fFlux_Low_Energy.size() << " Li_E: " << fFlux_Lithium_Energy.size()
+       << "  BINWidth:   " << fBinWidth << G4endl; //exit(0);
 
   //G4int kIndex= 0;
   G4int mIndex = 0;
@@ -309,7 +354,7 @@ void G4TARCRun::StartProcessing(){
         fLithium_Radial_Energy_Upper[fRadialIndex] = fFlux_Lithium_Energy[ii+1];;
         fLithium_Radial_Mean[fRadialIndex] = fExptEnergyBin[fRadialIndex];
         fLithium_Radial_True_Mean[fRadialIndex] = fLithiumMeanEnergy;
-        //G4cout << fRadialIndex << "      " << fLithium_Radial_Mean[fRadialIndex] << G4endl;
+        G4cout << fRadialIndex << "      " << fLithium_Radial_Mean[fRadialIndex] << G4endl;
         ++fRadialIndex;
         //fRadialIndex = (fRadialIndex > fMaxRadCount - 1) ? (fMaxRadCount - 1) : fRadialIndex;
     }
@@ -328,24 +373,11 @@ void G4TARCRun::StartProcessing(){
       ++mIndex;
     }
   }
+  G4cout << "StartProcessing ends " << G4endl;
 }
 
 
-void G4TARCRun::AddFlux(G4String particleName) {
-  if(particleName == "gamma")               fGamma_flux++;
-  if(particleName == "neutron")               fNeutron_flux++;
-  if(particleName == "e-")                        fElectron_flux++;
-  if(particleName == "pi-")                       fPiMinus_flux++;
-  if(particleName == "pi+")                      fPiPlus_flux++;
-  if(particleName == "pi0")                      fPiZero_flux++;
-  if(particleName == "e+")                       fPositron_flux++;
-  if(particleName == "proton")                 fProton_flux++;
-  if(particleName == "mu-")                     fMuon_flux++;
-  if(particleName == "mu+")                    fMuon_flux++;
-  if(particleName == "other")                   fOther_flux++;
-  if(particleName == "neutron_check")    fNeutron_check++;
-  if(particleName == "neutron_fluence")  fNeutron_fluence++;
-}
+
 
 void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4double radiusL, G4double cosAngleL, G4String fParticleNameL)
   //G4double zPosL,G4double cosAngleL, G4String fParticleNameL)
@@ -478,8 +510,6 @@ void G4TARCRun::analyseNeutronRadialFluence(G4double fParticleEnergyL, //G4doubl
       }
     }
 }
-
-
 
   void G4TARCRun::analyseNeutronFluence(G4double energyL, G4double thisStepL) {
     //   , G4double timeL, G4int thisTrackIDL,

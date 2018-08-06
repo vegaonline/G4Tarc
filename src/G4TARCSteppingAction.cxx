@@ -1,10 +1,10 @@
 #include "G4TARCSteppingAction.hh"
 
 G4TARCSteppingAction::G4TARCSteppingAction(G4TARCEventAction* anEvent)
-: G4UserSteppingAction()//, fEventAction(anEvent), fHisto(0)
+: G4UserSteppingAction(), fEventAction(anEvent)// , fHisto(0)
 {
 
-  fEventAction = anEvent;
+  //fEventAction = anEvent;
   //fHisto = G4TARCHistoManager::GetPointer();
 
   fRefShellThickness = 2.0 * mm;
@@ -19,7 +19,9 @@ G4TARCSteppingAction::G4TARCSteppingAction(G4TARCEventAction* anEvent)
   // G4TARCRun* thisRA = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   // thisRA->ReadExperimentalDataFromFile(fExptlDataFileName);
-  ReadExperimentalDataFromFile(fExptlDataFileName);
+
+  //ReadExperimentalDataFromFile(fExptlDataFileName);
+
 }
 
 void G4TARCSteppingAction::UserSteppingAction(const G4Step* myStep){

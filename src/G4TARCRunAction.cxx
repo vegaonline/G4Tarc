@@ -10,20 +10,90 @@
 G4TARCRunAction::G4TARCRunAction(): G4UserRunAction(){
   //fHistoM = G4TARCHistoManager::GetPointer();
   auto fAnalysisManager = G4AnalysisManager::Instance();
+  fReadData = false;
+  fHistoBooked = false;
 
   if (!fReadData){
     DefineShellBlocks();
     ReadExperimentalDataFromFile(fExptlDataFileName);
+    InitVecs();
   }
   if (!fHistoBooked){
     BookHistogram();
     CreateTuples();
   }
+  fTestSphereVolume = (4.0 / 3.0) * CLHEP::pi * (fRadHole * fRadHole * fRadHole) ;  // This is in mm3
+  fTestSphereSurfaceArea = 4.0 * CLHEP::pi * (fTestSphereRadius * fTestSphereRadius) ; //  / cm2;
+  fTestShellVol          = (4.0 / 3.0) * CLHEP::pi * (std::pow(fRefShellOuterRad, 3.0) - std::pow(fRefShellInnerRad, 3.0));
 
 }
 
 G4TARCRunAction::~G4TARCRunAction() {
 }
+
+
+void G4TARCRunAction::InitVecs(){
+  fNmax = 0;
+  fTotal_flux = 0.0;
+  fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
+  fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
+  fTARC_Integral_Eflux_46cm = 0.0;
+  fExiting_Flux = 0;
+  fExiting_check_Flux = 0;
+  fExiting_Energy = 0.0;
+  fLocal_Energy_Integral = G4DataVector(4, 0.0);
+
+  fEnergy0 = 0.0;
+  flag = false;
+  number_generations = 0;
+
+  fFracBinWidth = 0.2;
+  fFluence_Spectrum.resize(1000, 0.0);
+  fFluence.resize(fMaxFluenceTable, std::vector<G4double>(fMaxEBin, 0.0));
+  fFluence_Step_Shell.resize(fMaxTestFluxData, 0.0);
+  fFluence_Cyl.resize(fMaxTestFluxData, 0.0);
+  fFluence_step.resize(fMaxTestFluxData, 0.0);
+
+  fLow_Fluence_step.resize(fMaxFluenceData, 0.0);
+  fLow_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+
+  fRadialFluenceStep.resize(fMaxTestFluxData, std::vector<G4double>(fMaxRadCount, 0.0));
+  fRadialFluenceStep.resize(fRefShellNumber, std::vector<G4double>(fMaxRadCount, 0.0));
+
+  fFlux_He3.resize(fMaxFluxData, 0.0);
+  fFlux_Low.resize(fMaxFluxData, 0.0);
+  fFlux_Lithium.resize(fMaxFluxData, 0.0);
+  fFlux.resize(fMaxTestFluxData, 0.0);
+  fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
+  fEFlux.resize(fMaxTestFluxData, 0.0);
+  fLow_Flux.resize(fMaxFluxData, 0.0);
+  fENflux.resize(4, 0.0);
+  fNeutflux.resize(4, 0.0);
+
+  fCos_Lithium_Flux.resize(fMaxFluxData, 0.0);
+  fCos_Low_Flux.resize(fMaxFluxData, 0.0);
+  fCos_Flux.resize(fMaxFluxData, 0.0);
+  fCos_He3_Flux.resize(fMaxFluxData, 0.0);
+
+
+  fLithium_Flux.resize(fMaxFluxData, 0.0);
+  fLithium_Radial_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_True_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Lower.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
+  fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
+  fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+
+  fFlux_Radius.resize(fMaxRadCount, std::vector<G4double>(fMaxRadCount, 0.0));
+  fLithium_Flux.resize(fMaxFluxData, 0.0);
+  fLithium_Radial_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_True_Mean.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Lower.resize(fMaxRadCount, 0.0);
+  fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
+  fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
+  fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+}
+
 
 G4Run* G4TARCRunAction::GenerateRun(){
   G4cout << "GenerateRun" << G4endl;
@@ -31,8 +101,11 @@ G4Run* G4TARCRunAction::GenerateRun(){
 }
 
 void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
+  G4cout << "Begin of RunAction" << G4endl;
   auto fAnalysisManager = G4AnalysisManager::Instance();
-  auto id = aRun->GetRunID();
+  auto thisRunID = aRun->GetRunID();
+
+  G4cout << " RunID: " << thisRunID << G4endl;
 
   if (!fReadData){
     DefineShellBlocks();
@@ -41,12 +114,11 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
   if (!fHistoBooked){
     BookHistogram();
     CreateTuples();
+    fAnalysisManager->OpenFile(fAnalysisFileName);
   }
 
-  if (fAnalysisManager->IsActive())   fAnalysisManager->OpenFile(fAnalysisFileName);
-
   //G4NuclearLevelData::GetInstance();
-  G4cout << "Run # " << id << " starts." << G4endl;
+  G4cout << "Run # " << thisRunID << " starts." << G4endl;
   //fHistoM->BeginOfRun();
   //G4cout  << "Came back from Histo" << G4endl;
   G4cout << "BORunAction" << G4endl;
@@ -65,8 +137,9 @@ void G4TARCRunAction::BeginOfRunAction( const G4Run* aRun ) {
 void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
   G4cout << "End of RunAction started. " << G4endl;
   auto fAnalysisManager = G4AnalysisManager::Instance();
-  FillRadialExperimentalData();
-  G4cout << " Number of events: " << aRun->GetNumberOfEvent() << G4endl;
+  // FillRadialExperimentalData();
+  fNEventS =aRun->GetNumberOfEvent();
+  G4cout << " Number of events: " << fNEventS<< G4endl;
 
   const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
   G4double fTARCExitingFLux   = tarcRun->GetExitingFlux();
@@ -85,7 +158,7 @@ void G4TARCRunAction::EndOfRunAction( const G4Run* aRun ){
 
   if (fAnalysisManager->IsActive()){
     fAnalysisManager->Write();
-    fAnalysisManager->CloseFile();  
+    fAnalysisManager->CloseFile();
   }
 
 
@@ -570,11 +643,15 @@ void G4TARCRunAction::CreateTuples(){
 
 
 void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarcRun){
+  G4int fNeventsNN=tarcRun->GetNumberOfEvent();
+  G4cout << fNevents << "  "  << fNeventsNN << G4endl;
   auto fAnalysisManager = G4AnalysisManager::Instance();
   G4cout << "SA:" << fTestSphereSurfaceArea << G4endl;
+  G4cout << " MaxTestFluxData: " << fMaxTestFluxData << G4endl;
   fAbsolute_TotalFlux = (tarcRun->fTotal_flux *  1.0e9 / (G4double)fNevents) / (fTestSphereSurfaceArea); // per cm^2
   for (G4int ij1 = 0; ij1 < fMaxTestFluxData; ij1++){
     G4double fMeanEnergy   = 0.5 * (tarcRun->fFlux_Energy[ij1 + 1] + tarcRun->fFlux_Energy[ij1]);   // eV
+    G4cout << "fMeanEnergy: " << fMeanEnergy << "  events " << fNevents << "  flux " << fFlux[ij1] << G4endl;
     G4double fAbsFlux      = (tarcRun->fFlux[ij1] *  (1.0e9 / (G4double)fNevents)) / (fTestSphereSurfaceArea);     // per cm^2
     G4double fBinWidth     = std::abs(tarcRun->fFlux_Energy[ij1 + 1] - tarcRun->fFlux_Energy[ij1]);   //eV
     G4double fAbsFluxPerp  = fMeanEnergy * (((tarcRun->fCos_Flux[ij1] * (1.0e9 / (G4double)fNevents)) / (fTestSphereSurfaceArea)) / fBinWidth);   // per cm^2

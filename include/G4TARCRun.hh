@@ -4,20 +4,15 @@
 
 #include "G4Run.hh"
 #include "G4Event.hh"
-#include "G4EventManager.hh"
-#include "G4HCofThisEvent.hh"
-#include "G4VHitsCollection.hh"
-#include "G4TrajectoryContainer.hh"
-#include "G4Trajectory.hh"
-#include "G4VVisManager.hh"
+
 #include "G4SDManager.hh"
+#include "G4THitsMap.hh"
+#include "globals.hh"
 #include "G4RunManager.hh"
 #include "G4MultiFunctionalDetector.hh"
 #include "G4VPrimitiveScorer.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4THitsMap.hh"
-#include "globals.hh"
-#include "G4TARCRun.hh"
+
 #include <vector>
 #include <regex>
 
@@ -47,13 +42,12 @@ public:
   inline void CalcExitingFlux(G4double exitingE)                   { fExiting_Flux++;   fExiting_Energy += exitingE;}
   inline void exitingTallyCheck(G4bool exiting_flag_check)   {if(exiting_flag_check) fExiting_check_Flux++; }
 
-  void AddFlux(G4String);
+  void AddFlux(const G4String& );
 
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analyseNeutronFluence(G4double, G4double );
-
 
   G4int GetExitingFlux() const              {return fExiting_Flux;}
   G4int GetExitingEnergy() const          {return fExiting_Energy;}
@@ -61,6 +55,7 @@ public:
   G4int GetIntegralFlux_46cm() const   {return fIntegral_flux_46cm;}
   G4int GetIntegralEFlux_46cm() const {return fTARC_Integral_Eflux_46cm;}
   G4int GetRefShellNumber() const       {return fRefShellNumber;}
+  G4int GetNumberOfEvemts() const      {return fNevt;}
 
 private:
   std::vector<G4String> fCollName;
@@ -132,7 +127,7 @@ public:
     //G4int    fNumMax      = 200;  // for fE/Msecond etc.
     G4int    fMaxBin      = 500;
     G4int    fNbin        = fMaxBin;
-    // G4int    fMaxEBin     = 200;
+    G4int    fMaxEBin     = 200;
     //G4int    fStepE       = (fMaxEVal / fMaxBin);
     G4int    fMaxSlices   = 3 * fMaxBin;
     //G4int    fNHisto      = 25;
@@ -218,6 +213,7 @@ public:
   std::vector< std::vector<G4double> >   fExptFluxErrTables;
   std::vector< std::vector<G4double> >   fFlux_Radius;
   std::vector<std::vector<G4double> >    fRadialFluenceStep;
+  std::vector<std::vector<G4double> >    fFluence;
 
   //std::vector< G4double>                 fExptEnergyBin;
   //  std::vector<G4double>                  fFluxRadTables;
@@ -230,8 +226,8 @@ public:
   std::vector<G4double>                  fFlux_Data_in;
   std::vector<G4double>                  fFlux_Syst_Err_in;
 
-  //std::vector<G4double>                  fFlux_Low;
-  //std::vector<G4double>                  fFlux_Low_Radius;
+  std::vector<G4double>                  fFlux_Low;
+  std::vector<G4double>                  fFlux_Low_Radius;
   std::vector<G4double>                  fFlux_Low_Energy;
   std::vector<G4double>                  fFlux_Low_Energy_in;
   std::vector<G4double>                  fFlux_Low_Data;
@@ -239,8 +235,8 @@ public:
   std::vector<G4double>                  fFlux_Low_Syst_Err;
   std::vector<G4double>                  fFlux_Low_Syst_Err_in;
 
-  //  std::vector<G4double>                  fFlux_Lithium;
-  //std::vector<G4double>                  fFlux_Lithium_Radius;
+  std::vector<G4double>                  fFlux_Lithium;
+  std::vector<G4double>                  fFlux_Lithium_Radius;
   std::vector<G4double>                  fFlux_Lithium_Energy;
   std::vector<G4double>                  fFlux_Lithium_Energy_in;
   std::vector<G4double>                  fFlux_Lithium_Data;
@@ -248,11 +244,11 @@ public:
   std::vector<G4double>                  fFlux_Lithium_Syst_Err;
   std::vector<G4double>                  fFlux_Lithium_Syst_Err_in;
 
-  // std::vector<G4double>                  fFlux_He3;
-  //std::vector<G4double>                  fFlux_He3_Energy;
-  //std::vector<G4double>                  fFlux_He3_Energy_in;
-  //std::vector<G4double>                  fFlux_He3_Data;
-  //std::vector<G4double>                  fFlux_He3_Syst_Err;
+  std::vector<G4double>                  fFlux_He3;
+  std::vector<G4double>                  fFlux_He3_Energy;
+  std::vector<G4double>                  fFlux_He3_Energy_in;
+  std::vector<G4double>                  fFlux_He3_Data;
+  std::vector<G4double>                  fFlux_He3_Syst_Err;
 
   //std::vector<G4double>                  fFluence1D;
   //std::vector<G4double>                  fFluence_Radius;
@@ -266,7 +262,7 @@ public:
   //std::vector<G4double>                  fENflux;
   //std::vector<G4double>                  fNeutflux;
 
-  // std::vector<G4double>                  fFluence_Spectrum;
+
   //std::vector<G4double>                  fLithium_Radial_Energy_Lower;
   //std::vector<G4double>                  fLithium_Radial_Energy_Upper;
   //std::vector<G4double>                  fLithium_Radial_Mean;
@@ -277,8 +273,8 @@ public:
   //std::vector<G4double>                  fFluence_Step_Shell;
   //std::vector<G4double>                  fFluence_step;
   std::vector<G4double>                  fLithium_Flux;
-  //std::vector<G4double>                  fHe3_Flux;
-  // std::vector<G4double>                  fCos_He3_Flux;
+  std::vector<G4double>                  fHe3_Flux;
+  std::vector<G4double>                  fCos_He3_Flux;
   std::vector<G4double>                  fCos_Lithium_Flux;
   //std::vector<G4double>                  fLow_Flux;
   std::vector<G4double>                  fCos_Low_Flux;
@@ -287,9 +283,24 @@ public:
   //std::vector<G4double>                  fFluence_Cyl;
   //std::vector<G4double>                  fLow_Fluence_step;
 
-
-
 };
 
+
+
+inline void G4TARCRun::AddFlux(const G4String& particleName) {
+  if(particleName == "gamma")               fGamma_flux++;
+  if(particleName == "neutron")               fNeutron_flux++;
+  if(particleName == "e-")                        fElectron_flux++;
+  if(particleName == "pi-")                       fPiMinus_flux++;
+  if(particleName == "pi+")                      fPiPlus_flux++;
+  if(particleName == "pi0")                      fPiZero_flux++;
+  if(particleName == "e+")                       fPositron_flux++;
+  if(particleName == "proton")                 fProton_flux++;
+  if(particleName == "mu-")                     fMuon_flux++;
+  if(particleName == "mu+")                    fMuon_flux++;
+  if(particleName == "other")                   fOther_flux++;
+  if(particleName == "neutron_check")    fNeutron_check++;
+  if(particleName == "neutron_fluence")  fNeutron_fluence++;
+}
 
 #endif
