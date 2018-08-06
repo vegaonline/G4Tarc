@@ -32,6 +32,8 @@ class G4TARCHistoManager;
 class G4TARCStackingMessenger;
 class G4Track;
 class G4ParticleDefinition;
+class G4Navigator;
+class G4Element;
 
 class G4TARCStackingAction : public G4UserStackingAction {
 public:
@@ -53,6 +55,7 @@ private:
   G4int                       fNeutron;
   G4int                       fProton;
   G4int                       fDeuteron;
+  G4int                 fOther;
 
   G4Navigator*                fNavigator;
   G4TARCEventAction*          fEventAction;

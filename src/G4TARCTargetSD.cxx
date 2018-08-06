@@ -8,7 +8,7 @@ G4TARCTargetSD::G4TARCTargetSD(const G4String& name)
 G4bool G4TARCTargetSD::ProcessHits(G4Step* myStep, G4TouchableHistory*){
   const G4Track* myTrack = myStep->GetTrack();
   fHisto->AddTargetStep(myStep);
-  fHisto->ScoreNewTrack(myTrack);
+  //fHisto->ScoreNewTrack(myTrack);
   if (myTrack->GetTrackID() > 1){
     fHisto->AddEnergyTime(myTrack);  // , myStep);
   } else {

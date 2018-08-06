@@ -913,7 +913,7 @@ void G4TARCHistoManager::AddTargetStep(const G4Step* myStep) {
                            << G4endl;
   //}
 }
-
+/*
 
 void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
   fNumber_newTrack++;
@@ -964,7 +964,7 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
       /*
       fAnalysisManager->FillNtupleDColumn(15, 0, ke);   //log10(ke));
       fAnalysisManager->AddNtupleRow(15);
-      */
+      * /
     } else if (pd == G4AntiProton::AntiProtonDefinition()){
       fNaproton++;
     } else if ( pd == G4PionPlus::PionPlusDefinition() ) {
@@ -988,6 +988,8 @@ void G4TARCHistoManager::ScoreNewTrack( const G4Track* myTrack) {
     }
   }
 }
+
+*/
 
 void G4TARCHistoManager::AddLeakingParticle(const G4Track* myTrack) {
   const G4ParticleDefinition* pd           = myTrack->GetDefinition();

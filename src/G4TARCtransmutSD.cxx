@@ -9,7 +9,7 @@ G4bool G4TARCtransmutSD::ProcessHits(G4Step* myStep, G4TouchableHistory*){
   const G4Track* myTrack = myStep->GetTrack();
   fHisto->AddLeakingParticle(myTrack);
   fHisto->AddTargetStep(myStep);
-  fHisto->ScoreNewTrack(myTrack);
+  //fHisto->ScoreNewTrack(myTrack);
   if (myTrack->GetTrackID() > 1){
     fHisto->AddEnergyTime(myTrack);  // , myStep);
     // fHisto->AddEnergyTimeHole(myTrack); // , myStep);

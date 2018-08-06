@@ -25,8 +25,133 @@ G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* 
   G4ClassificationOfNewTrack status = fWaiting;     //fUrgent;
 
   fNumber_newTracks++;
-  if (myTrack->GetTrackStatus() == fAlive)
-    fHistoManager->ScoreNewTrack(myTrack);
+  //if (myTrack->GetTrackStatus() == fAlive)
+    //fHistoManager->ScoreNewTrack(myTrack);
+
+  const G4ParticleDefinition* pd = myTrack->GetDefinition();
+  G4String name = pd->GetParticleName();
+  G4double ke = myTrack->GetKineticEnergy() / eV;
+  G4int thisTrackID = myTrack->GetTrackID();
+  G4int partType = -99;
+
+  if (pd == G4Neutron::NeutronDefinition() && thisTrackID != 1) {
+    partType = 1;
+    ++fNeutron;
+    fEventAction->Adding2NeutronStack();
+  } else if (pd == G4Proton::ProtonDefinition() && thisTrackID != 1){
+    partType = 2;
+    ++fProton;
+  } else if (pd == G4Deuteron::DeuteronDefinition() && thisTrackID != 1) {
+    partType = 3;
+  } else if (pd == G4Triton::TritonDefinition() && thisTrackID != 1) {
+    partType = 4;
+  } else if (pd == G4Gamma::GammaDefinition() && thisTrackID != 1) {
+    partType = 5;
+  }else if (pd == G4Electron::ElectronDefinition() && thisTrackID != 1) {
+    partType = 6;
+  } else if (pd == G4Positron::PositronDefinition() && thisTrackID != 1) {
+    partType = 7;
+  } else if (pd->GetAtomicMass() == 208 && pd->GetAtomicNumber() == 82 && thisTrackID != 1){
+    partType = 8;
+    name = "Pb-208";
+  } else if (pd->GetAtomicMass() == 207 && pd->GetAtomicNumber() == 82 && thisTrackID != 1){
+    partType = 8;
+    name = "Pb-207";
+  } else if (pd->GetAtomicMass() == 206 && pd->GetAtomicNumber() == 82 && thisTrackID != 1){
+    partType = 8;
+    name = "Pb-206";
+  }else if (pd->GetAtomicMass() == 204 && pd->GetAtomicNumber() == 82 && thisTrackID != 1){
+    partType = 8;
+    name = "Pb-204";
+  } else if (pd->GetAtomicMass() == 2 && pd->GetAtomicNumber() == 1 && thisTrackID != 1){
+    partType = 9;
+    ++fDeuteron;
+    name = "deuteron";
+  }else if (pd->GetAtomicMass() == 3 && pd->GetAtomicNumber() == 1 && thisTrackID != 1){
+    partType = 10;
+    name = "triton";
+  } else {
+    if (pd->GetAtomicMass() > 41)
+     partType = 11;
+    else
+      partType = 12;
+    ++fOther;
+    name = "other";
+  }
+
+  //if (pd == G4Neutron::NeutronDefinition() && myTrack->GetTrackID() != 1)
+
+    // For Primary Track
+    //  if (myTrack->GetTrackID() == 1) {
+        //fNevt++;
+/*
+        if (ke > 0){
+          G4double enerMean = GetGPSEnergy() / eV;
+          enerMean = (0.5 * (ke + enerMean));
+          //SetGPSEnergyIN(enerMean);  // already set in primaryGenerator from GPS
+        }
+        * /
+        //fPrimaryKineticEnergy = ke;
+        fPrimaryDef = pd;
+        G4ThreeVector dir = myTrack->GetMomentumDirection();
+
+
+        if (fVerbose > 1) G4cout << "### Primary "   << name << " KineticE(eV) = " << ke
+                                 << "; Mass(MeV) = " << pd->GetPDGMass() / MeV
+                                 << "; Pos(mm) = "   << myTrack->GetPosition() / mm
+                                 << "; Dir = "       << myTrack->GetMomentumDirection()
+                                 << G4endl;
+      } else {
+    // For Secondary tracks.
+        if (fVerbose > 1) G4cout << "=== Secondary " << name << " KineticE(eV) = " << ke / eV
+                                 << "; Mass(MeV) = " << pd->GetPDGMass() / MeV
+                                 << "; Pos(mm) = "   << myTrack->GetPosition() / mm
+                                 << "; Dir = "       << myTrack->GetMomentumDirection()
+                                 << G4endl;
+        //    ke = std::log10(ke);
+
+        if (pd == G4Gamma::GammaDefinition()){
+          fNgam++;
+          //const G4VProcess* procG = myTrack->GetCreatorProcess();         //  check
+        }else if (pd == G4Electron::ElectronDefinition()){
+          fNelec++;
+        }else if (pd == G4Positron::PositronDefinition()) {
+          fNposit++;
+        } else if (pd == G4Proton::ProtonDefinition()){
+          fNproton++;
+        } else if (pd == G4Neutron::NeutronDefinition()){//&& TKin < fTcut){  // <----- CHECK
+          fNneutron++;
+          fNeutronStack++;
+          // fEventAction->AddNeutronStack();
+          //G4cout << ke << G4endl;
+          / *
+          fAnalysisManager->FillNtupleDColumn(15, 0, ke);   //log10(ke));
+          fAnalysisManager->AddNtupleRow(15);
+          * /
+        } else if (pd == G4AntiProton::AntiProtonDefinition()){
+          fNaproton++;
+        } else if ( pd == G4PionPlus::PionPlusDefinition() ) {
+          fNpions++;
+        } else if ( pd == G4PionMinus::PionMinusDefinition()) {
+          fNpions++;
+        } else if ( pd == G4PionZero::PionZeroDefinition()) {
+          fNpi0++;
+        } else if ( pd == G4KaonPlus::KaonPlusDefinition() ||  pd == G4KaonMinus::KaonMinusDefinition()) {
+          fNkaons++;
+        } else if ( pd == G4KaonZeroShort::KaonZeroShortDefinition() ||  pd == G4KaonZeroLong::KaonZeroLongDefinition()) {
+          fNkaons++;
+        } else if (pd == G4Deuteron::DeuteronDefinition() || pd == G4Triton::TritonDefinition()){
+          fNdeut++;
+        } else if (pd == G4He3::He3() || pd == G4Alpha::Alpha()) {
+          fNalpha++;
+        } else if (pd->GetParticleType() == "nucleus"){
+          fNions++;
+        } else if (pd == G4MuonPlus::MuonPlusDefinition() || pd == G4MuonMinus::MuonMinusDefinition()){
+          fNmuons++;
+        }
+      }
+
+    }
 
   const G4ParticleDefinition* part = myTrack->GetDefinition();
 
@@ -41,6 +166,7 @@ G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* 
     if (fKillSecondary || part == fParticle)
       status = fKill;
   }
+  */
   return status;
 }
 
