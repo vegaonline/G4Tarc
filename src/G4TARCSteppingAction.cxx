@@ -13,8 +13,16 @@ G4TARCSteppingAction::G4TARCSteppingAction(G4TARCEventAction* anEvent)
   fMaxOuterRadiusofShell = 1500.0 * mm;
   fMinInnerRadiusofShell = 10.0 * mm;
   fEnergy0 = 0.0;
-  fNumberGenerations = 0;
+  fNumGen = 0;
   fShellNumber = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
+  fRefShellNumber = fRadiusReference.size();
+
+  for (int i = 0; i < fRefShellNumber; i++) {
+    G4double tmp = fRadiusReference[i];
+    fOuterRadiusofShell.push_back(tmp);
+    tmp -=fRefShellThickness;
+    fInnerRadiusofShell.push_back(tmp);
+  }
 
   // G4TARCRun* thisRA = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
@@ -51,7 +59,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
   G4String fParticleName = fParticleType->GetParticleName();
   G4double primEnergy = 0.0;
 
-  fEventAction->analysePS(fParticleEnergy, fParticleName, fParticleMomentum);      //  , fParticleTime, fParticleMomentum, zMomentum);
+  //fEventAction->analysePS(fParticleEnergy, fParticleName, fParticleMomentum);      //  , fParticleTime, fParticleMomentum, zMomentum);
 
 
   if (StepNo == 1){
@@ -59,11 +67,12 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       fParentEnergy.clear();
       fParentParticle.clear();
       fParentParticleID.clear();
-      fNumberGenerations = 0;
+      fNumGen = 0;
     }
     if ( fParticleName == "neutron"){
       fEnergy0 = fParticleEnergy;
       fTime0 = fParticleTime;
+      fEventAction->analysePS(fEnergy0, fParticleName, fParticleMomentum);      //  , fParticleTime, fParticleMomentum, zMomentum);
       flag = true;
     }
   }
@@ -77,10 +86,10 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
   if (thisTrackID == 1 && StepNo == 1) primEnergy = fParticleEnergy;
   if (thisTrackID != 1 && StepNo == 1) {
     G4int tempID = thisTrackID;
-    fNumberGenerations = 1;
+    fNumGen = 1;
     while(fParentParticleID[tempID] != 1){
       tempID = fParentParticleID[tempID];
-      ++fNumberGenerations;
+      ++fNumGen;
     }
     if (fParentParticle[parentTrackID] == "neutron" && fParticleName == "neutron"){
       reduced_tally = true;
@@ -88,9 +97,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
     }
 
      fEventAction->analyseSecondaries (fParticleEnergy, fParticleName, fParticleTime, fParticleMomentum, parentTrackID, primEnergy,
-      fParentEnergy[parentTrackID], fParentParticle[parentTrackID], reduced_tally, fNumberGenerations);
-
-
+      fParentEnergy[parentTrackID], fParentParticle[parentTrackID], reduced_tally, fNumGen);
   } else {
     // G4cout << " Not entering AnalyseSecondary conditionally" << G4endl;
   }
@@ -123,7 +130,6 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
 
     G4bool pre_inside = false;
     G4bool post_inside = false;
-    G4cout << "----> HERE" << G4endl;
 
     if  ((radiusPre <= (fRefShellOuterRad + fMyTol)) && (radiusPre >= (fRefShellInnerRad - fMyTol)) ) pre_inside = true;
     if  ((radiusPost <= (fRefShellOuterRad + fMyTol)) && (radiusPost >= (fRefShellInnerRad - fMyTol))) post_inside = true;

@@ -84,7 +84,13 @@ private:
     G4TARCPVolumeStore                fPVolumeStore;
     G4MultiFunctionalDetector*        fTARCNeutronDet;
     G4MultiFunctionalDetector*        fTARCProtonDet;
-    G4int                             fShellNumber;
+
+    std::vector<G4double>                  fRadiusReference {200.0 * cm, 190.0 * cm, 185.0 * cm, 175.0 * cm, 165.0 * cm, 150.0 * cm,
+      140.0 * cm, 130.0 * cm, 120.0 * cm, 110.0 * cm, 100.0 * cm, 90.0 * cm, 80.0 * cm, 70.0 * cm, 60.0 * cm, 50.0 * cm, 45.7 * cm,
+      40.0 * cm, 30.0 * cm, 25.0 * cm, 20.0 * cm, 15.0 * cm, 10.0 * cm, 8.0 * cm, 5.0 * cm, 3.0 * cm};
+
+    G4int                                fRefShellNumber;
+    G4int                                fShellNumber;
     G4double                          fShellThickness;
     G4double                          fMaxOuterRadiusofShell;
     G4double                          fMinInnerRadiusofShell;

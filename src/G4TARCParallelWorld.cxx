@@ -5,10 +5,9 @@
  *********************************************************/
 #include "G4TARCParallelWorld.hh"
 
-
-
 G4TARCParallelWorld::G4TARCParallelWorld( G4String& tarcParallelWorld)
 : G4VUserParallelWorld( tarcParallelWorld), fConstructed(false) {
+  DefineShellsBlocks();
 }
 
 G4TARCParallelWorld::~G4TARCParallelWorld() {
@@ -30,18 +29,19 @@ void G4TARCParallelWorld::DefineShellsBlocks() {
   fDiaMaxSphere          =  3300.0 * mm;
   fRadMaxSphere          =     0.5 * fDiaMaxSphere;
   fShellThickness        =     2.0 * mm;
+  fRefShellNumber = fRadiusReference.size();
   fMinInnerRadiusofShell =    10.0 * mm;
   fMaxOuterRadiusofShell =  1500.0 * mm;
   fInnerRadProtonShell   =     0.0 * mm;   //
   fOuterRadProtonShell   =   300.0 * mm;   // These two were thought as a spherical 4Pi measurement for Proton
   fShellNumber           = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
-  G4double tmp1          = fMaxOuterRadiusofShell;
-  G4double tmp2          =     0.0;
-  for (G4int ii = 0; ii < fShellNumber; ii++) {
-    tmp2 = tmp1 - fShellThickness;
-    fInnerRadiusofShell.push_back(tmp2);
-    fOuterRadiusofShell.push_back(tmp1);
-    tmp1 = tmp2;
+  
+  G4double tmp = 0.0;
+  for (G4int ii = 0; ii < fRefShellNumber; ii++) {
+    tmp = fRadiusReference[ii];
+    fOuterRadiusofShell.push_back(tmp);
+    tmp -=fShellThickness;
+    fInnerRadiusofShell.push_back(tmp);
   }
   std::cout << " Define Blocks initialised." << std::endl;
 }
@@ -49,7 +49,6 @@ void G4TARCParallelWorld::DefineShellsBlocks() {
 
 void G4TARCParallelWorld::Construct() {
   if (fConstructed) return;
-  DefineShellsBlocks();
   // A dummy material is used to fill the volulmes of the readout geometry.  Can we use Pb etc?
   G4Material* dummyMat = nullptr;
   G4String nameTmp;
@@ -88,7 +87,7 @@ void G4TARCParallelWorld::Construct() {
 
 
   // Make the thinner shell bunches
-  for (G4int i = 0; i < fShellNumber; i++) {
+  for (G4int i = 0; i < fRefShellNumber; i++) {
     G4Sphere* radShellSphere = new G4Sphere("shellSphere", fInnerRadiusofShell[i], fOuterRadiusofShell[i],
                             0.0*deg, 360.0*deg, 0.0*deg, 180.0*deg);
     nameTmp = "radial_shell_log_" + std::to_string(i);

@@ -50,6 +50,7 @@ void G4TARCPhysicsList::ConstructProcess() {
   fEmPhysicsList->ConstructProcess();
   fParticleList->ConstructProcess();
   neutronProcess();
+  G4cout << " Hadron Physics number: " << fHadronPhys.size() << G4endl;
   for ( size_t i = 0; i < fHadronPhys.size(); i++ ){
     fHadronPhys[i]->ConstructProcess();
     fHadronPhys[i]->SetVerboseLevel(1);

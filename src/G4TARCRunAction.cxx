@@ -7,9 +7,7 @@
 
 G4TARCRunAction::G4TARCRunAction() : G4UserRunAction() {
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
-
   DefineShellBlocks();
-
   if (!fHistoBooked){
     BookHistogram();
     CreateTuples();
@@ -37,7 +35,7 @@ void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
 
   G4cout << "Number of events: " << thisRun->GetNumberOfEvent() << G4endl;
 
-  auto fAnalysisManager = G4AbalysisManager::Instance();
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->Write();
   fAnalysisManager->CloseFile();
 }
@@ -50,6 +48,7 @@ void G4TARCRunAction::DefineShellBlocks() {
     fOuterRadiusofShell.push_back(radThis);
   }
   fRefShellThickness = 2.0 * mm;
+  G4cout << "DefineShellBlocks in RunAction" << G4endl;
 }
 
 
@@ -256,6 +255,7 @@ void G4TARCRunAction::CreateTuples(){
 
 void G4TARCRunAction::FillRadialExperimentalData(){
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+  /*
 
   for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  fExptRadiiTables.size(); ij1++){  0~ 41 to 7 ~ 48
     for (std::size_t ij2 = 0; ij2 < fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
@@ -284,4 +284,5 @@ void G4TARCRunAction::FillRadialExperimentalData(){
   std::vector<std::vector<G4double> >().swap(fExptFluenceTables);
   std::vector<std::vector<G4double> >().swap(fExptErrTables);
   // This is the end of the test
+  */
 }

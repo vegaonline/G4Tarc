@@ -841,8 +841,8 @@ void G4TARCHistoManager::EndOfEvent() {
   //  fHisto->Fill(23,fEdepPI/fPrimaryKineticEnergy,1.0);
   //  fHisto->Fill(24,fEdepProton/fPrimaryKineticEnergy,1.0);
 
-  fAnalysisManager->FillH1(6, fNeutronStack);
-  WriteEventRange( fRangeSum, fStepSum, fDeltaSum );
+  //fAnalysisManager->FillH1(6, fNeutronStack);
+  //WriteEventRange( fRangeSum, fStepSum, fDeltaSum );
 }
 
 // Normalization for no hadron interaction in the target. EM and hadron elastic shuld be inactivated
