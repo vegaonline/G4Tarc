@@ -131,7 +131,7 @@ public:
   std::vector< std::vector<G4double> >   fFlux_Radius;
   std::vector< std::vector<G4double> >   fRadialFluenceStep;
   std::vector< std::vector<G4double> >   fFluence;
-
+  std::vector<G4double>                  fFluence_step;
 
   G4int fNumGen;
   G4int fNevt;

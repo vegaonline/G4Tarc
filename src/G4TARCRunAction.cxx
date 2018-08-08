@@ -6,7 +6,7 @@
 #include "G4TARCRunAction.hh"
 
 G4TARCRunAction::G4TARCRunAction() : G4UserRunAction() {
-  G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+  auto fAnalysisManager = G4AnalysisManager::Instance();
   DefineShellBlocks();
   if (!fHistoBooked){
     BookHistogram();
@@ -25,7 +25,6 @@ G4Run* G4TARCRunAction::GenerateRun() {
 void G4TARCRunAction::BeginOfRunAction(const G4Run* thisRun){
   G4cout << " Run # " << thisRun->GetRunID() << " starts. " << G4endl;
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
-
   fAnalysisManager->OpenFile(fAnalysisFileName);
 }
 
@@ -33,7 +32,15 @@ void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
   //   ReadExperimentalDataFromFile(fExptlDataFileName);   use in G4TARCRun and bring as tarcRun->param[ijk] in FillRadial
   FillRadialExperimentalData();
 
+  const G4TARCRun*  tarcRun = static_cast<const G4TARCRun*>(thisRun);
   G4cout << "Number of events: " << thisRun->GetNumberOfEvent() << G4endl;
+  G4double ExitFlux = tarcRun->GetExitingFlux();
+  G4double ExitEnergy = tarcRun->GetExitingEnergy();
+  G4double ExitCheckFlux = tarcRun->GetExitingCheckFlux();
+
+  if (IsMaster()) {
+    G4cout << "Integral Neutron Flux at 45.6 cms: " << tarcRun->fIntegral_flux_46cm << " Integral EFLUX at 45.6 cms: " << tarcRun->fTARC_Integral_Eflux_46cm << G4endl;
+  }
 
   auto fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->Write();
