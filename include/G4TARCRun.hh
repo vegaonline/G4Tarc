@@ -33,13 +33,13 @@ public:
   inline void CalcExitingFlux(G4double exitingE)    {++fExiting_Flux; fExiting_Energy += exitingE;}
   inline void ExitingTallyCheck()                              {++fExiting_check_Flux;}
 
-  inline G4int GetExitingFlux() const                {return fExiting_Flux;}
-  inline G4double GetExitingEnergy() const     {return fExiting_Energy;}
-  inline G4int GetExitingCheckFlux() const      {return fExiting_check_Flux;}
-  inline G4int GetIntegralFlux_46cm() const    {return fIntegral_flux_46cm;}
-  inline G4int GetIntegralEFlux_46cm() const   {return fTARC_Integral_Eflux_46cm;}
-  inline G4int GetRefShellNumber() const        {return fRefShellNumber;}
-  inline G4int GetNumberOfEvents() const       {return fNevt;}
+  G4int GetExitingFlux() const                {return fExiting_Flux;}
+  G4double GetExitingEnergy() const     {return fExiting_Energy;}
+  G4int GetExitingCheckFlux() const      {return fExiting_check_Flux;}
+  G4int GetIntegralFlux_46cm() const    {return fIntegral_flux_46cm;}
+  G4int GetIntegralEFlux_46cm() const   {return fTARC_Integral_Eflux_46cm;}
+  G4int GetRefShellNumber() const        {return fRefShellNumber;}
+  G4int GetNumberOfEvents() const       {return fNevt;}
 
   void initVectors();
   void StartProcessing();
@@ -131,7 +131,7 @@ public:
   std::vector< std::vector<G4double> >   fFlux_Radius;
   std::vector< std::vector<G4double> >   fRadialFluenceStep;
   std::vector< std::vector<G4double> >   fFluence;
-  std::vector<G4double>                  fFluence_step;
+
 
   G4int fNumGen;
   G4int fNevt;

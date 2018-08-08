@@ -46,7 +46,7 @@ public:
   void InitVecs();
   void BookHistogram();
   void CreateTuples();
-  void FillRadialExperimentalData();
+  void FillRadialExperimentalData(const G4TARCRun*);
 
   void NeutronFluxHistogram(G4int, const G4TARCRun*);
   void RadialFluxHistogram(G4int, const G4TARCRun*);
@@ -54,15 +54,6 @@ public:
 private:
   G4String                         fAnalysisFileName = "G4TARC_output";
   G4bool                            fHistoBooked = false;
-
-  std::vector< std::vector<G4double> >   fExptRadiiTables;
-  std::vector< std::vector<G4double> >   fExptFluenceTables;
-  std::vector< std::vector<G4double> >   fExptErrTables;
-  std::vector< std::vector<G4double> >   fExptEnergyTables;
-  std::vector< std::vector<G4double> >   fExptFluxTables;
-  std::vector< std::vector<G4double> >   fExptFluxErrTables;
-  std::vector< std::vector<G4double> >   fFlux_Radius;
-  std::vector<std::vector<G4double> >    fRadialFluenceStep;
 
   std::vector<G4double>   fRadiusReference {200.0 * cm, 190.0 * cm, 185.0 * cm, 175.0 * cm, 165.0 * cm, 150.0 * cm,
     140.0 * cm, 130.0 * cm, 120.0 * cm, 110.0 * cm, 100.0 * cm, 90.0 * cm, 80.0 * cm, 70.0 * cm, 60.0 * cm, 50.0 * cm, 45.7 * cm,
@@ -72,12 +63,24 @@ private:
   std::vector<G4double>   fInnerRadiusofShell;
   std::vector<G4double> fLocal_Energy_Integral;
 
-  G4int fRefShellNumber;
+  G4int        fRefShellNumber;
+
+
   G4double fRefShellThickness;
-
-
-
-
+  G4double fRadHole;
+  G4double fLenCyl;
+  G4double fRefShellInnerRad;
+  G4double fRefShellOuterRad;
+  G4double fTestSphereRadius;
+  G4double fTestSphereSurfaceArea;
+  G4double fTestSphereVolume;
+  G4double fTestShellVol;
+  G4double fTARC_helium;
+  G4double fTARC_helium_E;
+  G4double fTARC_Integral;
+  G4double fTARC_Integral_E;
+  G4double fTARC_lithium;
+  G4double fTARC_lithium_E;
 
 };
 

@@ -400,7 +400,7 @@ void G4TARCRun::analyseNeutronFluence(G4double energyL, G4double thisStepL) {
   //if (fTempE >= fFlux_Energy[fFlux_Energy.size()-1]){
   if (fTempE >= fFlux_Energy[0]){
     for (G4int ii = 0; ii < fMaxTestFluxData; ii++){
-      if (fTempE > fFlux_Energy[ii] && fTempE < fFlux_Energy[ii + 1]) fFluence_step[ii] += thisStepL;
+      if (fTempE > fFlux_Energy[ii] && fTempE < fFlux_Energy[ii + 1]) fFluence_Step[ii] += thisStepL;
     }
   }
 }
