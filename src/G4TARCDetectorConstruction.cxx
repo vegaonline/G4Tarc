@@ -103,6 +103,7 @@ void G4TARCDetectorConstruction::ConstructSDandField() {
     (G4SDManager::GetSDMpointer())->AddNewDetector(fTransmutSD);
 
     for (std::vector<G4LogicalVolume*>::iterator it = fLVvectorMini.begin(); it != fLVvectorMini.end(); ++it) {
+      G4cout << (*it)->GetName() << G4endl;
       if ((*it)->GetName().find("blockB_log")!=std::string::npos){
         SetSensitiveDetector( (*it)->GetName(), fBlockBSD);
       } else if (((*it)->GetName().find(sslog)!=std::string::npos) ||((*it)->GetName().find(sslog2) != std::string::npos)){

@@ -28,22 +28,25 @@ void G4TARCParallelWorld::DefineShellsBlocks() {
   fZposProt              = -fHalfZBlockB + fNewHalfZProt;
   fDiaMaxSphere          =  3300.0 * mm;
   fRadMaxSphere          =     0.5 * fDiaMaxSphere;
-  fShellThickness        =     2.0 * mm;
+  fShellThickness        =     5.0 * cm;
+  fRefShellThickness        =     2.0 * mm;
   fRefShellNumber = fRadiusReference.size();
+  fRefShellOuterRad    = 457 * mm;
+  fRefShellInnerRad   = fRefShellOuterRad - fRefShellThickness;
   fMinInnerRadiusofShell =    10.0 * mm;
   fMaxOuterRadiusofShell =  1500.0 * mm;
   fInnerRadProtonShell   =     0.0 * mm;   //
   fOuterRadProtonShell   =   300.0 * mm;   // These two were thought as a spherical 4Pi measurement for Proton
-  fShellNumber           = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
-  
-  G4double tmp = 0.0;
+  // fShellNumber           = (G4int)((fMaxOuterRadiusofShell - fMinInnerRadiusofShell) / fShellThickness + 0.5);
+  fRefShellNumber = fRadiusReference.size();
+
   for (G4int ii = 0; ii < fRefShellNumber; ii++) {
-    tmp = fRadiusReference[ii];
+    G4double tmp = fRadiusReference[ii];
     fOuterRadiusofShell.push_back(tmp);
-    tmp -=fShellThickness;
+    tmp -=fRefShellThickness;
     fInnerRadiusofShell.push_back(tmp);
   }
-  std::cout << " Define Blocks initialised." << std::endl;
+  std::cout << " Define Blocks in ParallelWorld  initialised." << std::endl;
 }
 
 
@@ -71,6 +74,8 @@ void G4TARCParallelWorld::Construct() {
   fLVvector.push_back(ghostWorldLog);
   fPVolumeStore.AddPVolume(G4GeometryCell(*ghostWorld, 0));
 
+/*  This is being commented to run it smoothly without error and then it would be fixed.
+
   // Make a rectangular plate for proton hits and spallation point
   // blockB copy 50 equivalent : Z length is 300 mm for blockB. Here we consider 100 mm.
   G4Box* fTestBlockB50 = new G4Box("BoxPHit", fHalfXBlockB, fHalfYBlockB, fNewHalfZProt);
@@ -85,6 +90,7 @@ void G4TARCParallelWorld::Construct() {
   G4GeometryCell fProtonCell(*fVBoxPVProton, 0);
   fPVolumeStore.AddPVolume(fProtonCell);
 
+*/
 
   // Make the thinner shell bunches
   for (G4int i = 0; i < fRefShellNumber; i++) {

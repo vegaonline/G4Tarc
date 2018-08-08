@@ -115,11 +115,13 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
 
   G4TouchableHistory* thePreTouchable  = (G4TouchableHistory*) (myStep->GetPreStepPoint()->GetTouchable());
   G4TouchableHistory* thePostTouchable = (G4TouchableHistory*) (myStep->GetPostStepPoint()->GetTouchable());
+  G4String PreVol="";
+  G4String PostVol="";
 
   if (fParticleName == "neutron"){
-    G4String PreVol = thePreTouchable->GetVolume()->GetName();
-    G4String PostVol = thePostTouchable->GetVolume()->GetName();
-    G4cout << fParticleName << "       Prevol-> " << PreVol <<  "    PostVol " << PostVol << G4endl;
+    PreVol = thePreTouchable->GetVolume()->GetName();
+    if (PreVol != "world_log_PV")  PostVol = thePostTouchable->GetVolume()->GetName();
+
     if (myStep->GetTrack()->GetNextVolume()){
       if (PreVol == "lab_phys" && PostVol == "world_log_PV"){
         fEventAction->exitingTally(true, fParticleEnergy);
@@ -127,6 +129,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
         fEventAction->exitingTallyCheck(true);
       }
     }
+
 
     G4bool pre_inside = false;
     G4bool post_inside = false;
@@ -145,11 +148,12 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       if (pre_inside_radial && post_inside_radial) fEventAction->analyseNeutronRadialFluence(fParticleEnergy, StepLength, ishell);  // fParticleTime, StepLength, ishell);
 
     }
-
+/*   ********************* CHECK IT
     if (vol == "sample_phys" || vol == "sampleTube_phys" || vol == "sample_phys2"){
       G4double radValue = fRefShellOuterRad;
       fEventAction->analyseNeutronFluence(fParticleEnergy, fParticleTime,  thisTrackID, radValue, StepLength,  parentTrackID, primEnergy,  fParticleName);
     }
+    */
 
     //for (std::size_t ii = 0; ii < fFluxRadTables.size(); ++ii){
     for (G4int ii = 0; ii < fMaxRadCount; ++ii){

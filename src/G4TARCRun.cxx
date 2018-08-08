@@ -100,8 +100,7 @@ void G4TARCRun::StartProcessing(){
     fMeanEnergy = std::exp(0.5 * (std::log(fFlux_Low_Energy[i + 1]) + std::log(fFlux_Low_Energy[i])));
     G4double fLithiumMeanEnergy = std::exp(0.5 * (std::log(fFlux_Lithium_Energy[i + 1]) + std::log(fFlux_Lithium_Energy[i])));
 
-    if (fFlux_Lithium_Energy[i] < fExptEnergyBin[fRadialIndex]
-    && fFlux_Lithium_Energy[i + 1] > fExptEnergyBin[fRadialIndex]){
+    if (fFlux_Lithium_Energy[i] < fExptEnergyBin[fRadialIndex]  && fFlux_Lithium_Energy[i + 1] > fExptEnergyBin[fRadialIndex]){
       fLithium_Radial_Energy_Lower[fRadialIndex] = fFlux_Lithium_Energy[i];
       fLithium_Radial_Energy_Upper[fRadialIndex] = fFlux_Lithium_Energy[i+1];;
       fLithium_Radial_Mean[fRadialIndex] = fExptEnergyBin[fRadialIndex];
@@ -379,6 +378,57 @@ G4THitsMap<G4double>* G4TARCRun::GetHitsMap(const G4String& fullName){
   return NULL;
 }
 
+void G4TARCRun::analyseNeutronRadialFluence(G4double fParticleEnergyL, //G4double fParticleTimeL,
+  G4double StepLengthL, G4int ishellL){
+    if (ishellL < 0 || ishellL > fRefShellNumber) G4cout << "WARNING! radial index is wrong !!!!!!!" << G4endl;
+    G4double tempEnergy = fParticleEnergyL / eV;
+    if (tempEnergy <= fLithium_Radial_Energy_Upper[9] && tempEnergy >= fLithium_Radial_Energy_Lower[0]){
+      for (G4int i = 0 ; i <= fMaxRadCount; ++i) {
+        if (tempEnergy >= fLithium_Radial_Energy_Lower[i] && tempEnergy <= fLithium_Radial_Energy_Upper[i]){
+          fRadialFluenceStep[ishellL][i] += StepLengthL;  //  (StepLengthL / mm);  steplength is in mm
+        }
+      }
+    }
+}
+
+
+void G4TARCRun::analyseNeutronFluence(G4double energyL, G4double thisStepL) {
+  //   , G4double timeL, G4int thisTrackIDL,
+  //G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL){
+  G4double fTempE = energyL / eV;
+
+  //if (fTempE >= fFlux_Energy[fFlux_Energy.size()-1]){
+  if (fTempE >= fFlux_Energy[0]){
+    for (G4int ii = 0; ii < fMaxTestFluxData; ii++){
+      if (fTempE > fFlux_Energy[ii] && fTempE < fFlux_Energy[ii + 1]) fFluence_step[ii] += thisStepL;
+    }
+  }
+}
+
+
+void G4TARCRun::analyseNeutronShellFluence(G4double energyL, G4double StepLengthL){
+  G4double tempE = energyL / eV;
+
+  if (tempE < fFlux_Lithium_Energy[fMaxFluxData - 1]){
+    for (G4int ii1 = 0; ii1 < fMaxFluxData; ii1++){
+      if (tempE > fFlux_Lithium_Energy[ii1] && tempE < fFlux_Lithium_Energy[ii1 + 1]) fLithium_Fluence_Step_Shell[ii1] += StepLengthL;
+    }
+  }
+  std::size_t lastTagLowEFlux = fFlux_Low_Energy.size();
+  if (tempE < fFlux_Low_Energy[lastTagLowEFlux - 1]){
+    for (std::size_t ii1 = 0; ii1 < lastTagLowEFlux; ii1++){
+      if (tempE > fFlux_Low_Energy[ii1] && tempE < fFlux_Low_Energy[ii1 + 1]) fLow_Fluence_Step_Shell[ii1] += StepLengthL;
+    }
+  }
+  std::size_t lastTagFluxE = fFlux_Energy.size();
+  if (tempE > fFlux_Energy[0]){
+    for (std::size_t ii1 = 0; ii1 < lastTagFluxE; ii1++){
+      if (tempE > fFlux_Energy[ii1] && tempE < fFlux_Energy[ii1 + 1]) fFluence_Step_Shell[ii1] += StepLengthL;
+    }
+  }
+}
+
+
 
 void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4double radiusL,
   G4double cosAngleL, G4String& fParticleNameL)
@@ -505,7 +555,7 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
   fTARC_Integral_Eflux_46cm += localRun->fTARC_Integral_Eflux_46cm;
   fTotalFlux                += localRun->fTotalFlux;
 
-  for (G4int ii = 0; ii < fMaxTestFluxData; ii++) {
+  for (G4int ii = 0; ii < (fMaxRadCount + fMaxTestFluxData); ii++) {
     fFlux[ii]                          += localRun->fFlux[ii];
     fCos_Flux[ii]                  += localRun->fCos_Flux[ii];
     fFluence_Step[ii]            += localRun->fFluence_Step[ii];
@@ -514,7 +564,7 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
     fEFlux[ii]                       += localRun->fEFlux[ii];
   }
 
-  for (G4int ii = 0; ii < fMaxFluxData; ii++) {
+  for (G4int ii = 0; ii < fMaxFluenceData; ii++) {
     fFlux_Low[ii]                += localRun->fFlux_Low[ii];
     fCos_Low_Flux[ii]        += localRun->fCos_Low_Flux[ii];
     fLow_Fluence_Step[ii]   += localRun->fLow_Fluence_Step[ii];
@@ -525,8 +575,8 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
     fCos_Lithium_Flux[ii]  += localRun->fCos_Lithium_Flux[ii];
     fLithium_Fluence_Step[ii] += localRun->fLithium_Fluence_Step[ii];
 
-    for (G4int i = 0; i < fRefShellNumber; i++){
-      for (G4int j = 0; j < fMaxRadCount; j++) {
+    for (G4int i = 0; i < fMaxRadCount; i++){
+      for (G4int j = 0; j < fRefShellNumber; j++) {
         fRadialFluenceStep[j][i] += localRun->fRadialFluenceStep[j][i];
       }
     }

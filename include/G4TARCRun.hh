@@ -31,14 +31,14 @@ public:
   void ReadExperimentalDataFromFile(G4String& );
 
   inline void CalcExitingFlux(G4double exitingE)    {++fExiting_Flux; fExiting_Energy += exitingE;}
-  inline void ExitingTallyCheck(G4bool exitingflagcheck) {if (exitingflagcheck) ++fExiting_check_Flux;}
+  inline void ExitingTallyCheck()                              {++fExiting_check_Flux;}
 
-  inline G4int GetExitingFlux() const          {return fExiting_Flux;}
+  inline G4int GetExitingFlux() const                {return fExiting_Flux;}
   inline G4double GetExitingEnergy() const     {return fExiting_Energy;}
-  inline G4int GetExitingCheckFlux() const     {return fExiting_check_Flux;}
+  inline G4int GetExitingCheckFlux() const      {return fExiting_check_Flux;}
   inline G4int GetIntegralFlux_46cm() const    {return fIntegral_flux_46cm;}
   inline G4int GetIntegralEFlux_46cm() const   {return fTARC_Integral_Eflux_46cm;}
-  inline G4int GetRefShellNumber() const       {return fRefShellNumber;}
+  inline G4int GetRefShellNumber() const        {return fRefShellNumber;}
   inline G4int GetNumberOfEvents() const       {return fNevt;}
 
   void initVectors();
@@ -54,9 +54,9 @@ public:
 
   void AddFlux(const G4String&);
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String&);
-  void analyseNeutronShellFluence(G4double, G4double){};
-  void analyseNeutronRadialFluence(G4double, G4double, G4int){}; //G4double, G4int);
-  void analyseNeutronFluence(G4double, G4double ){};
+  void analyseNeutronShellFluence(G4double, G4double);
+  void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
+  void analyseNeutronFluence(G4double, G4double );
 
 public:
   G4bool flag;

@@ -90,8 +90,11 @@ private:
       40.0 * cm, 30.0 * cm, 25.0 * cm, 20.0 * cm, 15.0 * cm, 10.0 * cm, 8.0 * cm, 5.0 * cm, 3.0 * cm};
 
     G4int                                fRefShellNumber;
+    G4int                                fRefShellOuterRad;
+    G4int                                fRefShellInnerRad;
     G4int                                fShellNumber;
     G4double                          fShellThickness;
+    G4double                          fRefShellThickness;
     G4double                          fMaxOuterRadiusofShell;
     G4double                          fMinInnerRadiusofShell;
     G4double                          fInnerRadProtonShell;

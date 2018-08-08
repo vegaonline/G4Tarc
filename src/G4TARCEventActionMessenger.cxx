@@ -23,6 +23,6 @@ G4TARCEventActionMessenger::~G4TARCEventActionMessenger() {
 void G4TARCEventActionMessenger::SetNewValue(G4UIcommand* comm, G4String newValue) {
   if(comm == fPrintCmd)
    {fEventAction->SetPrintModulo(fPrintCmd->GetNewIntValue(newValue));}
- if(comm == fCmd)
-   {fEventAction->AddEventToDebug(fCmd->GetNewIntValue(newValue));}
+ //if(comm == fCmd)
+   //{fEventAction->AddEventToDebug(fCmd->GetNewIntValue(newValue));}
 }

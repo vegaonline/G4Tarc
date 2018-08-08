@@ -42,13 +42,15 @@ void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
 
 
 void G4TARCRunAction::DefineShellBlocks() {
+  fRefShellNumber = fRadiusReference.size();
   for (G4int ii = 0; ii < fRefShellNumber; ii++) {
     G4double radThis = fRadiusReference[ii] / mm;
-    fInnerRadiusofShell.push_back(radThis - fRefShellThickness);
     fOuterRadiusofShell.push_back(radThis);
+    radThis = fRadiusReference[ii] / mm  - fRefShellThickness;
+    fInnerRadiusofShell.push_back(radThis);
   }
   fRefShellThickness = 2.0 * mm;
-  G4cout << "DefineShellBlocks in RunAction" << G4endl;
+  fLocal_Energy_Integral.resize(4, 0.0);
 }
 
 

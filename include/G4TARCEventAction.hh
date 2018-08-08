@@ -51,25 +51,29 @@ public:
   virtual void EndOfEventAction( const G4Event* );
 
   void SetPrintModulo ( G4int val) {fPrintModulo = val;}
-  void AddEventToDebug ( G4int);
+  //inline void AddEventToDebug ( G4int val){fSelectedEvents.push_back(val);  ++fSelected;};
 
   void analyseSecondaries(G4double, G4String, G4double, G4double, G4int, G4double, G4double, G4String, G4bool, G4int);
   void NeutronEnergyTime(G4double, G4double, G4double);
   void otherEnergyTime(G4double, G4double, G4double);
   void exitingTally(G4bool, G4double);
-  void exitingTallyCheck(G4bool exiting_flag_check);
-  void Adding2NeutronStack() {++fNeutronStack;}
+  void exitingTallyCheck(G4bool);
+  inline void Adding2NeutronStack() {++fNeutronStack;}
 
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String);
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
   void analyseNeutronFluence(G4double energyL, G4double timeL, G4int thisTrackIDL,
-    G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL);
+    G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL){};
 
 
 private:
+  G4int                                                     fEventID;
+  G4int                                                     fPrintModulo;
+  G4int                                                     fNeutronStack;
 
+/*
   //    G4TARCEventAction& operator=(const G4TARCEventAction& right);
   //      G4TARCEventAction ( const G4TARCEventAction& );
 
@@ -119,6 +123,7 @@ private:
   std::vector<G4double>                  fLithium_Radial_Energy_Lower;
   std::vector<G4double>                  fLithium_Radial_Energy_Upper;
   std::vector<std::vector<G4double> >    fRadialFluenceStep;
+  */
 
 };
 
