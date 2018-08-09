@@ -62,11 +62,11 @@ void RootDataPlotting(){
   TH1F* TARCG4FluenceHe3       = new TH1F("FluenceG4He", "TARC G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4FluenceLi        = new TH1F("FluenceG4Li", "TARC G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4RatioHi          = new TH1F("RatioG4Hi", "TARC Fluence Ratio G4 Fluence (High)", (xHiCnt - 1), fXbinHi);
-  TH1F* TARCG4RatRatHi         = new TH1F("Ratio/(1-Ratio)", "TARC Fluence Ratio G4 Fluence (High)", (xHiCnt - 1), fXbinHi);
+  TH1F* TARCG4RatRatHi         = new TH1F("HiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (High)", (xHiCnt - 1), fXbinHi);
   TH1F* TARCG4RatioHe3         = new TH1F("RatioG4He", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
-  TH1F* TARCG4RatRatHe3        = new TH1F("Ratio/(1-Ratio)", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
+  TH1F* TARCG4RatRatHe3        = new TH1F("He3RatioBYRatio", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4RatioLi          = new TH1F("RatioG4Li", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
-  TH1F* TARCG4RatRatLi         = new TH1F("Ratio/(1-Ratio)", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
+  TH1F* TARCG4RatRatLi         = new TH1F("LiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
   TH2F* radialHisto            = new TH2F("Radial", "TARC radial", 1000, -1000, 1000, 1000, 1.0, 2.5e+7);
 
   // Variables for histograms
@@ -115,9 +115,9 @@ void RootDataPlotting(){
      TARCG4FluenceHi->SetBinError(binX3, g4error);
      if (tarcflux != 0.0) {
        double ratio = corr / tarcflux;
-       double ratrat = ratio/(1.0-ratio);
+       //double ratrat = ratio/(1.0-ratio);
        //std::cout << energy << "    " << ratio << std::endl;
-       TARCG4RatRatHi->Fill(energy, ratrat);
+       //TARCG4RatRatHi->Fill(energy, ratrat);
        TARCG4RatioHi->Fill(energy, ratio);
      }
   }
@@ -154,8 +154,8 @@ void RootDataPlotting(){
     TARCG4FluenceHe3->SetBinError(binX3, g4error);
     if (tarcflux != 0.0) {
       double ratio = corr / tarcflux;
-      double ratrat = ratio/(1.0-ratio);
-      TARCG4RatRatHe3->Fill(energy, ratrat);
+      //double ratrat = ratio/(1.0-ratio);
+      //TARCG4RatRatHe3->Fill(energy, ratrat);
       TARCG4RatioHe3->Fill(energy, ratio);
     }
   }
@@ -192,8 +192,8 @@ void RootDataPlotting(){
     TARCG4FluenceLi->SetBinError(binX3, g4error);
     if (tarcflux != 0.0) {
       double ratio = corr / tarcflux;
-      double ratrat = ratio/(1.0-ratio);
-      TARCG4RatRatLi->Fill(energy, ratrat);
+      //double ratrat = ratio/(1.0-ratio);
+      //TARCG4RatRatLi->Fill(energy, ratrat);
       TARCG4RatioLi->Fill(energy, ratio);
     }
   }
@@ -434,7 +434,7 @@ void RootDataPlotting(){
   ElecED->SetLineColor(kBlue);
   ElecED->GetYaxis()->SetTitleOffset(1.3);
   ElecED->SetTitle("Electron Deposition");
-  std::cout << ElecED->GetMinimum() << "  " << ElecED->GetMaximum() << std::endl;
+  //std::cout << ElecED->GetMinimum() << "  " << ElecED->GetMaximum() << std::endl;
   c5->cd(1);
   ElecED->Draw();
   c5->cd(2);

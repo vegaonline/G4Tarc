@@ -304,7 +304,6 @@ void G4TARCRunAction::FillRadialExperimentalData(const G4TARCRun* tarcRun){
 void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarcRun){
   auto fAnalysisManager = G4AnalysisManager::Instance();
   G4double fAbsolute_TotalFlux = (tarcRun->fTotalFlux *  1.0e9 / (G4double)fNevents) / (fTestSphereSurfaceArea); // per cm^2
-  G4cout << " Absolute total flux: " << fAbsolute_TotalFlux << G4endl;
   for (G4int ij1 = 0; ij1 < tarcRun->fMaxTestFluxData; ij1++){
     G4double fMeanEnergy   = 0.5 * (tarcRun->fFlux_Energy[ij1 + 1] + tarcRun->fFlux_Energy[ij1]);   // eV
     G4double fAbsFlux      = (tarcRun->fFlux[ij1] *  (1.0e9 / (G4double)fNevents)) / (fTestSphereSurfaceArea);     // per cm^2

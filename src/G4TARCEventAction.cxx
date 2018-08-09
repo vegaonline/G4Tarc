@@ -18,6 +18,10 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
   fEventID = evt->GetEventID();
   fNeutronStack = 0;
 
+  G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  fExptRadiiTables = thisRun->fExptRadiiTables;
+  fMaxRadCount = thisRun->fMaxRadCount;
+
   //if (fEventID % fPrintModulo == 0)
   G4cout << "     Begin of Event:  " << fEventID << G4endl;
 
@@ -44,18 +48,6 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* ) {
   auto  fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->FillH1(6, fNeutronStack);
   thisRun->SetNumberOfEvent(fEventID);
-  // if (fEventID % fPrintModulo == 0)
-  //G4cout << " End of event: " << fEventID << " *** " << G4endl;
-  /*
-  G4int nEvt = evt->GetEventID();
-  if ( fDebugStarted ){
-    fUITARC->ApplyCommand("/tracking/verbose 0");
-    fDebugStarted = false;
-    // G4cout << " EventAction: Event # " << evt->GetEventID() << " ended" << G4endl;
-  }
-  fHisto->EndOfEvent();
-  if (fHisto->GetVerbose() > 1) G4cout << "   EventAction: Event # " << nEvt << " ended." <<G4endl;
-  */
 }
 
 void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4double timeL, G4double momentumL,
@@ -172,10 +164,8 @@ void G4TARCEventAction::exitingTally(G4bool exiting_flag, G4double energyL){
   if(exiting_flag) {
     G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
     thisRun->CalcExitingFlux(energyL);
-    if (fAnalysisManager->IsActive()) {
-      fAnalysisManager->FillNtupleDColumn(2, 0, energyL / eV);
-      fAnalysisManager->AddNtupleRow(2);
-    }
+    fAnalysisManager->FillNtupleDColumn(2, 0, energyL / eV);
+    fAnalysisManager->AddNtupleRow(2);
   }
 }
 
@@ -220,8 +210,6 @@ void G4TARCEventAction::analysePS(G4double fParticleEnergy, G4String fParticleNa
   }
   //  G4cout << " Exiting  analysePS" << G4endl;
 }
-
-
 
 void G4TARCEventAction::analyseNeutronRadialFluence(G4double fParticleEnergyL, //G4double fParticleTimeL,
   G4double StepLengthL, G4int ishellL){

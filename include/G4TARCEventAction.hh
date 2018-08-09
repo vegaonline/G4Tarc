@@ -66,6 +66,9 @@ public:
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
   void analyseNeutronFluence(G4double, G4double); //G4int, G4double, G4double,  G4int, G4double, G4String&);
 
+public:
+  std::vector< std::vector<G4double> >   fExptRadiiTables;
+  G4int fMaxRadCount;
 
 private:
   G4int                                                     fEventID;

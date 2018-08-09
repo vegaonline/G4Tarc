@@ -51,12 +51,12 @@ void G4TARCRun::initVectors() {
   fLow_Fluence_Step.resize(fMaxFluenceData, 0.0);
   fLow_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
 
-  fFlux_He3.resize(fMaxFluxData, 0.0);
-  fFlux_Low.resize(fMaxFluxData, 0.0);
-  fFlux_Lithium.resize(fMaxFluxData, 0.0);
-  fFlux.resize(fMaxFluxData, 0.0);
+  fFlux_He3.resize((fMaxTestFluxData+fMaxFluxData), 0.0);
+  fFlux_Low.resize((fMaxTestFluxData+fMaxFluxData), 0.0);
+  fFlux_Lithium.resize((fMaxTestFluxData+fMaxFluxData), 0.0);
+  fFlux.resize((fMaxTestFluxData+fMaxFluxData), 0.0);
   fFlux_Radius.resize(fMaxRadCount, std::vector<G4double> (fMaxRadCount, 0.0));
-  fEFlux.resize(fMaxTestFluxData, 0.0);
+  fEFlux.resize((fMaxTestFluxData+fMaxFluxData), 0.0);
 
   fCos_Lithium_Flux.resize(fMaxFluxData, 0.0);
   fCos_Low_Flux.resize(fMaxFluxData, 0.0);
@@ -251,29 +251,6 @@ void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
     }
   }
 
-  /*
-  for (std::size_t i = 0; i < fExptFluenceTables.size(); i++){
-    for (std::size_t j = 0; j < fExptFluenceTables[i].size(); j++){
-      fExptFluenceTables[i][j] /=100.0;   //    in unit of n/mm^2/eV/10^9p
-    }
-  }
-  for (std::size_t i = 0; i < fExptFluxTables.size(); i++){
-    for (std::size_t j = 0; j < fExptFluxTables[i].size(); j++){
-      fExptFluxTables[i][j] /= 100.0;   //  in unit of n/mm^2/10^9p
-    }
-  }
-  for (std::size_t i = 0; i < fExptErrTables.size(); i++){
-    for (std::size_t j = 0; j < fExptErrTables[i].size(); j++){
-      fExptErrTables[i][j] /=100.0;   //    in unit of n/mm^2/eV/10^9p
-    }
-  }
-  for (std::size_t i = 0; i < fExptFluxErrTables.size(); i++){
-    for (std::size_t j = 0; j < fExptFluxErrTables[i].size(); j++){
-      fExptFluxErrTables[i][j] /=100.0;   //    in unit of n/mm^2/eV/10^9p
-    }
-  }
-  */
-
   for (std::size_t ijk2 = 0; ijk2 < fExptRadiiTables[3].size(); ijk2++){
     G4double rVal = fExptRadiiTables[3][ijk2];
     if (floatDummy != rVal)   fRadList.push_back(rVal);
@@ -309,7 +286,6 @@ void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
   fFlux_Lithium_Energy_in = fFlux_Lithium_Energy;
   fFlux_Lithium_Data_in = fFlux_Lithium_Data;
   fFlux_Lithium_Syst_Err_in = fFlux_Lithium_Syst_Err;
-
 
   // This is a test to shrink use of memory
   std::vector<std::vector<G4double> > ().swap(fExptEnergyTables);
@@ -429,7 +405,7 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
   G4double cosAngleL, G4String& fParticleNameL)
   //G4double zPosL,G4double cosAngleL, G4String fParticleNameL)
   {
-    G4cout << "n_EnergyL: " << n_EnergyL << "   " << n_EnergyL / eV << "  rad: " << radiusL << "    " << radiusL / mm << G4endl;
+    //G4cout << "n_EnergyL: " << n_EnergyL << "   " << n_EnergyL / eV << "  rad: " << radiusL << "    " << radiusL / mm << G4endl;
     G4double OnebyCosAngle = 1.0 / std::abs(cosAngleL);
     if (fParticleNameL == "neutron"){
       if (thisTrackIDL == fOldTrackID && std::abs(radiusL - 456.0) <= 0.01){
