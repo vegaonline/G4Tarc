@@ -46,7 +46,7 @@ void RootDataPlotting(){
   TNtuple* h8SpallN        = (TNtuple*) tf1->Get("h8_Created_N");
   TNtuple* RadShellFluence = (TNtuple*) tf1->Get("h9_Rad_Shell_Fluence");  
   TNtuple* ExptLiData      = (TNtuple*) tf1->Get("h10_Rad_Fluence_Expt_Li_Data");
-  TNtuple* ExptHeData      = (TNtuple*) tf1->Get("h11_Rad_Fluence_Expt_He3_Data");
+  TNtuple* ExptHe3Data     = (TNtuple*) tf1->Get("h11_Rad_Fluence_Expt_He3_Data");
   TNtuple* h15OtherET      = (TNtuple*) tf1->Get("h15_Other_ET");
 
 
@@ -116,7 +116,7 @@ void RootDataPlotting(){
      if (tarcflux != 0.0) {
        double ratio = corr / tarcflux;
        double ratrat = ratio/(1.0-ratio);
-       // std::cout << energy << "    " << ratio << std::endl;
+       //std::cout << energy << "    " << ratio << std::endl;
        TARCG4RatRatHi->Fill(energy, ratrat);
        TARCG4RatioHi->Fill(energy, ratio);
      }
@@ -234,7 +234,7 @@ void RootDataPlotting(){
   tlx->SetTextSize(0.5);
   tlx->SetNDC(kTRUE);
   tlx->Draw();
-  gPad->DrawFrame(1.0e-3, 1.0e5, 5.0e7, 1.0e10,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
+  gPad->DrawFrame(1.0e-3, 1.0e5, 1.0e7, 1.0e10,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
       
   TARCDataFluenceHi->SetMarkerStyle(kFullCircle);
   TARCDataFluenceHi->SetMarkerSize(0.8);
@@ -263,13 +263,13 @@ void RootDataPlotting(){
              
   c0->cd(4); // Bottom Right gPad
   gPad->SetLogx();
-  gPad->SetLogy(); 
+  //gPad->SetLogy(); 
   NeutEnergy->SetTitle("Neutron Deposition");
   NeutEnergy->SetLineColor(kRed);
   NeutEnergy->SetMarkerColor(kRed);
   NeutEnergy->Draw("SAME COLZ");
   NeutEnergy->GetXaxis()->SetTitle("log10(Energy (eV))");
-  NeutEnergy->GetYaxis()->SetTitle("log10(Flux(dN/dE))");
+  NeutEnergy->GetYaxis()->SetTitle("Flux(dN/dE)");
   NeutEnergy->GetXaxis()->SetTitleSize(0.03);
   NeutEnergy->GetXaxis()->SetTitleOffset(1.2);
   //NeutEnergy->GetYaxis()->SetTitle("Neutrons");
@@ -333,7 +333,7 @@ void RootDataPlotting(){
   tlx->SetNDC(kTRUE);
   tlx->Draw();
    
-  gPad->DrawFrame(5.0e-3, 1.0e-17, 5e6, 5.0e-11,"; log10(Energy/eV); G4 Shell / Data")->GetXaxis()->SetTitleOffset(1.2);
+  gPad->DrawFrame(5.0e-3, 1.0e-9, 5e6, 5.0e-4,"; log10(Energy/eV); G4 Shell / Data")->GetXaxis()->SetTitleOffset(1.2);
   //gPad->DrawFrame(4e4, 1.0e-3, 5e6, 5.0e-1,"; Energy/eV; G4/Data")->GetXaxis()->SetTitleOffset(1.2);  // for the Hi Data
   TARCG4RatioHi->SetMarkerColor(kRed);
   TARCG4RatioHi->SetMarkerStyle(kFullCircle);
@@ -377,15 +377,18 @@ void RootDataPlotting(){
   GammaED->SetMarkerStyle(7);
   GammaED->SetMarkerColor(kBlue);
   GammaED->SetLineColor(kBlue);
-  GammaED->GetXaxis()->SetTitle("Energy (eV)");
+  GammaED->GetXaxis()->SetTitle("log10(Energy (eV))");
   GammaED->GetYaxis()->SetTitle("Gamma");
   GammaED->GetYaxis()->SetTitleOffset(1.4);
   GammaED->SetTitle("Gamma Deposition");
+  //std::cout << GammaED->GetMinimum() << "   " << GammaED->GetMaximum() << std::endl;
    
   c3->cd(1);
+  gPad->SetLogx();
   GammaED->Draw();
   c3->cd(2);
   gPad->SetLogx();
+  gPad->SetLogy();
   TH1* h1 = GammaED->DrawCopy();
   h1->GetXaxis()->SetTitle("log10(Energy (eV))");
   c1->cd(0);
@@ -393,5 +396,192 @@ void RootDataPlotting(){
   c3->Print(savedFileN);
   c3->Close();
   
+  //******************************** c4 *******************************************
+  TCanvas*  c4 = new TCanvas("c4", "TARC Neutron Energy Deposition Study", 900, 500);
+  c4->Divide(2, 1);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  NeutEnergy->SetMarkerStyle(7);
+  NeutEnergy->SetMarkerColor(kBlue);
+  NeutEnergy->SetLineColor(kBlue);
+  NeutEnergy->GetXaxis()->SetTitle("log10(Energy (eV))");
+  NeutEnergy->GetYaxis()->SetTitle("Neutron ");
+  NeutEnergy->GetXaxis()->SetTitleOffset(1.6);
+  NeutEnergy->GetYaxis()->SetTitleOffset(1.4);
+  NeutEnergy->SetTitle("Neutron energy Deposition");
+  c4->cd(1);
+  gPad->SetLogx();
+  NeutEnergy->Draw();
+  c4->cd(2);
+  gPad->SetLogx();
+  gPad->SetLogy();
+  NeutEnergy->DrawCopy();
+  h1->GetXaxis()->SetTitle("log10(Energy (eV))");
+  c1->cd(0);
+  savedFileN = thisTitlePart10 + "_Neutron_Edep.png";
+  c4->Print(savedFileN);
+  c4->Close();
 
+  //******************************** c5 *******************************************  
+  TCanvas*  c5 = new TCanvas("c5", "TARC Electron Energy Deposition Study", 1200, 500);
+  c5->Divide(2, 1);
+  gStyle->SetHistLineWidth(3);  
+  gStyle->SetTitleX(0.5);
+  ElecED->GetXaxis()->SetTitle("Energy (eV)");
+  ElecED->GetYaxis()->SetTitle("Electron");
+  ElecED->SetMarkerStyle(7);
+  ElecED->SetMarkerColor(kBlue);
+  ElecED->SetLineColor(kBlue);
+  ElecED->GetYaxis()->SetTitleOffset(1.3);
+  ElecED->SetTitle("Electron Deposition");
+  std::cout << ElecED->GetMinimum() << "  " << ElecED->GetMaximum() << std::endl;
+  c5->cd(1);
+  ElecED->Draw();
+  c5->cd(2);
+  gPad->SetLogx();
+  TH1* h = ElecED->DrawCopy();
+  h->GetXaxis()->SetTitle("log10(Energy / eV)");
+  h->GetYaxis()->SetTitleOffset(1.3);
+  c1->cd(0);
+  savedFileN = thisTitlePart10 + "_Electron_Edep.png";
+  c5->Print(savedFileN);
+  c5->Close();
+
+  //******************************** c6 *******************************************  
+  TCanvas*  c6 = new TCanvas("c6", "TARC Positron Energy Deposition Study", 700, 500);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  //gPad->SetLogx();
+  gPad->SetLogy();
+  PositED->SetTitle("Positron Deposition");
+  PositED->SetMarkerStyle(7);
+  PositED->SetMarkerColor(kBlue);
+  PositED->SetLineColor(kBlue);
+  PositED->GetXaxis()->SetTitle("Energy (eV)");
+  PositED->Draw();
+  savedFileN = thisTitlePart10 + "_Positron_Edep.png";
+  c6->Print(savedFileN);
+  c6->Close();
+
+  //******************************** c7 *******************************************  
+  TCanvas*  c7 = new TCanvas("c7", "TARC Neutron Energy-Time Study", 700, 500);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  NeutronET->SetMarkerStyle(7);
+  NeutronET->SetMarkerColor(kBlue);
+  NeutronET->SetLineColor(kBlue);
+  NeutronET->SetTitle("Neutron Energy - Time characteristics");
+  NeutronET->GetXaxis()->SetTitle("log10(Time (#mus))");
+  NeutronET->GetYaxis()->SetTitle("log10(Neutron Energy (eV))");
+  NeutronET->Draw();
+  savedFileN = thisTitlePart10 + "_Neutron_Energy_Time.png";
+  c7->Print(savedFileN);
+  c7->Close();
+
+  //******************************** c7a *******************************************  
+  TCanvas*  c7a = new TCanvas("c7a", "TARC Neutron Energy-Time Study", 700, 500);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  NeutronET->SetMarkerStyle(7);
+  NeutronET->SetMarkerColor(kBlue);
+  NeutronET->SetLineColor(kBlue);
+  NeutronET->SetTitle("Neutron Energy - Time characteristics");
+  NeutronET->GetXaxis()->SetTitle("log10(Time (#mus))");
+  NeutronET->GetYaxis()->SetTitle("log10(Neutron Energy (eV))");
+  NeutronET->Draw("CONT1Z");
+  savedFileN = thisTitlePart10 + "_Neutron_Energy_Time_CONTOUR.png";
+  c7a->Print(savedFileN);
+  c7a->Close();
+
+  //******************************** c8 *******************************************
+  TCanvas*  c8 = new TCanvas("c8", "TARC Other Particles Energy-Time Study", 700, 500);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  OtherET->SetMarkerStyle(7);
+  OtherET->SetMarkerColor(kBlue);
+  OtherET->SetLineColor(kBlue);
+  OtherET->SetTitle("Time - Energy characteristics for other particles.");
+  OtherET->GetXaxis()->SetTitle("log10(Time (#mus))");
+  OtherET->GetYaxis()->SetTitle("log10(Energy (eV))");
+  OtherET->Draw();
+  savedFileN = thisTitlePart10 + "_Other_Energy_Time.png";
+  c8->Print(savedFileN);
+  c8->Close();
+ 
+  //******************************** c8a *******************************************
+  TCanvas*  c8a = new TCanvas("ca", "TARC Other Particles Energy-Time Study", 700, 500);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  //gPad->DrawFrame(-2, 4, -3, 5, "; Energy(eV), Time (#mus)")->GetXaxis()->SetTitleOffset(1.2);
+  OtherET->SetMarkerStyle(7);
+  OtherET->SetMarkerColor(kBlue);
+  OtherET->SetLineColor(kBlue);
+  OtherET->SetTitle("Time - Energy characteristics for other particles.");
+  OtherET->GetXaxis()->SetTitle("log10(Time (#mus))");
+  OtherET->GetYaxis()->SetTitle("log10(Energy (eV))");
+  OtherET->Draw("CONT1Z");
+  savedFileN = thisTitlePart10 + "_Other_Energy_Time_CONTOUR.png";
+  c8a->Print(savedFileN);
+  c8a->Close();  
+
+  //******************************** c9 *******************************************
+  TCanvas* c9 = new TCanvas("c9","TARC Exiting Neutron Spectrum", 1200, 700);
+  c9->Divide(2,1);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  ExitingSpec->SetLineColor(kBlue);
+  ExitingSpec->GetXaxis()->SetTitle("Energy (eV)");
+  ExitingSpec->GetYaxis()->SetTitle("Exiting Neutron from the System");
+  c9->cd(1);
+  ExitingSpec->Draw();
+  c9->cd(2);
+  gPad->SetLogx();
+  gPad->SetLogy();
+  h1 = ExitingSpec->DrawCopy();
+  h1->GetXaxis()->SetTitle("log10(Energy (eV))");
+  //h1->GetYaxis()->SetTitle("log10(Exiting Neutron from the System)");
+  c1->cd(0);
+  savedFileN = thisTitlePart10 + "_Exiting_Neutron_Spectrum.png";
+  c9->Print(savedFileN);
+  c9->Close();
+
+
+  //******************************** c10 *******************************************
+  TCanvas* c10 = new TCanvas("c10", "TARC Radial Fluence", 900, 700);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  gPad->SetLogy();
+  gStyle->SetTitle("fluence");
+  gPad->DrawFrame(-220, 1e-3, 220.0, 5.0e11, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+  RadShellFluence->SetMarkerStyle(21);
+  RadShellFluence->SetMarkerColor(kRed);
+  RadShellFluence->SetMarkerSize(0.8);
+  //RadShellFluence->Scan();
+  //RadShellFluence->Draw("radialFluenceTrueMean/radialEnergyTrueMean  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
+  RadShellFluence->Draw("fluence/energy  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
+  ExptLiData->SetMarkerStyle(28);
+  ExptLiData->SetMarkerSize(0.8);
+  ExptLiData->SetMarkerColor(kBlue);
+  //ExptLiData->Print();
+  ExptLiData->Draw("data/energy : radius / 10.0", "", "SAME");   // changing to cm
+  ExptHe3Data->SetMarkerStyle(28);
+  ExptHe3Data->SetMarkerSize(0.8);
+  ExptHe3Data->SetMarkerColor(kGreen);
+  //ExptHe3Data->Print();
+  ExptHe3Data->Draw("data/energy : radius / 10.0", "", "SAME");   // changing to cm
+  start = 0.11, stop = 0.9;
+  xwidth  = 0.28, ywidth = 0.12;
+  legend = new TLegend(start, stop - ywidth, start + xwidth, stop);
+  legend->SetTextFont(62);
+  legend->SetHeader("Radial Fluence distribution","C"); // option "C" allows to center the header
+  legend->SetTextFont(42);
+  legend->AddEntry(RadShellFluence,"Distribution for TARC simulation","ep");
+  legend->AddEntry(ExptHe3Data,"Distribution for He3 Data","ep");
+  legend->AddEntry(ExptLiData,"Distribution for Li data","ep");   // ep for errors and points
+  legend->Draw();
+  savedFileN = thisTitlePart10 + "_radial.png";
+  c10->Print(savedFileN);
+  c10->Close();
+     
+  tf1->Close();
 }

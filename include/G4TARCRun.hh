@@ -41,6 +41,8 @@ public:
   G4int GetRefShellNumber() const        {return fRefShellNumber;}
   G4int GetNumberOfEvents() const       {return fNevt;}
 
+  void SetNumberOfEvent(G4int val)                {fNevt = val;}
+
   void initVectors();
   void StartProcessing();
 

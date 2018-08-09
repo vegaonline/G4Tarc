@@ -19,7 +19,7 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
   fNeutronStack = 0;
 
   //if (fEventID % fPrintModulo == 0)
-  G4cout << " Begin of Event:  " << fEventID << G4endl;
+  G4cout << "     Begin of Event:  " << fEventID << G4endl;
 
 /*
   if ( fSelected > 0 ){
@@ -40,11 +40,12 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
 }
 
 void G4TARCEventAction::EndOfEventAction( const G4Event* ) {
-  //G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   auto  fAnalysisManager = G4AnalysisManager::Instance();
   fAnalysisManager->FillH1(6, fNeutronStack);
+  thisRun->SetNumberOfEvent(fEventID);
   // if (fEventID % fPrintModulo == 0)
-  G4cout << " End of event: " << fEventID << G4endl;
+  //G4cout << " End of event: " << fEventID << " *** " << G4endl;
   /*
   G4int nEvt = evt->GetEventID();
   if ( fDebugStarted ){
@@ -139,19 +140,17 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
     //G4cout << " Analyse Secondary exiting" << G4endl;
 }
 
-
 void G4TARCEventAction::NeutronEnergyTime(G4double thisE, G4double thisT, G4double E0){
   auto fAnalysisManager = G4AnalysisManager::Instance();
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-  if (fAnalysisManager->IsActive()){
-    if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
-    fAnalysisManager->FillNtupleDColumn(1, 0, tempE);
-    fAnalysisManager->FillNtupleDColumn(1, 1, tempT);
-    fAnalysisManager->FillNtupleDColumn(1, 2, tempE0);
-    fAnalysisManager->AddNtupleRow(1);
-  }
+
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
+  fAnalysisManager->FillNtupleDColumn(1, 0, tempE);
+  fAnalysisManager->FillNtupleDColumn(1, 1, tempT);
+  fAnalysisManager->FillNtupleDColumn(1, 2, tempE0);
+  fAnalysisManager->AddNtupleRow(1);
 }
 
 void G4TARCEventAction::otherEnergyTime(G4double thisE, G4double thisT, G4double E0){
@@ -159,13 +158,12 @@ void G4TARCEventAction::otherEnergyTime(G4double thisE, G4double thisT, G4double
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-  if (fAnalysisManager->IsActive()){
-    if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
-    fAnalysisManager->FillNtupleDColumn(4, 0, tempE);
-    fAnalysisManager->FillNtupleDColumn(4, 1, tempT);
-    fAnalysisManager->FillNtupleDColumn(4, 2, tempE0);
-    fAnalysisManager->AddNtupleRow(4);
-  }
+
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
+  fAnalysisManager->FillNtupleDColumn(4, 0, tempE);
+  fAnalysisManager->FillNtupleDColumn(4, 1, tempT);
+  fAnalysisManager->FillNtupleDColumn(4, 2, tempE0);
+  fAnalysisManager->AddNtupleRow(4);
 }
 
 
@@ -241,53 +239,15 @@ void G4TARCEventAction::analyseNeutronShellFluence(G4double energyL, G4double St
   //  G4int thisTrackIDL, G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double primaryEnergyL,
   //  G4double parentEnergyL, G4String& parentParticleL, G4bool reduced_fluxL,  G4int number_generationsL){
 
-/*
-void G4TARCEventAction::analyseNeutronFluence(G4double energyL, G4double timeL, G4int thisTrackIDL,
-    G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL){
 
-      G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+void G4TARCEventAction::analyseNeutronFluence(G4double energyL,
+   //G4double timeL, G4int thisTrackIDL,  G4double radiusL,
+   G4double thisStepL  //,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL
+ ){
       G4TARCRun* thisRun = static_cast<G4TARCRun*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
-      thisRun->analyseNeutronFluence( energyL, thisStepL);   //,  timeL,  thisTrackIDL,  radiusL, thisStepL,  ParentIDL, parentEnergyL,parentParticleL);
-      G4int iParent = 0;
-      G4double fTempT    = timeL / microsecond;
-      G4double fTempE0   = fEnergy0 / eV;
-      G4double fTempE    = energyL / eV;
-      if (parentParticleL == "gamma") iParent = 1;
-      if (parentParticleL == "neutron") iParent = 2;
-      if (parentParticleL == "e-") iParent = 3;
-      if (parentParticleL == "pi-") iParent = 4;
-      if (parentParticleL == "pi+") iParent = 5;
-      if (parentParticleL == "pi0") iParent = 6;
-      if (parentParticleL == "e+") iParent = 7;
-      if (parentParticleL == "proton") iParent = 8;
-/ *
-      //if (fTempE >= fFlux_Energy[fFlux_Energy.size()-1]){
-      if (fTempE >= fFlux_Energy[0]){
-        for (G4int ii = 0; ii < fMaxTestFluxData; ii++){
-          if (fTempE > fFlux_Energy[ii] && fTempE < fFlux_Energy[ii + 1]) fFluence_step[ii] += thisStepL;
-          // G4cout << fTempE << "   " << fFlux_Energy[0] << "   " << thisStepL / mm << "       " << fFluence_step[ii] << G4endl;
-        }
-      }
-* /
-      //fAnalysisManager->FillNtupleDColumn(7, 0, fTempE);
-      fAnalysisManager->FillNtupleDColumn(3, 0, fTempE);
-      fAnalysisManager->FillNtupleDColumn(3, 1, fTempT);
-      fAnalysisManager->FillNtupleDColumn(3, 2, fTempE0);
-      fAnalysisManager->FillNtupleIColumn(3, 3, thisTrackIDL);
-      fAnalysisManager->FillNtupleIColumn(3, 4, ParentIDL);
-      fAnalysisManager->FillNtupleDColumn(3, 5, 0.0);
-      fAnalysisManager->FillNtupleDColumn(3, 6, 0.0);
-      fAnalysisManager->FillNtupleDColumn(3, 7, 0.0);   // zMomentum
-      fAnalysisManager->FillNtupleDColumn(3, 8, fTime0 / microsecond);
-      fAnalysisManager->FillNtupleDColumn(3, 9, radiusL / mm);
-      fAnalysisManager->FillNtupleDColumn(3, 10, parentEnergyL / eV);
-      fAnalysisManager->FillNtupleIColumn(3, 11, iParent);
-      fAnalysisManager->FillNtupleDColumn(3, 12, thisStepL);
-      fAnalysisManager->FillNtupleIColumn(3, 13, 0);
-      fAnalysisManager->AddNtupleRow(3);
-
+      thisRun->analyseNeutronFluence(energyL, thisStepL);
   }
-*/
+
 
 void G4TARCEventAction::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4double radiusL, G4double cosAngleL, G4String fParticleNameL)
     //G4double zPosL,G4double cosAngleL, G4String fParticleNameL)

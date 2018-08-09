@@ -64,8 +64,7 @@ public:
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
-  void analyseNeutronFluence(G4double energyL, G4double timeL, G4int thisTrackIDL,
-    G4double radiusL, G4double thisStepL,  G4int ParentIDL, G4double parentEnergyL, G4String& parentParticleL){};
+  void analyseNeutronFluence(G4double, G4double); //G4int, G4double, G4double,  G4int, G4double, G4String&);
 
 
 private:

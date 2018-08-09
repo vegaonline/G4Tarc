@@ -6,7 +6,7 @@
 #include "G4TARCRunAction.hh"
 
 G4TARCRunAction::G4TARCRunAction() : G4UserRunAction() {
-  auto fAnalysisManager = G4AnalysisManager::Instance();
+  //    auto fAnalysisManager = G4AnalysisManager::Instance();
   DefineShellBlocks();
   if (!fHistoBooked){
     BookHistogram();
@@ -31,15 +31,17 @@ void G4TARCRunAction::BeginOfRunAction(const G4Run* thisRun){
 void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
   const G4TARCRun*  tarcRun = static_cast<const G4TARCRun*>(thisRun);
   FillRadialExperimentalData(tarcRun);
+  G4int eventN = tarcRun->GetNumberOfEvents();
 
-  G4cout << "Number of events: " << tarcRun->GetNumberOfEvents() << G4endl;
+  G4cout << "Total Number of events: " << eventN << G4endl;
   G4double ExitFlux = tarcRun->GetExitingFlux();
   G4double ExitEnergy = tarcRun->GetExitingEnergy();
   G4double ExitCheckFlux = tarcRun->GetExitingCheckFlux();
 
   if (IsMaster()) {
-    NeutronFluxHistogram(tarcRun->GetNumberOfEvents(), tarcRun);
-    RadialFluxHistogram(tarcRun->GetNumberOfEvents(), tarcRun);
+    NeutronFluxHistogram(eventN, tarcRun);
+    RadialFluxHistogram(eventN, tarcRun);
+    G4cout << "Exit flux: " << ExitFlux << ",   Exit Energy: " << ExitEnergy << ",   Exit CheckFlux: " << ExitCheckFlux << G4endl;
     G4cout << "Integral Neutron Flux at 45.6 cms:  " << tarcRun->fIntegral_flux_46cm << " Integral EFLUX at 45.6 cms:  " << tarcRun->fTARC_Integral_Eflux_46cm << G4endl;
   }
 
@@ -51,13 +53,14 @@ void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
 
 void G4TARCRunAction::DefineShellBlocks() {
   fRefShellNumber = fRadiusReference.size();
+  fRefShellThickness = 2.0 * mm;
   for (G4int ii = 0; ii < fRefShellNumber; ii++) {
-    G4double radThis = fRadiusReference[ii] / mm;
+    G4double radThis = fRadiusReference[ii] ;
     fOuterRadiusofShell.push_back(radThis);
-    radThis = fRadiusReference[ii] / mm  - fRefShellThickness;
+    radThis = fRadiusReference[ii]  - fRefShellThickness;
     fInnerRadiusofShell.push_back(radThis);
   }
-  fRefShellThickness = 2.0 * mm;
+
   fLocal_Energy_Integral.resize(4, 0.0);
 
   fRefShellOuterRad = 456.0 * mm;
@@ -299,15 +302,11 @@ void G4TARCRunAction::FillRadialExperimentalData(const G4TARCRun* tarcRun){
 
 
 void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarcRun){
-  G4int fNeventsNN=tarcRun->GetNumberOfEvents();
-  G4cout << fNevents << "  "  << fNeventsNN << G4endl;
   auto fAnalysisManager = G4AnalysisManager::Instance();
-  G4cout << "SA:" << fTestSphereSurfaceArea << G4endl;
-  G4cout << " MaxTestFluxData: " << tarcRun->fMaxTestFluxData << G4endl;
   G4double fAbsolute_TotalFlux = (tarcRun->fTotalFlux *  1.0e9 / (G4double)fNevents) / (fTestSphereSurfaceArea); // per cm^2
+  G4cout << " Absolute total flux: " << fAbsolute_TotalFlux << G4endl;
   for (G4int ij1 = 0; ij1 < tarcRun->fMaxTestFluxData; ij1++){
     G4double fMeanEnergy   = 0.5 * (tarcRun->fFlux_Energy[ij1 + 1] + tarcRun->fFlux_Energy[ij1]);   // eV
-    G4cout << "fMeanEnergy: " << fMeanEnergy << "  events " << fNevents << "  flux " << tarcRun->fFlux[ij1] << G4endl;
     G4double fAbsFlux      = (tarcRun->fFlux[ij1] *  (1.0e9 / (G4double)fNevents)) / (fTestSphereSurfaceArea);     // per cm^2
     G4double fBinWidth     = std::abs(tarcRun->fFlux_Energy[ij1 + 1] - tarcRun->fFlux_Energy[ij1]);   //eV
     G4double fAbsFluxPerp  = fMeanEnergy * (((tarcRun->fCos_Flux[ij1] * (1.0e9 / (G4double)fNevents)) / (fTestSphereSurfaceArea)) / fBinWidth);   // per cm^2
@@ -326,13 +325,6 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
 
     fLocal_Energy_Integral[2] += fAbsFlux * fMeanEnergy;
     fLocal_Energy_Integral[3] += tarcRun->fFlux_Data[ij1] * fMeanEnergy;
-/*
-    dumpResult1 << fMeanEnergy << "   " << fFlux_Data[ij1] << "   " << fFlux_Syst_Err[ij1] << "   "
-	        << fAbsFlux << "   " << fAbsFluxPerp << "   " << fAbsFluence << "   " << fAbsErr << "   " << fEFlux[ij1] << "   "
-		<< fEflux_Data[ij1] << "   " << fAbsEFlux << "   " << fFluence_step[ij1] << "   " << fAbsFluenceShell << "   "
-		<< fAbsFluenceShellErr << G4endl;
-*/
-
 
     fAnalysisManager->FillNtupleDColumn(3, 0, fMeanEnergy);
     fAnalysisManager->FillNtupleDColumn(3, 1, tarcRun->fFlux_Data[ij1]  * 100.0);
@@ -370,13 +362,6 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
     fTARC_Integral += tarcRun->fFlux_Low_Data[ij1] ;
     fTARC_Integral_E += tarcRun->fFlux_Low_Data[ij1] * fMeanLowEnergy;
 
-/*
-    dumpResult2 << fMeanLowEnergy << "   " << fFlux_Low_Data[ij1] << "   " << fFlux_Low_Syst_Err[ij1] << "   "
-		<< fAbsLowFlux << "  " << fAbsLowFluxPerp << "  " << fAbsLowFluence << "   " << fAbsLowError << "   "
-		<< fLow_Flux[ij1] << "   " << fEflux_Data[ij1] << "   " << fAbsLowFluenceShell << "   " << fAbsLowFluenceShellError << G4endl;
-
-
-*/
     fAnalysisManager->FillNtupleDColumn(4, 0, fMeanLowEnergy);
     fAnalysisManager->FillNtupleDColumn(4, 1, tarcRun->fFlux_Low_Data_in[ij1] * 100.0);
     fAnalysisManager->FillNtupleDColumn(4, 2, tarcRun->fFlux_Low_Syst_Err[ij1] * 100.0);
@@ -409,14 +394,6 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
     fTARC_lithium   += tarcRun->fFlux_Lithium_Data[ij1];
     fTARC_lithium_E += tarcRun->fFlux_Lithium_Data[ij1] * fMeanLithiumEnergy;
 
-/*
-    dumpResult3 << fMeanLithiumEnergy << "   " << fFlux_Lithium_Data[ij1] << "   "
-		<< fFlux_Lithium_Syst_Err[ij1] << "   " << fAbsLithiumFlux << "   "
-		<< fAbsLithiumFluxPerp << "   " << fAbsLithiumFluence << "   "
-		<< fAbsErrorLi << "   " << fLithium_Flux[ij1] << "   "
-		<< fLithium_Fluence_Step[ij1] << "   " << fAbsLithiumFluenceShell << G4endl;
-
-*/
     fAnalysisManager->FillNtupleDColumn(5, 0, fMeanLithiumEnergy);
     fAnalysisManager->FillNtupleDColumn(5, 1, tarcRun->fFlux_Lithium_Data[ij1] * 100.0);
     fAnalysisManager->FillNtupleDColumn(5, 2, tarcRun->fFlux_Low_Syst_Err[ij1] * 100.0);
@@ -438,8 +415,6 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
       fAnalysisManager->AddNtupleRow(13);
     }
   }
-
-  //outh5.close();
 }
 
 void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* aRun){
@@ -447,7 +422,7 @@ void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* aRun)
   const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
 
   for (G4int ijk1 = 0; ijk1 < fRefShellNumber; ijk1++) {  // ijk1 < fMaxTestFluxData; ijk1++){
-    // G4cout << ijk1 << " / " << fRefShellNumber << " RO " << fOuterRadiusofShell[ijk1] << " RI " << fInnerRadiusofShell[ijk1] << "  ";
+    //G4cout << ijk1 << " / " << fRefShellNumber << " RO " << fOuterRadiusofShell[ijk1] << " RI " << fInnerRadiusofShell[ijk1] << "  " << G4endl;
     G4double shellVol = (4.0 / 3.0) * CLHEP::pi * (std::pow(fOuterRadiusofShell[ijk1], 3.0) - std::pow(fInnerRadiusofShell[ijk1], 3.0)); // mm^3
     G4double radL = 0.5 * (fOuterRadiusofShell[ijk1] + fInnerRadiusofShell[ijk1]);                                                      // mm
     for (G4int ijk2 = 0; ijk2 < tarcRun->fMaxRadCount; ijk2++){
@@ -457,11 +432,6 @@ void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* aRun)
       if (tarcRun->fRadialFluenceStep[ijk1][ijk2] != 0.0){
         G4double fAbsRadFluence = tarcRun->fLithium_Radial_Mean[ijk2]*(100.0 * (1.0e9 / (G4double)fNevents) * ((tarcRun->fRadialFluenceStep[ijk1][ijk2]) / shellVol) / fBinTmpWidth); // radii are in mm
         G4double fAbsRadFluenceTrueMean = tarcRun->fLithium_Radial_True_Mean[ijk2] * (100.0 * ( 1.0e9 / (G4double)fNevents) * tarcRun->fRadialFluenceStep[ijk1][ijk2] / shellVol / fBinTmpWidth);
-/*
-	dumpResult4 << radL << "   " << fLithium_Radial_Mean[ijk2] << "   " << fAbsRadFluence << "   "
-		    << fLithium_Radial_True_Mean[ijk2] << "   " << fAbsRadFluenceTrueMean << G4endl;
-
-*/
         fAnalysisManager->FillNtupleDColumn(8, 0, radL);    // rad in mm
         fAnalysisManager->FillNtupleDColumn(8, 1, tarcRun->fLithium_Radial_Mean[ijk2]);
         fAnalysisManager->FillNtupleDColumn(8, 2, fAbsRadFluence);

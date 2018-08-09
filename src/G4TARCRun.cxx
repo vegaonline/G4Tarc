@@ -15,7 +15,6 @@ G4TARCRun::G4TARCRun() : G4Run() {
 }
 
 void G4TARCRun::initVectors() {
-  G4cout << " InitVecs in RUN started" << G4endl;
   fEnergy0 = 0.0;
   fTotalFlux = 0;
   fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
@@ -71,7 +70,6 @@ void G4TARCRun::initVectors() {
   fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
   fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
   fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
-  G4cout << "InitVecs in Run done." << G4endl;
 }
 
 void G4TARCRun::StartProcessing(){
@@ -117,7 +115,6 @@ void G4TARCRun::StartProcessing(){
       ++mIndex;
     }
   }
-  G4cout << "StartProcessing in Run ends " << G4endl;
 }
 
 void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
@@ -232,7 +229,6 @@ void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
         std::vector<G4double>().swap(tmpV2);
         std::vector<G4double>().swap(tmpV3);
       }
-
     }
     lineIN="";
   }
@@ -321,7 +317,6 @@ void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
   std::vector<std::vector<G4double> > ().swap(fExptFluxErrTables);
   // This is end of test block
   //fReadData = true;
-  G4cout << "ReadData in Run done." << G4endl;
 }
 
 
