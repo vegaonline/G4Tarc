@@ -10,7 +10,7 @@
 #include "G4UIcmdWith3Vector.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithABool.hh"
-#include "G4TARCHistoManager.hh"
+//#include "G4TARCHistoManager.hh"
 
 class G4TARCDetectorConstruction;
 class G4UIdirectory;

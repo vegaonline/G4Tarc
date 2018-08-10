@@ -1,7 +1,7 @@
 #include "G4TARCTargetSD.hh"
 
 G4TARCTargetSD::G4TARCTargetSD(const G4String& name)
-: G4VSensitiveDetector(name), fHisto(0) {
+: G4VSensitiveDetector(name) {
   // fHisto = G4TARCHistoManager::GetPointer();
 }
 

@@ -1,7 +1,7 @@
 #ifndef G4TARCVOLUMESD_HH
 #define G4TARCVOLUMESD_HH
 
-#include "G4TARCHistoManager.hh"
+//#include "G4TARCHistoManager.hh"
 
 #include "G4VSensitiveDetector.hh"
 #include "G4HCofThisEvent.hh"
@@ -12,7 +12,7 @@
 class G4Step;
 class G4TouchableHistory;
 class G4HCofThisEvent;
-class G4TARCHistoManager;
+//class G4TARCHistoManager;
 
 class G4TARCVolumeSD : public G4VSensitiveDetector{
 public:
@@ -25,7 +25,7 @@ public:
   virtual void EndOfEvent(G4HCofThisEvent*){};
 
 private:
-  G4TARCHistoManager* fHisto;
+  //G4TARCHistoManager* fHisto;
 
 };
 

@@ -21,14 +21,14 @@
 #include "G4PhysicalConstants.hh"
 
 #include "G4TARCDetectorConstruction.hh"
-#include "G4TARCHistoManager.hh"
+//#include "G4TARCHistoManager.hh"
 #include "G4TARCStackingMessenger.hh"
 #include "G4TARCAnalysis.hh"
 #include "G4TARCEventAction.hh"
 
 
 
-class G4TARCHistoManager;
+//class G4TARCHistoManager;
 class G4TARCStackingMessenger;
 class G4Track;
 class G4ParticleDefinition;
@@ -47,7 +47,7 @@ public:
 
 
 private:
-  G4TARCHistoManager*         fHistoManager;
+  //G4TARCHistoManager*         fHistoManager;
   G4TARCStackingMessenger*    fStackMessenger;
   G4bool                      fKillSecondary;
   G4bool                      fKillGammas;
@@ -55,7 +55,8 @@ private:
   G4int                       fNeutron;
   G4int                       fProton;
   G4int                       fDeuteron;
-  G4int                 fOther;
+  G4int                       fOther;
+  G4int                 partType;
 
   G4Navigator*                fNavigator;
   G4TARCEventAction*          fEventAction;

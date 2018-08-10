@@ -1,7 +1,7 @@
 #include "G4TARCtransmutSD.hh"
 
 G4TARCtransmutSD::G4TARCtransmutSD(const G4String& name)
-: G4VSensitiveDetector(name), fHisto(0) {
+: G4VSensitiveDetector(name){
   // fHisto = G4TARCHistoManager::GetPointer();
 }
 

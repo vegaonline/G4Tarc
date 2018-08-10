@@ -21,7 +21,7 @@
 
 #include "G4TARCRun.hh"
 #include "G4TARCAnalysis.hh"
-#include "G4TARCHistoManager.hh"
+//#include "G4TARCHistoManager.hh"
 #include "G4TARCPrimaryGeneratorAction.hh"
 
 #include "Randomize.hh"
@@ -50,6 +50,8 @@ public:
 
   void NeutronFluxHistogram(G4int, const G4TARCRun*);
   void RadialFluxHistogram(G4int, const G4TARCRun*);
+  void ResultSummary(G4int, const G4TARCRun*);
+  template <typename T>  void Check10s(T, T&, G4String&);
 
 private:
   G4String                         fAnalysisFileName = "G4TARC_output";
@@ -64,7 +66,6 @@ private:
   std::vector<G4double> fLocal_Energy_Integral;
 
   G4int        fRefShellNumber;
-
 
   G4double fRefShellThickness;
   G4double fRadHole;

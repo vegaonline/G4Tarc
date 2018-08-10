@@ -1,7 +1,7 @@
 #include "G4TARCVolumeSD.hh"
 
 G4TARCVolumeSD::G4TARCVolumeSD(const G4String& name)
- : G4VSensitiveDetector(name), fHisto(0) {
+ : G4VSensitiveDetector(name){
    // fHisto = G4TARCHistoManager::GetPointer();
  }
 

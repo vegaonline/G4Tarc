@@ -62,18 +62,19 @@ void RootDataPlotting(){
   TH1F* TARCG4FluenceHe3       = new TH1F("FluenceG4He", "TARC G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4FluenceLi        = new TH1F("FluenceG4Li", "TARC G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4RatioHi          = new TH1F("RatioG4Hi", "TARC Fluence Ratio G4 Fluence (High)", (xHiCnt - 1), fXbinHi);
-  TH1F* TARCG4RatRatHi         = new TH1F("HiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (High)", (xHiCnt - 1), fXbinHi);
+  //  TH1F* TARCG4RatRatHi         = new TH1F("HiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (High)", (xHiCnt - 1), fXbinHi);
   TH1F* TARCG4RatioHe3         = new TH1F("RatioG4He", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
-  TH1F* TARCG4RatRatHe3        = new TH1F("He3RatioBYRatio", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
+  //  TH1F* TARCG4RatRatHe3        = new TH1F("He3RatioBYRatio", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4RatioLi          = new TH1F("RatioG4Li", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
-  TH1F* TARCG4RatRatLi         = new TH1F("LiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
+  //  TH1F* TARCG4RatRatLi         = new TH1F("LiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
   TH2F* radialHisto            = new TH2F("Radial", "TARC radial", 1000, -1000, 1000, 1000, 1.0, 2.5e+7);
 
   // Variables for histograms
   double energy, tarcflux, errstat, g4flux, g4perp, g4fluence, g4error, rawflux, eflux, tarcmeanflux, abseflux;
   double radius, g4shell, g4shellerr, tarcmeanstep, tarccyl, tarcfrontflux;
   TLatex* tlx;
-
+  
+  
   // Fill the histograms
   for (int irow = 0; irow < h3NExiting->GetEntries(); ++irow){
     h3NExiting->SetBranchAddress("energy", &energy);
@@ -121,7 +122,8 @@ void RootDataPlotting(){
        TARCG4RatioHi->Fill(energy, ratio);
      }
   }
-
+  
+  
   for (int irow = 0; irow < Flux4004->GetEntries(); ++irow) {
     Flux4004->SetBranchAddress("energy",     &energy);        Flux4004->GetEntry(irow);
     Flux4004->SetBranchAddress("tarcflux",   &tarcflux);      Flux4004->GetEntry(irow);
@@ -160,6 +162,7 @@ void RootDataPlotting(){
     }
   }
 
+  
   for (int irow = 0; irow < Flux4005->GetEntries(); ++irow) {
     Flux4005->SetBranchAddress("energy",  &energy);          Flux4005->GetEntry(irow);
     Flux4005->SetBranchAddress("tarcflux",  &tarcflux);      Flux4005->GetEntry(irow);
@@ -464,7 +467,8 @@ void RootDataPlotting(){
   c6->Close();
 
   //******************************** c7 *******************************************  
-  TCanvas*  c7 = new TCanvas("c7", "TARC Neutron Energy-Time Study", 700, 500);
+  TCanvas*  c7 = new TCanvas("c7", "TARC Neutron Energy-Time Study", 900, 600);
+  c7->Divide(2, 1);
   gStyle->SetHistLineWidth(3);
   gStyle->SetTitleX(0.2);
   NeutronET->SetMarkerStyle(7);
@@ -473,28 +477,18 @@ void RootDataPlotting(){
   NeutronET->SetTitle("Neutron Energy - Time characteristics");
   NeutronET->GetXaxis()->SetTitle("log10(Time (#mus))");
   NeutronET->GetYaxis()->SetTitle("log10(Neutron Energy (eV))");
+  c7->cd(1);
   NeutronET->Draw();
+  c7->cd(2);
+  NeutronET->Draw("CONT1Z");
+  c7->cd(0);
   savedFileN = thisTitlePart10 + "_Neutron_Energy_Time.png";
   c7->Print(savedFileN);
   c7->Close();
 
-  //******************************** c7a *******************************************  
-  TCanvas*  c7a = new TCanvas("c7a", "TARC Neutron Energy-Time Study", 700, 500);
-  gStyle->SetHistLineWidth(3);
-  gStyle->SetTitleX(0.2);
-  NeutronET->SetMarkerStyle(7);
-  NeutronET->SetMarkerColor(kBlue);
-  NeutronET->SetLineColor(kBlue);
-  NeutronET->SetTitle("Neutron Energy - Time characteristics");
-  NeutronET->GetXaxis()->SetTitle("log10(Time (#mus))");
-  NeutronET->GetYaxis()->SetTitle("log10(Neutron Energy (eV))");
-  NeutronET->Draw("CONT1Z");
-  savedFileN = thisTitlePart10 + "_Neutron_Energy_Time_CONTOUR.png";
-  c7a->Print(savedFileN);
-  c7a->Close();
-
   //******************************** c8 *******************************************
-  TCanvas*  c8 = new TCanvas("c8", "TARC Other Particles Energy-Time Study", 700, 500);
+  TCanvas*  c8 = new TCanvas("c8", "TARC Other Particles Energy-Time Study", 1200, 500);
+  c8->Divide(2, 1);
   gStyle->SetHistLineWidth(3);
   gStyle->SetTitleX(0.2);
   OtherET->SetMarkerStyle(7);
@@ -503,27 +497,15 @@ void RootDataPlotting(){
   OtherET->SetTitle("Time - Energy characteristics for other particles.");
   OtherET->GetXaxis()->SetTitle("log10(Time (#mus))");
   OtherET->GetYaxis()->SetTitle("log10(Energy (eV))");
+  c8->cd(1);
   OtherET->Draw();
+  c8->cd(2);
+  OtherET->Draw("CONT1Z");
+  c8->cd(0);
   savedFileN = thisTitlePart10 + "_Other_Energy_Time.png";
   c8->Print(savedFileN);
   c8->Close();
  
-  //******************************** c8a *******************************************
-  TCanvas*  c8a = new TCanvas("ca", "TARC Other Particles Energy-Time Study", 700, 500);
-  gStyle->SetHistLineWidth(3);
-  gStyle->SetTitleX(0.2);
-  //gPad->DrawFrame(-2, 4, -3, 5, "; Energy(eV), Time (#mus)")->GetXaxis()->SetTitleOffset(1.2);
-  OtherET->SetMarkerStyle(7);
-  OtherET->SetMarkerColor(kBlue);
-  OtherET->SetLineColor(kBlue);
-  OtherET->SetTitle("Time - Energy characteristics for other particles.");
-  OtherET->GetXaxis()->SetTitle("log10(Time (#mus))");
-  OtherET->GetYaxis()->SetTitle("log10(Energy (eV))");
-  OtherET->Draw("CONT1Z");
-  savedFileN = thisTitlePart10 + "_Other_Energy_Time_CONTOUR.png";
-  c8a->Print(savedFileN);
-  c8a->Close();  
-
   //******************************** c9 *******************************************
   TCanvas* c9 = new TCanvas("c9","TARC Exiting Neutron Spectrum", 1200, 700);
   c9->Divide(2,1);
@@ -582,6 +564,7 @@ void RootDataPlotting(){
   savedFileN = thisTitlePart10 + "_radial.png";
   c10->Print(savedFileN);
   c10->Close();
-     
+ 
+  
   tf1->Close();
 }

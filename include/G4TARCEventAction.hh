@@ -65,6 +65,7 @@ public:
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analysePS(G4double, G4String, G4double); // , G4double, G4double);
   void analyseNeutronFluence(G4double, G4double); //G4int, G4double, G4double,  G4int, G4double, G4String&);
+  void ExtraNeutronProcs(const G4String&);
 
 public:
   std::vector< std::vector<G4double> >   fExptRadiiTables;
@@ -74,6 +75,7 @@ private:
   G4int                                                     fEventID;
   G4int                                                     fPrintModulo;
   G4int                                                     fNeutronStack;
+  G4bool                                                  fPrimarySet;
 };
 
 

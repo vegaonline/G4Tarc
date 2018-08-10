@@ -4,7 +4,7 @@
 #include "G4VSensitiveDetector.hh"
 #include "globals.hh"
 
-#include "G4TARCHistoManager.hh"
+//#include "G4TARCHistoManager.hh"
 
 #include "G4HCofThisEvent.hh"
 #include "G4TouchableHistory.hh"
@@ -14,7 +14,7 @@
 class G4Step;
 class G4TouchableHistory;
 class G4HCofThisEvent;
-class G4TARCHistoManager;
+//class G4TARCHistoManager;
 
 class G4TARCtransmutSD : public G4VSensitiveDetector {
 public:
@@ -26,7 +26,7 @@ public:
   virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
 
 private:
-  G4TARCHistoManager* fHisto;
+  //G4TARCHistoManager* fHisto;
 };
 
 #endif

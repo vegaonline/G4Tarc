@@ -41,6 +41,9 @@ void G4TARCRun::initVectors() {
   fENflux.resize(4, 0.0);
   fNeutflux.resize(4, 0.0);
 
+  fNeutronInit = 0;
+  fNeutronBreed = 0;
+
   fRadialFluenceStep.resize(fRefShellNumber, std::vector<G4double>(fMaxRadCount, 0.0));
 
   fFluence.resize(fMaxFluenceTable, std::vector<G4double>(fMaxEBin, 0.0));
@@ -377,6 +380,8 @@ void G4TARCRun::analyseNeutronFluence(G4double energyL, G4double thisStepL) {
 }
 
 
+
+
 void G4TARCRun::analyseNeutronShellFluence(G4double energyL, G4double StepLengthL){
   G4double tempE = energyL / eV;
 
@@ -416,6 +421,7 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
       fOldTrackID = thisTrackIDL;
     }
     G4double tempEnergy = n_EnergyL / eV;
+
     if (fParticleNameL == "neutron"){
       for (G4int ii1 = 0; ii1 < fMaxRadCount; ii1++){
         if (std::abs(radiusL - fRadList[ii1]) <= 0.01){
@@ -553,4 +559,9 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
     }
   }
   G4Run::Merge(thisRun);
+}
+
+
+void G4TARCRun::NeutronExtraCalc(const G4String& procID){
+  if (procID == "init") ++fNeutronInit;
 }

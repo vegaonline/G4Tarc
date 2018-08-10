@@ -21,15 +21,10 @@ G4TARCPrimaryGeneratorAction::~G4TARCPrimaryGeneratorAction() {
 }
 
 void G4TARCPrimaryGeneratorAction::GeneratePrimaries( G4Event* anEvent ){
-  G4double tmp;
+  G4double tmp = fGPS->GetParticleEnergy();
   if (DefaultBeamPosition()){
     G4cout << " Ok in Gun Mess\n";
   }
   fGPS->GeneratePrimaryVertex(anEvent);
-  tmp = fGPS->GetParticleEnergy();
   if (!GetEnergy())  SetEnergy(tmp);
-  //fHisto->SetGPSEnergyIN(tmp);
-  //tmp = fGPS->GetParticleMomentum();
-  //if (!GetMomentum()) SetMomentum(tmp);
-  //fHisto->SetGPSMomentumIN(tmp);
 }

@@ -36,15 +36,18 @@ public:
   G4int GetExitingFlux() const                {return fExiting_Flux;}
   G4double GetExitingEnergy() const     {return fExiting_Energy;}
   G4int GetExitingCheckFlux() const      {return fExiting_check_Flux;}
-  G4int GetIntegralFlux_46cm() const    {return fIntegral_flux_46cm;}
+  G4int GetIntegralFlux_46cm() const     {return fIntegral_flux_46cm;}
   G4int GetIntegralEFlux_46cm() const   {return fTARC_Integral_Eflux_46cm;}
   G4int GetRefShellNumber() const        {return fRefShellNumber;}
   G4int GetNumberOfEvents() const       {return fNevt;}
 
-  void SetNumberOfEvent(G4int val)                {fNevt = val;}
+  void SetNumberOfEvent(G4int val)     {fNevt = val;}
+  void SetBeamEnergy(G4double val)    {fIncidentBeamEnergy = val; }
+  void SetBeamParticleName(const G4String name) { fIncidentBeamParticleName = name;}
 
   void initVectors();
   void StartProcessing();
+  void NeutronExtraCalc(const G4String&);
 
   virtual void RecordEvent(const G4Event*);
   G4int GetNumberOfHitsMap()  const                                {return fRunMap.size();}
@@ -152,10 +155,11 @@ public:
   G4int fIntegral_flux_70cm;
   G4int fIntegral_flux_100cm;
   G4int fIntegral_flux_120cm;
-  G4int fTARC_Integral_Eflux_46cm;
   G4int fGamma_flux;
   G4int fNeutron_flux;
   G4int fNeutron_check;
+  G4int fNeutronInit;        // k_eff
+  G4int fNeutronBreed;   // k_eff
   G4int fElectron_flux;
   G4int fPiPlus_flux;
   G4int fPiMinus_flux;
@@ -176,6 +180,7 @@ public:
   G4double fMyRadTol;
   G4double fNeutron_fluence;
   G4double fTARC_Integral;
+  G4double fTARC_Integral_Eflux_46cm;
   G4double fTARC_Integral_E;
   G4double fTARC_lithium;
   G4double fTARC_lithium_E;
@@ -187,6 +192,8 @@ public:
   G4double fFracBinWidth;
   G4double fEnergy0;
 
+  G4double fIncidentBeamEnergy;
+  G4String  fIncidentBeamParticleName;
 
 private:
   G4String                         fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";

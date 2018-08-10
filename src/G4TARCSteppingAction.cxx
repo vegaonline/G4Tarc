@@ -93,6 +93,15 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
   } else {
     if (fParticleName == "Pb207" || fParticleName == "Pb208")  fEventAction->otherEnergyTime(fParticleEnergy, fParticleTime, fEnergy0);
   }
+
+  if (thisTrackID > 1){
+    if (myTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName() == "neutron"){
+      if ( (myTrack->GetLogicalVolumeAtVertex()->GetName() != "sampleSphere_log") || (myTrack->GetLogicalVolumeAtVertex()->GetName() != "sampleSphere_log")) {
+          fEventAction->ExtraNeutronProcs("init");
+      }
+    }
+  }
+
   G4double radiusPre = myStep->GetPreStepPoint()->GetPosition().mag();
   G4double radiusPost = myStep->GetPostStepPoint()->GetPosition().mag();
   //G4double zPos = myStep->GetPreStepPoint()->GetPosition().z();

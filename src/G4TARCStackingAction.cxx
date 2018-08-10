@@ -1,10 +1,10 @@
 #include "G4TARCStackingAction.hh"
 
 G4TARCStackingAction::G4TARCStackingAction(G4TARCEventAction* thisEvent)
-: G4UserStackingAction(), fHistoManager(0), fStackMessenger(0),
+: G4UserStackingAction(),  fStackMessenger(0),
   fEventAction(thisEvent), fParticle(0) {
   fStackMessenger   = new G4TARCStackingMessenger(this);
-  fHistoManager     = G4TARCHistoManager::GetPointer();
+  //fHistoManager     = G4TARCHistoManager::GetPointer();
   fKillSecondary    = false;
   fKillGammas       = false;
   fNumber_newTracks = 0;
@@ -31,8 +31,9 @@ G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* 
   const G4ParticleDefinition* pd = myTrack->GetDefinition();
   G4String name = pd->GetParticleName();
   G4double ke = myTrack->GetKineticEnergy() / eV;
+  G4cout << ke << G4endl;
   G4int thisTrackID = myTrack->GetTrackID();
-  G4int partType = -99;
+
 
   if (pd == G4Neutron::NeutronDefinition() && thisTrackID != 1) {
     partType = 1;
@@ -78,6 +79,7 @@ G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* 
     ++fOther;
     name = "other";
   }
+  G4cout << " In StackingAction" << G4endl;
 
   //if (pd == G4Neutron::NeutronDefinition() && myTrack->GetTrackID() != 1)
 

@@ -33,16 +33,10 @@ void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
   FillRadialExperimentalData(tarcRun);
   G4int eventN = tarcRun->GetNumberOfEvents();
 
-  G4cout << "Total Number of events: " << eventN << G4endl;
-  G4double ExitFlux = tarcRun->GetExitingFlux();
-  G4double ExitEnergy = tarcRun->GetExitingEnergy();
-  G4double ExitCheckFlux = tarcRun->GetExitingCheckFlux();
-
   if (IsMaster()) {
     NeutronFluxHistogram(eventN, tarcRun);
     RadialFluxHistogram(eventN, tarcRun);
-    G4cout << "Exit flux: " << ExitFlux << ",   Exit Energy: " << ExitEnergy << ",   Exit CheckFlux: " << ExitCheckFlux << G4endl;
-    G4cout << "Integral Neutron Flux at 45.6 cms:  " << tarcRun->fIntegral_flux_46cm << " Integral EFLUX at 45.6 cms:  " << tarcRun->fTARC_Integral_Eflux_46cm << G4endl;
+    ResultSummary(eventN, tarcRun);
   }
 
   auto fAnalysisManager = G4AnalysisManager::Instance();
@@ -118,17 +112,17 @@ void G4TARCRunAction::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("e_parent");
   fAnalysisManager->CreateNtupleIColumn("numgen");
   fAnalysisManager->CreateNtupleIColumn("event");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 0 - filled     : 0
+  fAnalysisManager->FinishNtuple(); // ntupleID: 0
 
   fAnalysisManager->CreateNtuple("h2_N_ET", "Neutron Time");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleDColumn("primary");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 1   : 1
+  fAnalysisManager->FinishNtuple(); // ntupleID: 1
 
   fAnalysisManager->CreateNtuple("h3_N_Exiting", "Neutrons Exiting");
   fAnalysisManager->CreateNtupleDColumn("energy");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 2 - filled     : 2
+  fAnalysisManager->FinishNtuple(); // ntupleID: 2
 
   fAnalysisManager->CreateNtuple("h4_Flux_4002", "Neutrons G4TARC flux");
   fAnalysisManager->CreateNtupleDColumn("energy");     // 0
@@ -243,6 +237,7 @@ void G4TARCRunAction::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("syst_err");
   fAnalysisManager->FinishNtuple(); // ntupleID: 11
 
+/*
   fAnalysisManager->CreateNtuple("h13_Rad_Fluence_Li", "Radial Fluence Li");
   fAnalysisManager->CreateNtupleDColumn("radius");
   fAnalysisManager->CreateNtupleDColumn("energy");
@@ -257,19 +252,12 @@ void G4TARCRunAction::CreateTuples(){
   fAnalysisManager->CreateNtupleDColumn("fluence");
   fAnalysisManager->CreateNtupleDColumn("he_data");
   fAnalysisManager->FinishNtuple(); // ntupleID: 13
-
+*/
   fAnalysisManager->CreateNtuple("h15_Other_ET", "OTHER Time");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleDColumn("primary");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 14              : 4
-
-/*
-  fAnalysisManager->CreateNtuple("h16", "log10(En)");
-  fAnalysisManager->CreateNtupleDColumn("energy");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 15 for neutron
-
-  */
+  fAnalysisManager->FinishNtuple(); // ntupleID: 14  : 12                        after commenting 12 and 13
 
   G4cout << "Ntuples created." << G4endl;
 }
@@ -303,7 +291,7 @@ void G4TARCRunAction::FillRadialExperimentalData(const G4TARCRun* tarcRun){
 
 void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarcRun){
   auto fAnalysisManager = G4AnalysisManager::Instance();
-  G4double fAbsolute_TotalFlux = (tarcRun->fTotalFlux *  1.0e9 / (G4double)fNevents) / (fTestSphereSurfaceArea); // per cm^2
+  //           G4double fAbsolute_TotalFlux = (tarcRun->fTotalFlux *  1.0e9 / (G4double)fNevents) / (fTestSphereSurfaceArea); // per cm^2
   for (G4int ij1 = 0; ij1 < tarcRun->fMaxTestFluxData; ij1++){
     G4double fMeanEnergy   = 0.5 * (tarcRun->fFlux_Energy[ij1 + 1] + tarcRun->fFlux_Energy[ij1]);   // eV
     G4double fAbsFlux      = (tarcRun->fFlux[ij1] *  (1.0e9 / (G4double)fNevents)) / (fTestSphereSurfaceArea);     // per cm^2
@@ -407,18 +395,11 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
     fAnalysisManager->FillNtupleDColumn(5, 11, fAbsLithiumFluenceShell);
     fAnalysisManager->AddNtupleRow(5);
   }
-
-  for (G4int i1 = 0; i1 < tarcRun->fMaxRadCount; i1++){
-    for (G4int i2 = 0; i2 < tarcRun->fMaxRadCount; i2++) {
-      fAnalysisManager->FillNtupleDColumn(13, 0, tarcRun->fRadList[i1]);
-      fAnalysisManager->AddNtupleRow(13);
-    }
-  }
 }
 
-void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* aRun){
+void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* tarcRun){
   auto fAnalysisManager = G4AnalysisManager::Instance();
-  const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
+  //const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
 
   for (G4int ijk1 = 0; ijk1 < fRefShellNumber; ijk1++) {  // ijk1 < fMaxTestFluxData; ijk1++){
     //G4cout << ijk1 << " / " << fRefShellNumber << " RO " << fOuterRadiusofShell[ijk1] << " RI " << fInnerRadiusofShell[ijk1] << "  " << G4endl;
@@ -439,5 +420,64 @@ void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* aRun)
         fAnalysisManager->AddNtupleRow(8);
       }
     }
+  }
+}
+
+void  G4TARCRunAction::ResultSummary(G4int eventN, const G4TARCRun* tarcRun){
+  //const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
+  auto fAnalysisManager = G4AnalysisManager::Instance();
+  std::ofstream trackout ("track.dat", std::ios::out);
+  G4double trVal1 = 0.0, trVal2 = 0.0;
+  G4String enerU1 = "", enerU2 = "";
+
+  G4double ExitFlux = tarcRun->GetExitingFlux();
+  G4double ExitEnergy = tarcRun->GetExitingEnergy();
+  G4double ExitCheckFlux = tarcRun->GetExitingCheckFlux();
+
+  Check10s(tarcRun->fIncidentBeamEnergy/eV , trVal1, enerU1);
+  trackout << "Total Number of events: " << eventN << G4endl;
+  trackout << " Incident Beam particle: " << tarcRun->fIncidentBeamParticleName << "  with incident Beam energy: " << trVal1 << enerU1 << G4endl;
+
+  Check10s(fAnalysisManager->GetH1(1)->mean(), trVal1, enerU1);
+  Check10s(fAnalysisManager->GetH1(1)->rms(), trVal2, enerU2);
+  trackout << "Gamma Edep <MEAN>: " << trVal1 << enerU1 << "  <RMS>: " << trVal2 << enerU2 << G4endl;
+  trackout << "Neutron Lethargy <MEAN>: " << fAnalysisManager->GetH1(2)->mean() << "  <RMS>: " << fAnalysisManager->GetH1(2)->rms() << G4endl;
+
+  Check10s(ExitEnergy, trVal1, enerU1);
+  G4double temp = tarcRun->fTARC_Integral_Eflux_46cm;
+  Check10s(temp, trVal2, enerU2);
+  trackout << "Exit Neutron flux: " << ExitFlux << ",   Exit Energy: " << trVal1 << enerU1 << ",   Exit CheckFlux: " << ExitCheckFlux << G4endl;
+  trackout << "Integral Neutron Flux at 45.6 cms:  " << tarcRun->fIntegral_flux_46cm << " Integral EFLUX at 45.6 cms:  " << trVal2 << enerU2 << G4endl;
+
+  trackout << " Neutron Init " << tarcRun->fNeutronInit <<  G4endl;
+}
+
+
+template <typename T>
+void G4TARCRunAction::Check10s(T inVal, T &outVal, G4String &uniStr){
+  outVal = 0;
+  uniStr = "";
+  G4int iresult = 0;
+  div_t divresult = div(inVal, 1000000000);
+  if (divresult.quot >= 1){
+    iresult = 9;  // unit = Giga
+  } else {
+    divresult = div(inVal, 1000000);
+    if (divresult.quot >=1){
+      iresult = 6;   // Mega
+    } else {
+      divresult = div(inVal, 1000);
+      if (divresult.quot >= 1) {
+        iresult = 3;   // kilo
+      } else {
+        iresult = 1;
+      }
+    }
+  }
+  switch(iresult){
+    case 9: outVal = inVal / 1.0e9; uniStr = " GeV"; break;
+    case 6: outVal = inVal / 1.0e6; uniStr = " MeV"; break;
+    case 3: outVal = inVal / 1.0e3; uniStr = " keV"; break;
+    case 1: outVal = inVal; uniStr = " eV"; break;
   }
 }
