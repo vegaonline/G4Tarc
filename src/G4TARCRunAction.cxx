@@ -429,6 +429,7 @@ void  G4TARCRunAction::ResultSummary(G4int eventN, const G4TARCRun* tarcRun){
   std::ofstream trackout ("track.dat", std::ios::out);
   G4double trVal1 = 0.0, trVal2 = 0.0;
   G4String enerU1 = "", enerU2 = "";
+  G4double xFac = 1.0 / eventN;
 
   G4double ExitFlux = tarcRun->GetExitingFlux();
   G4double ExitEnergy = tarcRun->GetExitingEnergy();
@@ -436,7 +437,7 @@ void  G4TARCRunAction::ResultSummary(G4int eventN, const G4TARCRun* tarcRun){
 
   Check10s(tarcRun->fIncidentBeamEnergy/eV , trVal1, enerU1);
   trackout << "Total Number of events: " << eventN << G4endl;
-  trackout << " Incident Beam particle: " << tarcRun->fIncidentBeamParticleName << "  with incident Beam energy: " << trVal1 << enerU1 << G4endl;
+  trackout << "Incident Beam particle: " << tarcRun->fIncidentBeamParticleName << "  with beam energy: " << trVal1 << enerU1 << G4endl;
 
   Check10s(fAnalysisManager->GetH1(1)->mean(), trVal1, enerU1);
   Check10s(fAnalysisManager->GetH1(1)->rms(), trVal2, enerU2);
@@ -446,10 +447,29 @@ void  G4TARCRunAction::ResultSummary(G4int eventN, const G4TARCRun* tarcRun){
   Check10s(ExitEnergy, trVal1, enerU1);
   G4double temp = tarcRun->fTARC_Integral_Eflux_46cm;
   Check10s(temp, trVal2, enerU2);
-  trackout << "Exit Neutron flux: " << ExitFlux << ",   Exit Energy: " << trVal1 << enerU1 << ",   Exit CheckFlux: " << ExitCheckFlux << G4endl;
-  trackout << "Integral Neutron Flux at 45.6 cms:  " << tarcRun->fIntegral_flux_46cm << " Integral EFLUX at 45.6 cms:  " << trVal2 << enerU2 << G4endl;
+  trackout << "Integral Neutron Flux at 45.6 cms:  " << tarcRun->fIntegral_flux_46cm * xFac << " Integral EFLUX at 45.6 cms:  " << trVal2 << enerU2 << G4endl;
 
-  trackout << " Neutron Init " << tarcRun->fNeutronInit <<  G4endl;
+  trackout << "********** Some Important parameters per event  ***************" <<G4endl;
+  trackout << std::setprecision(4) << "   Average Number of protons: "     << tarcRun->fProton_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of Anti-protons: "     << tarcRun->fAntiProton_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of gammas: "  << tarcRun->fGamma_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of electrons: " << tarcRun->fElectron_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of positrons: " << tarcRun->fPositron_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of neutrons: "  << tarcRun->fNeutron_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Neutron flux exited: " << ExitFlux * xFac << "  having  Exiting Energy: " << trVal1 << enerU1 << G4endl;
+  trackout << std::setprecision(4) << "   Average Exiting Neutron CheckFlux: " << ExitCheckFlux * xFac<< G4endl;
+  trackout << std::setprecision(4) << "   Average Number of muons: "     << tarcRun->fMuon_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of Pi+: "     << tarcRun->fPiPlus_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of Pi-: "     << tarcRun->fPiMinus_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of Pi0: "     << tarcRun->fPiZero_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of Alpha: "     << tarcRun->fAlpha_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of He3: "     << tarcRun->fHe3_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of Deuterons: "     << tarcRun->fDeuteron_flux * xFac << G4endl;
+  trackout << std::setprecision(4) << "   Average Number of Tritons: "     << tarcRun->fTriton_flux * xFac << G4endl;
+
+  trackout << " Neutron Init " << tarcRun->fNeutronInit * xFac <<  G4endl;
+  trackout << G4endl;
+  trackout.close();
 }
 
 
@@ -458,22 +478,21 @@ void G4TARCRunAction::Check10s(T inVal, T &outVal, G4String &uniStr){
   outVal = 0;
   uniStr = "";
   G4int iresult = 0;
-  div_t divresult = div(inVal, 1000000000);
-  if (divresult.quot >= 1){
+
+  if (inVal / 1000000000 >= 1){
     iresult = 9;  // unit = Giga
   } else {
-    divresult = div(inVal, 1000000);
-    if (divresult.quot >=1){
+    if (inVal / 1000000 >= 1){
       iresult = 6;   // Mega
     } else {
-      divresult = div(inVal, 1000);
-      if (divresult.quot >= 1) {
+      if (inVal / 1000 >= 1) {
         iresult = 3;   // kilo
       } else {
         iresult = 1;
       }
     }
   }
+
   switch(iresult){
     case 9: outVal = inVal / 1.0e9; uniStr = " GeV"; break;
     case 6: outVal = inVal / 1.0e6; uniStr = " MeV"; break;

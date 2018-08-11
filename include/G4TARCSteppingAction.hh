@@ -14,16 +14,32 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
+
+#include "G4VPhysicalVolume.hh"
+#include "G4Navigator.hh"
+#include "G4TransportationManager.hh"
+#include "G4VProcess.hh"
+#include "G4ProcessVector.hh"
+#include "G4ProcessManager.hh"
+#include "G4HadronicProcess.hh"
+#include "G4HadronCrossSections.hh"
+
 #include "globals.hh"
 #include <map>
 
-// #include "G4TARCParallelWorld.hh"
+#include "G4TARCParallelWorld.hh"
 #include "G4TARCEventAction.hh"
-// #include "G4TARCRunAction.hh"
+#include "G4TARCDetectorConstruction.hh"
+#include "G4TARCRunAction.hh"
 
+class G4Navigator;
+class G4Track;
+class G4Element;
+class G4ParticleDefinition;
 class G4TARCEventAction;
-//class G4TARCParallelWorld;
-//class G4G4TARCRunAction;
+class G4TARCParallelWorld;
+class G4TARCRunAction;
+class G4TARCDetectorConstruction;
 
 class G4TARCSteppingAction : public G4UserSteppingAction {
 public:
@@ -33,6 +49,7 @@ public:
   virtual void UserSteppingAction(const G4Step*);
   void ProcessStepping(const G4Step*);
   void ReadExperimentalDataFromFile(G4String& );
+
 
 
 private:

@@ -12,6 +12,7 @@
 #include "G4ProcessVector.hh"
 #include "G4ProcessManager.hh"
 #include "G4HadronicProcess.hh"
+#include "G4HadronInelasticProcess.hh"
 #include "G4HadronCrossSections.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
@@ -35,6 +36,7 @@ class G4ParticleDefinition;
 class G4Navigator;
 class G4Element;
 
+
 class G4TARCStackingAction : public G4UserStackingAction {
 public:
   G4TARCStackingAction(G4TARCEventAction*);
@@ -44,6 +46,7 @@ public:
   void SetKill(const G4String&);
   inline void SetKillGammas(G4bool val)  { fKillGammas = val; }
   virtual G4ClassificationOfNewTrack ClassfyNewTrack(const G4Track*);
+  void DumpCS(const G4ParticleDefinition*, const G4Element*);
 
 
 private:

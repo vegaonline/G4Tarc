@@ -79,6 +79,27 @@ G4ClassificationOfNewTrack G4TARCStackingAction::ClassfyNewTrack(const G4Track* 
     ++fOther;
     name = "other";
   }
+
+  if (name == "neutron"){
+    G4Material* matTest = 0;
+    const G4Element* eleTest = 0;
+    G4VPhysicalVolume* pvol = 0;
+    G4LogicalVolume* lvol = 0;
+    G4String lvName = "";
+    const G4VTouchable* touchabletest = myTrack->GetTouchable();
+    if (touchabletest) pvol = touchabletest->GetVolume();
+    if (pvol) lvol = pvol->GetLogicalVolume();
+    if (lvol) lvName = lvol->GetName();    // sampleSphere_log  sampleSphere_log2
+    if (lvName == "sampleSphere_log" || lvName == "sampleSphere_log2") matTest = lvol->GetMaterial();
+    if (matTest){
+      //G4cout << matTest->GetNumberOfElements() << G4endl;
+      eleTest = matTest->GetElement(0);
+      //G4cout << lvName << "    " << eleTest->GetName() << G4endl;
+    }
+    DumpCS(pd, eleTest);
+  }
+
+
   G4cout << " In StackingAction" << G4endl;
 
   //if (pd == G4Neutron::NeutronDefinition() && myTrack->GetTrackID() != 1)
@@ -178,4 +199,32 @@ void G4TARCStackingAction::SetKillStatus( G4bool value ) {
 
 void G4TARCStackingAction::SetKill( const G4String& name ) {
   fParticle = G4ParticleTable::GetParticleTable()->FindParticle(name);
+}
+
+
+void G4TARCStackingAction::DumpCS(const G4ParticleDefinition* fParticleType, const G4Element* fElement){
+  std::ofstream csFile;
+  csFile.open("csTc99.dat", std::ios::app);
+  G4ProcessManager* procManager = fParticleType->GetProcessManager();
+  G4ProcessVector* procLists = procManager->GetProcessList();
+  for (G4int iProc = 0; iProc < procLists->size(); iProc++){
+    //  G4cout << iProc << "    " << (*procLists)[iProc]->GetProcessType() << "    " << (*procLists)[iProc]->GetProcessName() << G4endl;
+    if ((*procLists)[iProc]->GetProcessType() == 4) {  // IonInelastic:4  RadioActiveDecay : 6    msc : 2   coupledtransportation : 1
+      G4double fParticleMass = fParticleType->GetPDGMass();
+      G4double fParticleTestProcEnergy = 0.0;
+      G4HadronicProcess* hadProc = static_cast<G4HadronicProcess*>((*procLists)[iProc]);
+      for (G4double mom = 10.0 * keV, fParticleTestProcEnergy = std::sqrt(sqr(fParticleMass) + sqr(mom));
+            fParticleTestProcEnergy < 1.0 * GeV;
+            mom *= 10.0, fParticleTestProcEnergy = std::sqrt(sqr(fParticleMass) + sqr(mom))) {
+              const G4DynamicParticle* fDynPart = new G4DynamicParticle(fParticleType, G4ThreeVector(1, 0, 0), fParticleTestProcEnergy - fParticleMass);
+
+              G4double cross_section = hadProc->GetMicroscopicCrossSection(fDynPart, fElement);   //, 293.0);
+              //G4double cs_lhep = (G4HadronCrossSections::Instance())->GetInelasticCrossSection(fDynPart, fElement, 293.0);
+              csFile << mom / MeV << "      " << cross_section * 1000.0 / barn << G4endl;   // "    " << cs_lhep * 10000.0 / barn << G4endl;
+
+              delete fDynPart;
+      }
+    }
+  }
+  csFile.close();
 }

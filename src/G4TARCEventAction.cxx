@@ -25,23 +25,6 @@ void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
 
   //if (fEventID % fPrintModulo == 0)
   G4cout << "     Begin of Event:  " << fEventID << G4endl;
-
-/*
-  if ( fSelected > 0 ){
-    for (G4int i = 0; i < fSelected; ++i ) {
-      if ( nEvt == fSelectedEvents[i] ){
-        fUITARC->ApplyCommand("/random/saveThisEvent");
-        fUITARC->ApplyCommand("/tracking/verbose 2");
-        fDebugStarted = true;
-        break;
-      }
-    }
-  }
-  if ( G4int( nEvt / fPrintModulo ) * fPrintModulo == nEvt ){
-    G4cout << "EventAction: Event # " << nEvt << " started "  << G4endl;
-  }
-  fHisto->BeginOfEvent(nEvt);
-*/
 }
 
 void G4TARCEventAction::EndOfEventAction( const G4Event*  thisEvent) {
@@ -104,7 +87,17 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
   } else if(nameL == "mu+") {
     thisRun->AddFlux(nameL);
     Iparticle = 10;
-  } else {
+  } else if (nameL == "anti_proton") {
+    thisRun->AddFlux(nameL);
+  } else if (nameL == "alpha"){
+    thisRun->AddFlux(nameL);
+  }  else if (nameL == "He3"){
+    thisRun->AddFlux(nameL);
+  } else if (nameL == "deuteron"){
+    thisRun->AddFlux(nameL);
+  } else if (nameL == "triton"){
+    thisRun->AddFlux(nameL);
+  }else  {
     thisRun->AddFlux("other");
     Iparticle = 99;
     return;
@@ -119,9 +112,13 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
   else if (parentParticleL == "pi0")     iParent = 6;
   else if (parentParticleL == "e+")      iParent = 7;
   else if (parentParticleL == "proton")  iParent = 8;
-  else if (parentParticleL == "proton")  iParent = 8;
+  else if (parentParticleL == "anti_proton")  iParent = 8;
   else if (parentParticleL == "mu-")     iParent = 9;
   else if (parentParticleL == "mu+")     iParent = 10;
+  else if (parentParticleL == "alpha")     iParent = 11;
+  else if (parentParticleL == "He3")     iParent = 12;
+  else if (parentParticleL == "deuteron")     iParent = 13;
+  else if (parentParticleL == "triton")     iParent = 14;
 
   fAnalysisManager->FillNtupleDColumn(0,0, temp_energy);
   fAnalysisManager->FillNtupleDColumn(0,1, temp_time);

@@ -166,7 +166,13 @@ public:
   G4int fPiZero_flux;
   G4int fPositron_flux;
   G4int fProton_flux;
+  G4int fAntiProton_flux;
+  G4int fDeuteron_flux;
+  G4int fTriton_flux;
+  G4int fAlpha_flux;
+  G4int fHe3_flux;
   G4int fMuon_flux;
+  G4int fNucleii_flux;
   G4int fOther_flux;
   G4int fDuplicate_neutrons;
   G4int fOldTrackID;
