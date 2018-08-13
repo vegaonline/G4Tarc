@@ -79,10 +79,12 @@ void G4TARCRun::initVectors() {
   fFluence.resize(fMaxFluenceTable, std::vector<G4double>(fMaxEBin, 0.0));
   fFluence_Step.resize(fMaxTestFluxData, 0.0);
   fFluence_Step_Shell.resize(fMaxTestFluxData, 0.0);
+  fFluence_Step_Cyl.resize(fMaxTestFluxData, 0.0);
   fFluence_Cyl.resize(fMaxTestFluxData, 0.0);
 
   fLow_Fluence_Step.resize(fMaxFluenceData, 0.0);
   fLow_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+  fLow_Fluence_Cyl.resize(fMaxFluenceData, 0.0);
 
   fFlux_He3.resize((fMaxTestFluxData+fMaxFluxData), 0.0);
   fFlux_Low.resize((fMaxTestFluxData+fMaxFluxData), 0.0);
@@ -539,9 +541,6 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
     }
 }
 
-
-
-
 void G4TARCRun::Merge(const G4Run* thisRun) {
   const G4TARCRun *localRun = static_cast<const G4TARCRun *> (thisRun);
   G4int fNColl = localRun->fCollID.size();
@@ -567,7 +566,7 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
   fTARC_Integral_Eflux_46cm += localRun->fTARC_Integral_Eflux_46cm;
   fTotalFlux                += localRun->fTotalFlux;
 
-  for (G4int ii = 0; ii < (fMaxRadCount + fMaxTestFluxData); ii++) {
+  for (G4int ii = 0; ii < (fMaxTestFluxData); ii++) {
     fFlux[ii]                          += localRun->fFlux[ii];
     fCos_Flux[ii]                  += localRun->fCos_Flux[ii];
     fFluence_Step[ii]            += localRun->fFluence_Step[ii];
@@ -586,6 +585,7 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
     fLithium_Flux[ii]          += localRun->fLithium_Flux[ii];
     fCos_Lithium_Flux[ii]  += localRun->fCos_Lithium_Flux[ii];
     fLithium_Fluence_Step[ii] += localRun->fLithium_Fluence_Step[ii];
+
 
     for (G4int i = 0; i < fMaxRadCount; i++){
       for (G4int j = 0; j < fRefShellNumber; j++) {

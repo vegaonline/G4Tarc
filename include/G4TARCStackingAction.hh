@@ -44,9 +44,9 @@ public:
 
   void SetKillStatus(G4bool);
   void SetKill(const G4String&);
-  inline void SetKillGammas(G4bool val)  { fKillGammas = val; }
+  inline void SetKillGammasFlag(G4bool val)  { fKillGammas = val; }
   virtual G4ClassificationOfNewTrack ClassfyNewTrack(const G4Track*);
-  void DumpCS(const G4ParticleDefinition*, const G4Element*);
+  virtual void PrepareNewEvent() {};
 
 
 private:

@@ -7,11 +7,21 @@
 
 G4TARCRunAction::G4TARCRunAction() : G4UserRunAction() {
   //    auto fAnalysisManager = G4AnalysisManager::Instance();
-  DefineShellBlocks();
-  if (!fHistoBooked){
-    BookHistogram();
-    CreateTuples();
+  #ifdef G$MULTITHREADED
+  if (IsMaster()){
+  	DefineShellBlocks();
+  	if (!fHistoBooked){
+    	BookHistogram();
+    	CreateTuples();
+  	}
   }
+  #else
+  	DefineShellBlocks();
+  	if (!fHistoBooked){
+    	BookHistogram();
+    	CreateTuples();
+  	}
+  #endif
 }
 
 G4TARCRunAction::~G4TARCRunAction() {
@@ -30,18 +40,25 @@ void G4TARCRunAction::BeginOfRunAction(const G4Run* thisRun){
 
 void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
   const G4TARCRun*  tarcRun = static_cast<const G4TARCRun*>(thisRun);
-  FillRadialExperimentalData(tarcRun);
   G4int eventN = tarcRun->GetNumberOfEvents();
+  auto fAnalysisManager = G4AnalysisManager::Instance();
 
   if (IsMaster()) {
+  G4cout << " In IsMaster" << G4endl;
+  	FillRadialExperimentalData(tarcRun);
+	G4cout << "NeutronFluxHisto begins" << G4endl;
     NeutronFluxHistogram(eventN, tarcRun);
+	G4cout << "NeutronFluxHisto ends" << G4endl;
+	G4cout << "RadialFluxHisto begins" << G4endl;
     RadialFluxHistogram(eventN, tarcRun);
+	G4cout << "RadialFluxHisto ends" << G4endl;
+	G4cout << "Result Summary begins" << G4endl;
     ResultSummary(eventN, tarcRun);
-  }
-
-  auto fAnalysisManager = G4AnalysisManager::Instance();
+	G4cout << "Result Summary ends" << G4endl;
   fAnalysisManager->Write();
   fAnalysisManager->CloseFile();
+  }
+
 }
 
 
@@ -74,25 +91,25 @@ void G4TARCRunAction::BookHistogram() {
   fHistoBooked = true;
   fAnalysisManager->SetFirstHistoId(1);
   //1
-  fAnalysisManager->CreateH1("Gamma","Gamma Edep (eV)", 2e3, 1.0e5, 5e8);  // 0:
+  fAnalysisManager->CreateH1("Gamma","Gamma Edep (eV)", 2e4, 1.0e3, 1e9);  // 0:
   //2
-  fAnalysisManager->CreateH1("NeutronEnergy","Neutron energy (eV) vs. 1/mom /eV", 5e3, 1.0e5, 1.0e9); // , 0.0, 50.0);  // 100000, 0., 1000000.);
+  fAnalysisManager->CreateH1("NeutronEnergy","Neutron energy (eV) vs. 1/mom /eV", 5e3, 1.0e5, 5.0e9); // , 0.0, 50.0);  // 100000, 0., 1000000.);
   //3
   fAnalysisManager->CreateH1("ElectronEdep","Electron Edep (eV)", 2e3, 1.0e4, 1.0e7);
   //4
-  fAnalysisManager->CreateH1("PositronEdep","Positron Edep (keV)", 2e2, 10.0, 6.0e7);
+  fAnalysisManager->CreateH1("PositronEdep","Positron Edep (keV)", 2e2, 10.0, 4.0e8);
   //5
-  fAnalysisManager->CreateH1("OtherEdep","Other Edep (eV)", 1e3, 1.0e6, 5.0e9);
+  fAnalysisManager->CreateH1("OtherEdep","Other Edep (eV)", 1e4, 1.0e6, 5.0e9);
   //6
-  fAnalysisManager->CreateH1("ParticleStack","Particle Stack", 50, 0.0, 1e9);
+  fAnalysisManager->CreateH1("ParticleStack","Particle Stack", 1e3, 0.0, 1e9);
   //7
-  fAnalysisManager->CreateH1("NeutronPerEvent","Neutrons/event", 30, 0.0, 1e5);
+  fAnalysisManager->CreateH1("NeutronPerEvent","Neutrons/event", 5e2, 0.0, 1e5);
   //8
-  fAnalysisManager->CreateH1("ProtonPerEvent","Protons/event", 50, 0.0, 30.0);
+  fAnalysisManager->CreateH1("ProtonPerEvent","Protons/event", 5e2, 0.0, 30.0);
   //9
-  fAnalysisManager->CreateH2("NeutronET","log(Neutron Energy <eV>) vs. log(Time <us> )", 50, -2, 4, 50, -3, 7); // H2:1
+  fAnalysisManager->CreateH2("NeutronET","log(Neutron Energy <eV>) vs. log(Time <us> )", 1e2, -2, 4, 1e2, -4, 7); // H2:1
   //10
-  fAnalysisManager->CreateH2("OtherPartET","log(OTHER particle Energy <eV>) vs. log(Time <us>)", 50, -3.0, 4.0, 50, -4.0, 6.0); // H2:2
+  fAnalysisManager->CreateH2("OtherPartET","log(OTHER particle Energy <eV>) vs. log(Time <us>)", 1e2, -3.0, 4.0, 1e2, -4.5, 6.0); // H2:2
   //11
   //fAnalysisManager->CreateH2("NeutronCapture", "Neutron Capture / 10^9 p", 700, 0, 10000, 400, 0, 1e9);  //H2:3
   G4cout << "BookHisto in RunAction done." << G4endl;
@@ -425,15 +442,18 @@ void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* tarcR
 
 void  G4TARCRunAction::ResultSummary(G4int eventN, const G4TARCRun* tarcRun){
   //const G4TARCRun* tarcRun = static_cast<const G4TARCRun*>(aRun);
+  G4cout << " In RS : 437" << G4endl;
   auto fAnalysisManager = G4AnalysisManager::Instance();
   std::ofstream trackout ("track.dat", std::ios::out);
   G4double trVal1 = 0.0, trVal2 = 0.0;
   G4String enerU1 = "", enerU2 = "";
   G4double xFac = 1.0 / eventN;
 
+  G4cout << " In RS : 444" << G4endl;
   G4double ExitFlux = tarcRun->GetExitingFlux();
+  G4cout << " In RS : 446" << G4endl;
   G4double ExitEnergy = tarcRun->GetExitingEnergy();
-  G4double ExitCheckFlux = tarcRun->GetExitingCheckFlux();
+  //G4double ExitCheckFlux = tarcRun->GetExitingCheckFlux();
 
   Check10s(tarcRun->fIncidentBeamEnergy/eV , trVal1, enerU1);
   trackout << "Total Number of events: " << eventN << G4endl;
@@ -457,7 +477,7 @@ void  G4TARCRunAction::ResultSummary(G4int eventN, const G4TARCRun* tarcRun){
   trackout << std::setprecision(4) << "   Average Number of positrons: " << tarcRun->fPositron_flux * xFac << G4endl;
   trackout << std::setprecision(4) << "   Average Number of neutrons: "  << tarcRun->fNeutron_flux * xFac << G4endl;
   trackout << std::setprecision(4) << "   Average Neutron flux exited: " << ExitFlux * xFac << "  having  Exiting Energy: " << trVal1 << enerU1 << G4endl;
-  trackout << std::setprecision(4) << "   Average Exiting Neutron CheckFlux: " << ExitCheckFlux * xFac<< G4endl;
+  //trackout << std::setprecision(4) << "   Average Exiting Neutron CheckFlux: " << ExitCheckFlux * xFac<< G4endl;
   trackout << std::setprecision(4) << "   Average Number of muons: "     << tarcRun->fMuon_flux * xFac << G4endl;
   trackout << std::setprecision(4) << "   Average Number of Pi+: "     << tarcRun->fPiPlus_flux * xFac << G4endl;
   trackout << std::setprecision(4) << "   Average Number of Pi-: "     << tarcRun->fPiMinus_flux * xFac << G4endl;

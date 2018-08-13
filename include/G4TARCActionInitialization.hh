@@ -15,6 +15,10 @@
 #include "G4TARCSteppingAction.hh"
 #include "G4TARCStackingAction.hh"
 
+class G4TARCRunAction;
+class G4TARCEventAction;
+class G4TARCDetectorConstruction;
+
 class G4TARCDetectorConstruction;
 //class G4VSteppingVerbose;
 
@@ -31,6 +35,7 @@ public:
 
 private:
   G4TARCDetectorConstruction* fGeomConstruct;
+  G4TARCRunAction* const fMasterRunAction;
 };
 
 #endif

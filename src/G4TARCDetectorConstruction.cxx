@@ -125,7 +125,7 @@ void G4TARCDetectorConstruction::addTransU(){
 
   //  99Tc
   atMass = 98.906254 * g / mole;
-  atNum = 43.0;
+  atNum = 43;
   nNucleons = 99;
   density = 11.0 * g / cm3;
   G4Isotope* Tc99Iso = new G4Isotope("Tc", atNum, nNucleons, atMass);

@@ -22,6 +22,7 @@
 #include "G4ProcessVector.hh"
 #include "G4ProcessManager.hh"
 #include "G4HadronicProcess.hh"
+#include "G4HadronInelasticProcess.hh"
 #include "G4HadronCrossSections.hh"
 
 #include "globals.hh"
@@ -49,7 +50,7 @@ public:
   virtual void UserSteppingAction(const G4Step*);
   void ProcessStepping(const G4Step*);
   void ReadExperimentalDataFromFile(G4String& );
-
+  void DumpCS(const G4ParticleDefinition*, const G4Element*, const G4Material*);
 
 
 private:
