@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
   #endif
 
   auto scoreManager = G4ScoringManager::GetScoringManager();
-  scoreManager->SetVerboseLevel(0);
+  scoreManager->SetVerboseLevel(1);
 
   G4String fileName = argv[1];
 
@@ -167,7 +167,6 @@ int main(int argc, char** argv) {
   }
   if (!phys) { phys = new G4TARCPhysicsList(); }
   phys->RegisterPhysics(new G4ImportanceBiasing(&pgsN, parallelWorldName));
-  //phys->RegisterPhysics(new G4ImportanceBiasing(&pgsP, parallelWorldName));
   phys->RegisterPhysics(new G4ParallelWorldPhysics(parallelWorldName));
 
   runManager->SetUserInitialization(phys);      // RUNMANAGER for Physics List
@@ -206,11 +205,12 @@ int main(int argc, char** argv) {
     G4String command = "/control/execute ";
     UImanager->ApplyCommand(command + macro);
   } else {
+    UImanager->ApplyCommand("/control/execute vis.mac");
     #ifdef G4UI_USE
       G4UIExecutive* ui = new G4UIExecutive(argc, argv, session);
-      ui->SessionStart();
-      delete ui;
     #endif
+    ui->SessionStart();
+    delete ui;
   }
 
   G4GeometryManager::GetInstance()->OpenGeometry();
@@ -219,9 +219,10 @@ int main(int argc, char** argv) {
   //termination of job
   #ifdef G4VIS_USE
     delete visManager;
+	G4cout << "Vis manager deleted" << G4endl;
   #endif
-  delete runManager;
-  //delete physMess;
+  // delete runManager;
+  G4cout << "run manager deleted" << G4endl;
 
   return 0;
 }

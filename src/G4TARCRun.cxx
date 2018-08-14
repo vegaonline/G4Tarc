@@ -8,6 +8,7 @@
 #include "G4TARCRun.hh"
 
 G4TARCRun::G4TARCRun() : G4Run() {
+  G4SDManager* SDMan = G4SDManager::GetSDMpointer();
   ReadExperimentalDataFromFile(fExptlDataFileName);
   initVectors();
   StartProcessing();
@@ -105,6 +106,33 @@ void G4TARCRun::initVectors() {
   fLithium_Radial_Energy_Upper.resize(fMaxRadCount, 0.0);
   fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
   fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
+
+  G4String fDetname[2]       =  {"TARCSD", "TARCSDSRC"};
+  G4String fParaname[2]      =  {"TARCSDP", "TARCSDSRCP"};
+  G4String fPrimeNameSum[16] =  {"eDep", "nNeutron", "nGamma", "nElectron", "nPositron", "nProton", "nAntiProton", "nPiPlus", "nPiMinus", "nPiZero", "nMuPLus", "nMuMinus", "nDeuteron", "nTriton", "nAlpha", "nHe3"};
+/*
+  G4SDManager* SDMan = G4SDManager::GetSDMpointer();
+  G4int fDetNum = 2;
+  G4int fPrimeSumNum = 16;
+  G4int fParaNum = 2;
+  fColIDSum.resize(fPrimeSumNum, std::vector<G4int>(fDetNum, 0));
+  fColIDPara.resize(fPrimeSumNum, std::vector<G4int>(fParaNum, 0));
+
+  for (G4int i = 0; i < fDetNum; i++) {
+    for (G4int j = 0; j < fPrimeSumNum; j++) {
+      fullName = fDetname[i] + "/" + fPrimeNameSum[j];
+      G4cout << "--------> " << fullName << G4endl;
+      fColIDSum[i][j] = SDMan->GetCollectionID(fullName);
+    }
+  }
+
+  for (G4int i = 0; i < fParaNum; i++) {
+    for (G4int j = 0; j < fPrimeSumNum; j++){
+      fullName = fParaname[i] + "/" + fPrimeNameSum[j];
+      fColIDPara[i][j] = SDMan->GetCollectionID(fullName);
+    }
+  }
+  */
 }
 
 void G4TARCRun::StartProcessing(){
@@ -357,9 +385,29 @@ void G4TARCRun::RecordEvent(const G4Event* thisEvent) {
   ++fNevt;
   G4HCofThisEvent* HCE = thisEvent->GetHCofThisEvent();
   if (!HCE) return;
+  ++fNevt;
+  G4int fDetNum = 2;
+  G4int fPrimeSumNum = 16;
+  G4int fParaNum = 2;
   //=======================================================
   // Sum up HitsMap of this Event  into HitsMap of this RUN
   //=======================================================
+  /*
+  for (G4int i = 0; i <  fDetNum; i++) {
+    for (G4int j = 0; j <  fPrimeSumNum; j++) {
+      G4THitsMap<G4double>* EvtMap = (G4THitsMap<G4double>*)(HCE->GetHC(fColIDSum[i][j]));
+      fRunMapSum[i][j] += *EvtMap;
+    }
+  }
+
+  for (G4int i = 0; i <  fParaNum; i++) {
+    for (G4int j = 0; j <  fPrimeSumNum; j++) {
+      G4THitsMap<G4double>* EvtMap = (G4THitsMap<G4double>*)(HCE->GetHC(fColIDPara[i][j]));
+      fRunMapPara[i][j] += *EvtMap;
+    }
+  }
+*/
+
   G4int Ncol = fCollID.size();
   for ( G4int i = 0; i < Ncol ; i++ ){  // Loop over HitsCollection
     G4THitsMap<G4double>* EvtMap=0;
@@ -374,17 +422,26 @@ void G4TARCRun::RecordEvent(const G4Event* thisEvent) {
       //======================================================
     }
   }
+
+}
+
+G4double G4TARCRun::GetTotal(const G4THitsMap<G4double> &map) const {
+  G4double tot = 0;
+  if (map.GetSize() == 0) return tot;
+  std::map<G4int, G4double*>::iterator itr = map.GetMap()->begin();
+  for (; itr!= map.GetMap()->end(); itr++) {tot += *(itr->second);}
+  return tot;
 }
 
 G4THitsMap<G4double>* G4TARCRun::GetHitsMap(const G4String& detName, const G4String& colName){
-  G4String fullName = detName+"/"+colName;
-  return GetHitsMap(fullName);
+  G4String fThisfullName = detName+"/"+colName;
+  return GetHitsMap(fThisfullName);
 }
 
-G4THitsMap<G4double>* G4TARCRun::GetHitsMap(const G4String& fullName){
+G4THitsMap<G4double>* G4TARCRun::GetHitsMap(const G4String& fThisfullName){
   G4int NCol = fCollName.size();
   for (G4int i = 0; i < NCol; i++) {
-    if (fCollName[i] == fullName) return fRunMap[i];
+    if (fCollName[i] == fThisfullName) return fRunMap[i];
   }
   return NULL;
 }
@@ -543,10 +600,25 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
 
 void G4TARCRun::Merge(const G4Run* thisRun) {
   const G4TARCRun *localRun = static_cast<const G4TARCRun *> (thisRun);
+/*
+  for (G4int i = 0; i < 2; i++) {
+    for (G4int j = 0; j < 16; j++) {
+      fRunMapSum[i][j] += localRun->fRunMapSum[i][j];
+    }
+  }
+
+  for (G4int i = 0; i < 2; i++) {
+    for (G4int j = 0; j < 16; j++) {
+      fRunMapPara[i][j] += localRun->fRunMapPara[i][j];
+    }
+  }
+*/
   G4int fNColl = localRun->fCollID.size();
+  G4cout << " fNColl---------------------> " << fNColl << G4endl;
   for (G4int ii = 0; ii < fNColl; ii++) {
     if (localRun->fCollID[ii] >= 0)    *fRunMap[ii] += *localRun->fRunMap[ii];
   }
+  fNevt                   += localRun->fNevt;
   fExiting_Flux            += localRun->fExiting_Flux;
   fExiting_Energy        += localRun->fExiting_Energy;
   fExiting_check_Flux += localRun->fExiting_check_Flux;

@@ -7,21 +7,13 @@
 
 G4TARCRunAction::G4TARCRunAction() : G4UserRunAction() {
   //    auto fAnalysisManager = G4AnalysisManager::Instance();
-  #ifdef G$MULTITHREADED
-  if (IsMaster()){
-  	DefineShellBlocks();
-  	if (!fHistoBooked){
-    	BookHistogram();
-    	CreateTuples();
-  	}
+  /*
+  DefineShellBlocks();
+  if (!fHistoBooked){
+    BookHistogram();
+    CreateTuples();
   }
-  #else
-  	DefineShellBlocks();
-  	if (!fHistoBooked){
-    	BookHistogram();
-    	CreateTuples();
-  	}
-  #endif
+  */
 }
 
 G4TARCRunAction::~G4TARCRunAction() {
@@ -34,13 +26,21 @@ G4Run* G4TARCRunAction::GenerateRun() {
 
 void G4TARCRunAction::BeginOfRunAction(const G4Run* thisRun){
   G4cout << " Run # " << thisRun->GetRunID() << " starts. " << G4endl;
-  G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
-  fAnalysisManager->OpenFile(fAnalysisFileName);
+  if (IsMaster()){
+      DefineShellBlocks();
+  if (!fHistoBooked){
+    BookHistogram();
+    CreateTuples();
+  }
+    G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+    fAnalysisManager->OpenFile(fAnalysisFileName);
+  }
 }
 
 void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
   const G4TARCRun*  tarcRun = static_cast<const G4TARCRun*>(thisRun);
   G4int eventN = tarcRun->GetNumberOfEvents();
+
   auto fAnalysisManager = G4AnalysisManager::Instance();
 
   if (IsMaster()) {
@@ -56,9 +56,11 @@ void G4TARCRunAction::EndOfRunAction(const G4Run* thisRun) {
     ResultSummary(eventN, tarcRun);
 	G4cout << "Result Summary ends" << G4endl;
   fAnalysisManager->Write();
+  G4cout << "Root file written" << G4endl;
   fAnalysisManager->CloseFile();
+  G4cout << "Root file closed." << G4endl;
   }
-
+G4cout << "END" << G4endl;
 }
 
 

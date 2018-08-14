@@ -21,6 +21,8 @@
 #include <vector>
 #include <regex>
 
+class G4SDManager;
+
 class G4TARCRun : public G4Run {
 
 public:
@@ -50,12 +52,13 @@ public:
   void NeutronExtraCalc(const G4String&);
 
   virtual void RecordEvent(const G4Event*);
+  virtual void Merge(const G4Run*);
+
   G4int GetNumberOfHitsMap()  const                                {return fRunMap.size();}
   G4THitsMap<G4double>* GetHitsMap(G4int idx)          {return fRunMap[idx];}
   G4THitsMap<G4double>* GetHitsMap(const G4String& detName, const G4String& colName);
   G4THitsMap<G4double>* GetHitsMap(const G4String& fullName);
   void DumpAllScorer(){};
-  virtual void Merge(const G4Run*);
 
   void AddFlux(const G4String&);
   void analyseNeutronFlux(G4double, G4int, G4double, G4double,  G4String&);
@@ -63,13 +66,19 @@ public:
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analyseNeutronFluence(G4double, G4double );
 
+  G4double GetParaValue(G4int i, G4int j, G4int k) const { G4double *p = fRunMapPara[i][j][k]; if (p) return *p; return 0.0;}
+
+private:
+  G4double GetTotal(const G4THitsMap<G4double> &) const;
+
 public:
   G4bool flag;
   std::vector<G4double>                  fRadiusReference {200.0 * cm, 190.0 * cm, 185.0 * cm, 175.0 * cm, 165.0 * cm, 150.0 * cm,
     140.0 * cm, 130.0 * cm, 120.0 * cm, 110.0 * cm, 100.0 * cm, 90.0 * cm, 80.0 * cm, 70.0 * cm, 60.0 * cm, 50.0 * cm, 45.7 * cm,
     40.0 * cm, 30.0 * cm, 25.0 * cm, 20.0 * cm, 15.0 * cm, 10.0 * cm, 8.0 * cm, 5.0 * cm, 3.0 * cm};
 
-  std::vector< G4double>                         fExptEnergyBin;
+
+  std::vector<G4double>                          fExptEnergyBin;
   std::vector<G4double>                          fRadList;
 
   std::vector<G4double>                          fFlux_Low;
@@ -206,12 +215,14 @@ private:
   std::vector<G4int>         fFluxTableList {36, 38};
   unsigned                         fMeanEnergyTable = 40;
   std::vector<G4double>  fMeanEnergyT40List;
+  G4String fullName;
+  std::vector<std::vector<G4THitsMap<G4double> > > fRunMapSum; // [2][16]
+  std::vector<std::vector<G4int> > fColIDSum;                  // [fDetname.size][fPrimNameSum.size]
+  std::vector<std::vector<G4THitsMap<G4double> > > fRunMapPara;// [2][16]
+  std::vector<std::vector<G4int> > fColIDPara;                 // [fParaName.size][fPrimeNameSum.size]
 
   std::vector<G4String> fCollName;
   std::vector<G4int> fCollID;
   std::vector<G4THitsMap<G4double> *> fRunMap;
-
-
-
 };
 #endif

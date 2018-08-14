@@ -23,10 +23,12 @@
 #include "G4PhysicalConstants.hh"
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
+#include "G4AutoLock.hh"
 
 #include "G4TARCPrimaryMessenger.hh"
 #include "G4TARCRun.hh"
 
+namespace {G4Mutex myPrimGenMutex = G4MUTEX_INITIALIZER;}
 
 class G4GeneralParticleSource;
 class G4Event;
