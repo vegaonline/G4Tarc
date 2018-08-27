@@ -589,7 +589,12 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
   fPositron_flux            += localRun->fPositron_flux;
   fProton_flux              += localRun->fProton_flux;
   fMuon_flux                += localRun->fMuon_flux;
+  fTriton_flux              += localRun->fTriton_flux;
+  fDeuteron_flux            += localRun->fDeuteron_flux;
+  fAlpha_flux               += localRun->fAlpha_flux;
+  fHe3_flux                 += localRun->fHe3_flux;
   fOther_flux               += localRun->fOther_flux;
+  fNeutronInit              += localRun->fNeutronInit;
   fNeutron_check            += localRun->fNeutron_check;
   fNeutron_fluence          += localRun->fNeutron_fluence;
   fIntegral_flux_46cm       += localRun->fIntegral_flux_46cm;
