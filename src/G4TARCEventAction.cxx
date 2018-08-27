@@ -9,6 +9,7 @@ G4TARCEventAction::G4TARCEventAction(): fNeutronStack(0)  {
     //fSelected = 0;
     SetPrintModulo(1);
     fPrimarySet = false;
+    fMaxRadCount = 0;
 }
 
 G4TARCEventAction::~G4TARCEventAction() {
@@ -18,23 +19,24 @@ G4TARCEventAction::~G4TARCEventAction() {
 void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
   fEventID = evt->GetEventID();
   fNeutronStack = 0;
-
+ 
+  // Following three lines are required for passing value to SteppingAction variables.
   G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   fExptRadiiTables = thisRun->fExptRadiiTables;
   fMaxRadCount = thisRun->fMaxRadCount;
-
+  thisRun->SetNumberOfEvents(fEventID);
+  
   //if (fEventID % fPrintModulo == 0)
-  G4cout << "     Begin of Event:  " << fEventID << G4endl;
+  G4cout << " Begin of Event:  " << fEventID << G4endl;
 }
 
-void G4TARCEventAction::EndOfEventAction( const G4Event*  thisEvent) {
+void G4TARCEventAction::EndOfEventAction( const G4Event* evt) {
   G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
-  auto  fAnalysisManager = G4AnalysisManager::Instance();
-  fAnalysisManager->FillH1(6, fNeutronStack);
-  thisRun->SetNumberOfEvent(fEventID);
+  G4AnalysisManager*  fAnalysisManager = G4AnalysisManager::Instance();
 
+  fAnalysisManager->FillH1(5, fNeutronStack);
   if (!fPrimarySet){
-    auto primary = thisEvent->GetPrimaryVertex(0)->GetPrimary(0);
+    auto primary = evt->GetPrimaryVertex(0)->GetPrimary(0);
     thisRun->SetBeamParticleName(primary->GetG4code()->GetParticleName());
     thisRun->SetBeamEnergy(primary->GetKineticEnergy());
     fPrimarySet = true;
@@ -46,7 +48,6 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
   G4int number_generationsL){
     //G4cout << " Analyse Secondary started" << G4endl;
 
-  auto fAnalysisManager = G4AnalysisManager::Instance();
   G4TARCRun* thisRun = static_cast<G4TARCRun*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   G4int Iparticle=-9;
@@ -120,6 +121,8 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
   else if (parentParticleL == "deuteron")     iParent = 13;
   else if (parentParticleL == "triton")     iParent = 14;
 
+  auto fAnalysisManager = G4AnalysisManager::Instance();
+  
   fAnalysisManager->FillNtupleDColumn(0,0, temp_energy);
   fAnalysisManager->FillNtupleDColumn(0,1, temp_time);
   fAnalysisManager->FillNtupleIColumn(0,2, Iparticle);
@@ -130,8 +133,9 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
   fAnalysisManager->FillNtupleDColumn(0,7, parentEnergyL);
   fAnalysisManager->FillNtupleIColumn(0,8, number_generationsL);
   fAnalysisManager->FillNtupleIColumn(0,9, fEventID);
+  
   fAnalysisManager->AddNtupleRow(0);
-
+  
 }
 
 void G4TARCEventAction::NeutronEnergyTime(G4double thisE, G4double thisT, G4double E0){
@@ -139,12 +143,13 @@ void G4TARCEventAction::NeutronEnergyTime(G4double thisE, G4double thisT, G4doub
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-
-  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
+  
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(0, log10(tempT), log10(tempE), 1.0);
   fAnalysisManager->FillNtupleDColumn(1, 0, tempE);
   fAnalysisManager->FillNtupleDColumn(1, 1, tempT);
   fAnalysisManager->FillNtupleDColumn(1, 2, tempE0);
   fAnalysisManager->AddNtupleRow(1);
+  
 }
 
 void G4TARCEventAction::otherEnergyTime(G4double thisE, G4double thisT, G4double E0){
@@ -152,12 +157,13 @@ void G4TARCEventAction::otherEnergyTime(G4double thisE, G4double thisT, G4double
   G4double tempT = thisT / microsecond;
   G4double tempE = thisE / eV;
   G4double tempE0 = E0 / eV;
-
-  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(2, log10(tempT), log10(tempE), 1.0);
+  
+  if (tempT > 0.0 && tempE > 0.0) fAnalysisManager->FillH2(1, log10(tempT), log10(tempE), 1.0);
   fAnalysisManager->FillNtupleDColumn(12, 0, tempE);
   fAnalysisManager->FillNtupleDColumn(12, 1, tempT);
   fAnalysisManager->FillNtupleDColumn(12, 2, tempE0);
   fAnalysisManager->AddNtupleRow(12);     // ID 14 becomes 12 after commenting out 12 and 13
+  
 }
 
 
@@ -166,8 +172,10 @@ void G4TARCEventAction::exitingTally(G4bool exiting_flag, G4double energyL){
   if(exiting_flag) {
     G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
     thisRun->CalcExitingFlux(energyL);
+    
     fAnalysisManager->FillNtupleDColumn(2, 0, energyL / eV);
     fAnalysisManager->AddNtupleRow(2);
+    
   }
 }
 
@@ -183,12 +191,11 @@ void G4TARCEventAction::analysePS(G4double fParticleEnergy, G4String fParticleNa
 
   auto fAnalysisManager = G4AnalysisManager::Instance();
   if(fParticleName == "gamma") {
-    fAnalysisManager->FillH1(1, fParticleEnergy/eV);
+    fAnalysisManager->FillH1(0, fParticleEnergy/eV);
   } else if(fParticleName == "neutron") {
     //++fNeutCap;
     //G4cout << fNeutCap << "     " << fNeutronStack << G4endl;
-    //fAnalysisManager->FillH2(3, fNeutCap * 1e9, fParticleTime / microsecond, 1.0);
-    fAnalysisManager->FillH1(2, fParticleEnergy / eV, 1.0 / fParticleMomentum);
+    fAnalysisManager->FillH1(1, fParticleEnergy / eV, 1.0 / fParticleMomentum);
     if(fParticleEnergy / MeV < 2.0) {
       thisRun->fNeutflux[0] += 1.0;
       thisRun->fENflux[0] += fParticleEnergy;
@@ -204,11 +211,11 @@ void G4TARCEventAction::analysePS(G4double fParticleEnergy, G4String fParticleNa
       thisRun->fENflux[3] += fParticleEnergy / MeV;
     }
   } else if(fParticleName == "e-") {
-    fAnalysisManager->FillH1(3, fParticleEnergy / eV);
+    fAnalysisManager->FillH1(2, fParticleEnergy / eV);
   } else if(fParticleName == "e+") {
-    fAnalysisManager->FillH1(4, fParticleEnergy / eV);
+    fAnalysisManager->FillH1(3, fParticleEnergy / eV);
   } else {   //(fParticleName == "other") {
-    fAnalysisManager->FillH1(5, fParticleEnergy / eV);
+    fAnalysisManager->FillH1(4, fParticleEnergy / eV);
   }
   //  G4cout << " Exiting  analysePS" << G4endl;
 }

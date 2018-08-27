@@ -8,15 +8,35 @@
 #include "G4TARCRun.hh"
 
 G4TARCRun::G4TARCRun() : G4Run() {
-  G4SDManager* SDMan = G4SDManager::GetSDMpointer();
   ReadExperimentalDataFromFile(fExptlDataFileName);
   initVectors();
+
+  fCollID.resize(fScorerNumber);
+  G4SDManager* SDMan = G4SDManager::GetSDMpointer();
+  SDMan->SetVerboseLevel(1);
+  G4String fullName;
+  G4int k = 0;
+  for (G4int i = 0; i < fParaNumber; i++) {
+    G4int jstart = i * (kLim + 1) ;
+    for (G4int j = jstart; j < jstart + kLim + 1; j++) {
+      fullName = fParaName[i] + "/" + fScorerName[j];
+      fCollName.push_back(fullName);
+      fCollID[k] = SDMan->GetCollectionID(fullName);
+      ++k;
+    }
+  }
+  fNColl = fCollID.size();
+  fRunMap.resize(fNColl);
+  
   StartProcessing();
 
 }
 
 void G4TARCRun::initVectors() {
   fEnergy0 = 0.0;
+  fNColl = 0;
+  fNevt = 0;
+  fIncidentBeamEnergy = 0.0*MeV;
   fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
   fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
   fIntegral_EFlux = 0.0;
@@ -107,32 +127,6 @@ void G4TARCRun::initVectors() {
   fLithium_Fluence_Step.resize(fMaxFluenceData, 0.0);
   fLithium_Fluence_Step_Shell.resize(fMaxFluenceData, 0.0);
 
-  G4String fDetname[2]       =  {"TARCSD", "TARCSDSRC"};
-  G4String fParaname[2]      =  {"TARCSDP", "TARCSDSRCP"};
-  G4String fPrimeNameSum[16] =  {"eDep", "nNeutron", "nGamma", "nElectron", "nPositron", "nProton", "nAntiProton", "nPiPlus", "nPiMinus", "nPiZero", "nMuPLus", "nMuMinus", "nDeuteron", "nTriton", "nAlpha", "nHe3"};
-/*
-  G4SDManager* SDMan = G4SDManager::GetSDMpointer();
-  G4int fDetNum = 2;
-  G4int fPrimeSumNum = 16;
-  G4int fParaNum = 2;
-  fColIDSum.resize(fPrimeSumNum, std::vector<G4int>(fDetNum, 0));
-  fColIDPara.resize(fPrimeSumNum, std::vector<G4int>(fParaNum, 0));
-
-  for (G4int i = 0; i < fDetNum; i++) {
-    for (G4int j = 0; j < fPrimeSumNum; j++) {
-      fullName = fDetname[i] + "/" + fPrimeNameSum[j];
-      G4cout << "--------> " << fullName << G4endl;
-      fColIDSum[i][j] = SDMan->GetCollectionID(fullName);
-    }
-  }
-
-  for (G4int i = 0; i < fParaNum; i++) {
-    for (G4int j = 0; j < fPrimeSumNum; j++){
-      fullName = fParaname[i] + "/" + fPrimeNameSum[j];
-      fColIDPara[i][j] = SDMan->GetCollectionID(fullName);
-    }
-  }
-  */
 }
 
 void G4TARCRun::StartProcessing(){
@@ -351,9 +345,9 @@ void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
   fFlux_Lithium_Syst_Err_in = fFlux_Lithium_Syst_Err;
 
   // This is a test to shrink use of memory
-  std::vector<std::vector<G4double> > ().swap(fExptEnergyTables);
-  std::vector<std::vector<G4double> > ().swap(fExptFluxTables);
-  std::vector<std::vector<G4double> > ().swap(fExptFluxErrTables);
+  //std::vector<std::vector<G4double> > ().swap(fExptEnergyTables);
+  //std::vector<std::vector<G4double> > ().swap(fExptFluxTables);
+  //std::vector<std::vector<G4double> > ().swap(fExptFluxErrTables);
   // This is end of test block
   //fReadData = true;
 }
@@ -382,47 +376,18 @@ void G4TARCRun::AddFlux(const G4String& particleName) {
 
 
 void G4TARCRun::RecordEvent(const G4Event* thisEvent) {
-  ++fNevt;
+  ++fNevt;  
   G4HCofThisEvent* HCE = thisEvent->GetHCofThisEvent();
   if (!HCE) return;
-  ++fNevt;
-  G4int fDetNum = 2;
-  G4int fPrimeSumNum = 16;
-  G4int fParaNum = 2;
-  //=======================================================
-  // Sum up HitsMap of this Event  into HitsMap of this RUN
-  //=======================================================
-  /*
-  for (G4int i = 0; i <  fDetNum; i++) {
-    for (G4int j = 0; j <  fPrimeSumNum; j++) {
-      G4THitsMap<G4double>* EvtMap = (G4THitsMap<G4double>*)(HCE->GetHC(fColIDSum[i][j]));
-      fRunMapSum[i][j] += *EvtMap;
-    }
-  }
 
-  for (G4int i = 0; i <  fParaNum; i++) {
-    for (G4int j = 0; j <  fPrimeSumNum; j++) {
-      G4THitsMap<G4double>* EvtMap = (G4THitsMap<G4double>*)(HCE->GetHC(fColIDPara[i][j]));
-      fRunMapPara[i][j] += *EvtMap;
-    }
+  //   G4int fNColl = fCollID.size(); already defined in header and value given in constructor
+  for (G4int i = 0; i < fNColl; i++) {
+    G4THitsMap<G4double>* evtMap = 0;
+    if (fCollID[i] >= 0)  evtMap = (G4THitsMap<G4double>*)(HCE->GetHC(fCollID[i]));
+    if (evtMap && fRunMap[i]) *fRunMap[i] += *evtMap;
+    //if (evtMap) *fRunMap[i] += *evtMap;
   }
-*/
-
-  G4int Ncol = fCollID.size();
-  for ( G4int i = 0; i < Ncol ; i++ ){  // Loop over HitsCollection
-    G4THitsMap<G4double>* EvtMap=0;
-    if ( fCollID[i] >= 0 ){           // Collection is attached to HCE
-      EvtMap = (G4THitsMap<G4double>*)(HCE->GetHC(fCollID[i]));
-    }else{
-      G4cout <<" Error EvtMap Not Found "<< i << G4endl;
-    }
-    if ( EvtMap )  {
-      //=== Sum up HitsMap of this event to HitsMap of RUN.===
-      *fRunMap[i] += *EvtMap;
-      //======================================================
-    }
-  }
-
+  //G4Run::RecordEvent(thisEvent);
 }
 
 G4double G4TARCRun::GetTotal(const G4THitsMap<G4double> &map) const {
@@ -439,8 +404,8 @@ G4THitsMap<G4double>* G4TARCRun::GetHitsMap(const G4String& detName, const G4Str
 }
 
 G4THitsMap<G4double>* G4TARCRun::GetHitsMap(const G4String& fThisfullName){
-  G4int NCol = fCollName.size();
-  for (G4int i = 0; i < NCol; i++) {
+  // G4int NCol = fCollName.size();
+  for (G4int i = 0; i < fNColl; i++) { //    i < NCol; i++) {
     if (fCollName[i] == fThisfullName) return fRunMap[i];
   }
   return NULL;
@@ -599,69 +564,68 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
 }
 
 void G4TARCRun::Merge(const G4Run* thisRun) {
-  const G4TARCRun *localRun = static_cast<const G4TARCRun *> (thisRun);
-/*
-  for (G4int i = 0; i < 2; i++) {
-    for (G4int j = 0; j < 16; j++) {
-      fRunMapSum[i][j] += localRun->fRunMapSum[i][j];
-    }
+  const G4TARCRun* localRun = static_cast<const G4TARCRun *> (thisRun);
+  //G4int fNColl = (localRun->fCollID.size());
+  //G4int fCollNumber = localRun->fNColl;
+  //G4cout << " In Merge fNColl: " << fCollNumber << "     " << fNColl << G4endl;
+  //
+  for (G4int i = 0; i < fNColl; i++){
+    if (localRun->fRunMap[i])
+      *fRunMap[i] += *localRun->fRunMap[i];
   }
-
-  for (G4int i = 0; i < 2; i++) {
-    for (G4int j = 0; j < 16; j++) {
-      fRunMapPara[i][j] += localRun->fRunMapPara[i][j];
-    }
-  }
-*/
-  G4int fNColl = localRun->fCollID.size();
-  G4cout << " fNColl---------------------> " << fNColl << G4endl;
-  for (G4int ii = 0; ii < fNColl; ii++) {
-    if (localRun->fCollID[ii] >= 0)    *fRunMap[ii] += *localRun->fRunMap[ii];
-  }
-  fNevt                   += localRun->fNevt;
-  fExiting_Flux            += localRun->fExiting_Flux;
-  fExiting_Energy        += localRun->fExiting_Energy;
-  fExiting_check_Flux += localRun->fExiting_check_Flux;
-  fGamma_flux            += localRun->fGamma_flux;
-  fNeutron_flux            += localRun->fNeutron_flux;
-  fElectron_flux           += localRun-> fElectron_flux;
-  fPiMinus_flux           += localRun->fPiMinus_flux;
+  
+ 
+  fNevt                     =  std::max(fNevt, localRun->GetNumberOfEvents()); //     localRun->fNevt;
+  fIncidentBeamEnergy       = localRun->fIncidentBeamEnergy;
+  fExiting_Flux             += localRun->GetExitingFlux();    // fExiting_Flux;
+  fExiting_Energy           += localRun->fExiting_Energy;
+  fExiting_check_Flux       += localRun->fExiting_check_Flux;
+  fGamma_flux               += localRun->fGamma_flux;
+  fNeutron_flux             += localRun->fNeutron_flux;
+  fElectron_flux            += localRun-> fElectron_flux;
+  fPiMinus_flux             += localRun->fPiMinus_flux;
   fPiPlus_flux              += localRun->fPiPlus_flux;
   fPiZero_flux              += localRun->fPiZero_flux;
-  fPositron_flux           += localRun->fPositron_flux;
+  fPositron_flux            += localRun->fPositron_flux;
   fProton_flux              += localRun->fProton_flux;
-  fMuon_flux               += localRun->fMuon_flux;
+  fMuon_flux                += localRun->fMuon_flux;
   fOther_flux               += localRun->fOther_flux;
-  fNeutron_check        += localRun->fNeutron_check;
-  fNeutron_fluence      += localRun->fNeutron_fluence;
-  fIntegral_flux_46cm += localRun->fIntegral_flux_46cm;
+  fNeutron_check            += localRun->fNeutron_check;
+  fNeutron_fluence          += localRun->fNeutron_fluence;
+  fIntegral_flux_46cm       += localRun->fIntegral_flux_46cm;
   fTARC_Integral_Eflux_46cm += localRun->fTARC_Integral_Eflux_46cm;
   fTotalFlux                += localRun->fTotalFlux;
 
   for (G4int ii = 0; ii < (fMaxTestFluxData); ii++) {
-    fFlux[ii]                          += localRun->fFlux[ii];
-    fCos_Flux[ii]                  += localRun->fCos_Flux[ii];
-    fFluence_Step[ii]            += localRun->fFluence_Step[ii];
+    fFlux_Energy[ii]        += localRun->fFlux_Energy[ii];
+    fFlux_Data[ii]          += localRun->fFlux_Data[ii];
+    fFlux[ii]               += localRun->fFlux[ii];
+    fCos_Flux[ii]           += localRun->fCos_Flux[ii];
+    fFluence_Step[ii]       += localRun->fFluence_Step[ii];
     fFluence_Step_Cyl[ii]   += localRun->fFluence_Step_Cyl[ii];
     fFluence_Step_Shell[ii] += localRun->fFluence_Step_Shell[ii];
-    fEFlux[ii]                       += localRun->fEFlux[ii];
+    fEFlux[ii]              += localRun->fEFlux[ii];
   }
 
   for (G4int ii = 0; ii < fMaxFluenceData; ii++) {
-    fFlux_Low[ii]                += localRun->fFlux_Low[ii];
-    fCos_Low_Flux[ii]        += localRun->fCos_Low_Flux[ii];
-    fLow_Fluence_Step[ii]   += localRun->fLow_Fluence_Step[ii];
-    fLow_Fluence_Cyl[ii]     += localRun->fLow_Fluence_Cyl[ii];
+    fFlux_Low[ii]               += localRun->fFlux_Low[ii];
+    fFlux_Low_Energy[ii]        += localRun->fFlux_Low_Energy[ii];
+    fFlux_Low_Data[ii]          += localRun->fFlux_Low_Data[ii];
+    fCos_Low_Flux[ii]           += localRun->fCos_Low_Flux[ii];
+    fLow_Fluence_Step[ii]       += localRun->fLow_Fluence_Step[ii];
+    fLow_Fluence_Cyl[ii]        += localRun->fLow_Fluence_Cyl[ii];
     fLow_Fluence_Step_Shell[ii] += localRun->fLow_Fluence_Step_Shell[ii];
 
-    fLithium_Flux[ii]          += localRun->fLithium_Flux[ii];
-    fCos_Lithium_Flux[ii]  += localRun->fCos_Lithium_Flux[ii];
-    fLithium_Fluence_Step[ii] += localRun->fLithium_Fluence_Step[ii];
+    fLithium_Flux[ii]           += localRun->fLithium_Flux[ii];
+    fFlux_Lithium_Energy[ii]    += localRun->fFlux_Lithium_Energy[ii];
+    fFlux_Lithium_Data[ii]      += localRun->fFlux_Lithium_Data[ii];
+    fCos_Lithium_Flux[ii]       += localRun->fCos_Lithium_Flux[ii];
+    fLithium_Fluence_Step[ii]   += localRun->fLithium_Fluence_Step[ii];
 
 
     for (G4int i = 0; i < fMaxRadCount; i++){
       for (G4int j = 0; j < fRefShellNumber; j++) {
-        fRadialFluenceStep[j][i] += localRun->fRadialFluenceStep[j][i];
+        fRadialFluenceStep[j][i]+= localRun->fRadialFluenceStep[j][i];
       }
     }
   }

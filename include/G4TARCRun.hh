@@ -22,6 +22,8 @@
 #include <regex>
 
 class G4SDManager;
+class G4Run;
+class G4Event;
 
 class G4TARCRun : public G4Run {
 
@@ -43,7 +45,7 @@ public:
   G4int GetRefShellNumber() const        {return fRefShellNumber;}
   G4int GetNumberOfEvents() const       {return fNevt;}
 
-  void SetNumberOfEvent(G4int val)     {fNevt = val;}
+  void SetNumberOfEvents(const G4int val)     {fNevt = val; } // std::max(fNevt, val);}
   void SetBeamEnergy(G4double val)    {fIncidentBeamEnergy = val; }
   void SetBeamParticleName(const G4String name) { fIncidentBeamParticleName = name;}
 
@@ -53,9 +55,10 @@ public:
 
   virtual void RecordEvent(const G4Event*);
   virtual void Merge(const G4Run*);
+  virtual void FillPerEvent(G4double ) { ;}
 
   G4int GetNumberOfHitsMap()  const                                {return fRunMap.size();}
-  G4THitsMap<G4double>* GetHitsMap(G4int idx)          {return fRunMap[idx];}
+  G4THitsMap<G4double>* GetHitsMap(G4int idx)                      {return fRunMap[idx];}
   G4THitsMap<G4double>* GetHitsMap(const G4String& detName, const G4String& colName);
   G4THitsMap<G4double>* GetHitsMap(const G4String& fullName);
   void DumpAllScorer(){};
@@ -65,8 +68,6 @@ public:
   void analyseNeutronShellFluence(G4double, G4double);
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analyseNeutronFluence(G4double, G4double );
-
-  G4double GetParaValue(G4int i, G4int j, G4int k) const { G4double *p = fRunMapPara[i][j][k]; if (p) return *p; return 0.0;}
 
 private:
   G4double GetTotal(const G4THitsMap<G4double> &) const;
@@ -187,6 +188,7 @@ public:
   G4int fOldTrackID;
   G4int fMaxEBin;
   G4int fNmax;
+  G4int fNColl;
 
   G4int intDummy = 0;
   G4double floatDummy = 0.0;
@@ -215,14 +217,29 @@ private:
   std::vector<G4int>         fFluxTableList {36, 38};
   unsigned                         fMeanEnergyTable = 40;
   std::vector<G4double>  fMeanEnergyT40List;
-  G4String fullName;
+
+  /*
   std::vector<std::vector<G4THitsMap<G4double> > > fRunMapSum; // [2][16]
   std::vector<std::vector<G4int> > fColIDSum;                  // [fDetname.size][fPrimNameSum.size]
   std::vector<std::vector<G4THitsMap<G4double> > > fRunMapPara;// [2][16]
   std::vector<std::vector<G4int> > fColIDPara;                 // [fParaName.size][fPrimeNameSum.size]
+  */
+  
+  G4String fParaName[2]    = {"TARCNeut", "TARCNeutSRC"};
+  G4String fScorerName[18]  = {"Collisions0", "CollWeight0", "Population0", "Track_Enter0", "SL0", "SLW0", "SLWE0", "SLW_V0", "SLWE_V0","Collisions1", "CollWeight1", "Population1", "Track_Enter1", "SL1", "SLW1", "SLWE1", "SLW_V1", "SLWE_V1"};
 
+  static const G4int fParaNumber = 2;      // (static)fParaName.size();
+  static const G4int fScorerNumber = 18;    //fScorerName.size();
+  static const G4int kLim = fScorerNumber / 2 - 1;
+  
   std::vector<G4String> fCollName;
+  //  std::vector<std::vector<G4int> > fCollID;
   std::vector<G4int> fCollID;
-  std::vector<G4THitsMap<G4double> *> fRunMap;
+
+  // G4THitsMap<G4double> fRunMapTARC[fParaNumber][fScorerNumber]; // map for accumulation [i][j]: i for det j for scorer
+
+  std::vector<std::vector<G4THitsMap<G4double>* > > fRunMapTARC;
+
+  std::vector<G4THitsMap<G4double>* > fRunMap;
 };
 #endif

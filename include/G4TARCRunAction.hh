@@ -10,18 +10,19 @@
 #include "G4UserRunAction.hh"
 #include "G4NuclearLevelData.hh"
 #include "G4Run.hh"
+#include "G4Event.hh"
 #include "G4RunManager.hh"
 #include "G4ios.hh"
 #include "G4UserRunAction.hh"
 #include "G4UImanager.hh"
 #include "G4VVisManager.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
 
 #include "globals.hh"
 
 #include "G4TARCRun.hh"
 #include "G4TARCAnalysis.hh"
-//#include "G4TARCHistoManager.hh"
 #include "G4TARCPrimaryGeneratorAction.hh"
 
 #include "Randomize.hh"
@@ -45,17 +46,18 @@ public:
   //   void ReadExperimentalDataFromFile(G4String&);
   void InitVecs();
   void BookHistogram();
-  void CreateTuples();
+  //void CreateTuples();
   void FillRadialExperimentalData(const G4TARCRun*);
 
   void NeutronFluxHistogram(G4int, const G4TARCRun*);
   void RadialFluxHistogram(G4int, const G4TARCRun*);
-  void ResultSummary(G4int, const G4TARCRun*);
+  void ResultSummary(const G4int, const G4TARCRun*);
   template <typename T>  void Check10s(T, T&, G4String&);
 
 private:
-  G4String                         fAnalysisFileName = "G4TARC_output";
-  G4bool                            fHistoBooked = false;
+  G4int           fEventNum;
+  G4String        fAnalysisFileName = "G4TARC_output";
+  G4bool          fHistoBooked = false;
 
   std::vector<G4double>   fRadiusReference {200.0 * cm, 190.0 * cm, 185.0 * cm, 175.0 * cm, 165.0 * cm, 150.0 * cm,
     140.0 * cm, 130.0 * cm, 120.0 * cm, 110.0 * cm, 100.0 * cm, 90.0 * cm, 80.0 * cm, 70.0 * cm, 60.0 * cm, 50.0 * cm, 45.7 * cm,
@@ -65,7 +67,7 @@ private:
   std::vector<G4double>   fInnerRadiusofShell;
   std::vector<G4double> fLocal_Energy_Integral;
 
-  G4int        fRefShellNumber;
+  G4int    fRefShellNumber;
 
   G4double fRefShellThickness;
   G4double fRadHole;

@@ -133,67 +133,41 @@ void G4TARCParallelWorld::ConstructSD() {
   if (!fSDConstructed) {
     auto SDman = G4SDManager::GetSDMpointer();
     G4String fltName, fParticleName, psName, filterName;
-
+    
     fNeutronFilter = new G4SDParticleFilter(filterName="neutronFilter", fParticleName = "neutron");
-    fGammaFilter = new G4SDParticleFilter(filterName="gammaFilter", fParticleName = "gamma");
-    fNeutronFilter = new G4SDParticleFilter(filterName="neutronFilter", fParticleName = "neutron");
-    fElectronFilter = new G4SDParticleFilter(filterName="ElectronFilter", fParticleName = "e-");
-    fPositronFilter = new G4SDParticleFilter(filterName="PositronFilter", fParticleName = "e+");
     /*
+    fGammaFilter = new G4SDParticleFilter(filterName="gammaFilter", fParticleName = "gamma");
+    fElectronFilter = new G4SDParticleFilter(filterName="ElectronFilter", fParticleName = "e-");
+    fPositronFilter = new G4SDParticleFilter(filterName="PositronFilter", fParticleName = "e+");    
     fEPFilter = new G4SDParticleFilter(filterName="EPFilter");
-    fEPFilter->add(fParticleName="e-");
-    fEPFilter->add(fParticleName="e+");
-    */
+    fEPFilter->add("e-");
+    fEPFilter->add("e+");    
     fProtonFilter = new G4SDParticleFilter(filterName="ProtonFilter", fParticleName = "proton");
     fAntiProtonFilter = new G4SDParticleFilter(filterName="AntiProtonFilter", fParticleName = "anti_proton");
     fMuPlusFilter = new G4SDParticleFilter(filterName="MuPFilter", fParticleName = "mu+");
     fMuMinusFilter = new G4SDParticleFilter(filterName="MuMFilter", fParticleName = "mu-");
     fMuonFilter = new G4SDParticleFilter(filterName="MuonFilter");
-    fMuonFilter->add(fParticleName="mu+");
-    fMuonFilter->add(fParticleName="mu-");
+    fMuonFilter->add("mu+");
+    fMuonFilter->add("mu-");
     fPiPlusFilter = new G4SDParticleFilter(filterName="PiPFilter", fParticleName = "pi+");
     fPiMinusFilter = new G4SDParticleFilter(filterName="PiMFilter", fParticleName = "pi-");
     fPiZeroFilter = new G4SDParticleFilter(filterName="Pi0Filter", fParticleName = "pi0");
     fPionFilter = new G4SDParticleFilter(filterName="PionFilter");
-    fPionFilter->add(fParticleName="pi+");
-    fPionFilter->add(fParticleName="pi-");
-    fPionFilter->add(fParticleName="pi0");
+    fPionFilter->add("pi+");
+    fPionFilter->add("pi-");
+    fPionFilter->add("pi0");
     fDeuteronFilter = new G4SDParticleFilter(filterName="DeuteronFilter", fParticleName = "deuteron");
     fTritonFilter = new G4SDParticleFilter(filterName="TritonFilter", fParticleName = "triton");
     fAlphaFilter = new G4SDParticleFilter(filterName="AlphaFilter", fParticleName = "alpha");
     fHe3Filter = new G4SDParticleFilter(filterName="He3Filter", fParticleName = "He3");
-
+    */
+    
     G4MultiFunctionalDetector* fTARCNeutSD = new G4MultiFunctionalDetector("TARCNeut");
     SDman->AddNewDetector(fTARCNeutSD);
-    G4SDParticleFilter* fNeutronFilter = new G4SDParticleFilter("NeutronFilter", fParticleName = "neutron");
     fTARCNeutSD->SetFilter(fNeutronFilter);
-
     G4MultiFunctionalDetector* fTARCNeutSRCSD = new G4MultiFunctionalDetector("TARCNeutSRC");
     SDman->AddNewDetector(fTARCNeutSRCSD);
     fTARCNeutSRCSD->SetFilter(fNeutronFilter);
-
-
-
-    /*
-    // Here first defining two detectors for neutron and proton study
-    //----------------------------- SD 01 Neutron ----------------------------------------
-    // Create a MultiFunction Detector for Neutron study in General
-    TARCSDName = "TARCNeutronSD";
-    fTARCNeutronDet = new G4MultiFunctionalDetector(TARCSDName);
-    SDman->AddNewDetector(fTARCNeutronDet);
-    // Then create filters to study
-    neutronFilter = new G4SDParticleFilter(fltName="neutronFilter", fParticleName="neutron");
-    fTARCNeutronDet->SetFilter(neutronFilter);
-
-    //----------------------------- SD 02 Proton ----------------------------------------
-    // Create a MultiFunction Detector for Proton study in General
-    TARCSDName = "TARCProtonSD";
-    fTARCProtonDet = new G4MultiFunctionalDetector(TARCSDName);
-    SDman->AddNewDetector(fTARCProtonDet);
-    // Then create filters to study
-    protonFilter = new G4SDParticleFilter(fltName="protonFilter", fParticleName="proton");
-    fTARCProtonDet->SetFilter(protonFilter);
-    */
 
     G4String sslog = "sampleSphere_log";
     G4String sslog2 = "sampleSphere_log2";
@@ -207,50 +181,66 @@ void G4TARCParallelWorld::ConstructSD() {
       }
     }
 
-    G4PSNofCollision*   scorer0 = new G4PSNofCollision(psName="Collisions");
-    fTARCNeutSD->RegisterPrimitive(scorer0);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer0);
+    G4PSNofCollision*   scorer00 = new G4PSNofCollision(psName="Collisions0");
+    G4PSNofCollision*   scorer10 = new G4PSNofCollision(psName="CollWeight0");
+    scorer10->Weighted(true);
+    G4PSPopulation*   scorer20 = new G4PSPopulation(psName="Population0");
+    G4PSTrackCounter* scorer30 = new G4PSTrackCounter(psName="Track_Enter0",fCurrent_In);
+    G4PSTrackLength* scorer40 = new G4PSTrackLength(psName="SL0");   // Step_Length
+    G4PSTrackLength* scorer50 = new G4PSTrackLength(psName="SLW0");  // Step_Length_Weighted
+    scorer50->Weighted(true);
+    G4PSTrackLength* scorer60 = new G4PSTrackLength(psName="SLWE0");   // Step_Length_Weighted.KE
+    scorer60->Weighted(true);
+    scorer60->MultiplyKineticEnergy(true);
+    G4PSTrackLength* scorer70 = new G4PSTrackLength(psName="SLW_V0");       // Step_Length_Weighted_By_Velocity
+    scorer70->Weighted(true);
+    scorer70->DivideByVelocity(true);
+    G4PSTrackLength* scorer80 = new G4PSTrackLength(psName="SLWE_V0");       // Track_Length_Weighted_KE_By_Velocity
+    scorer80->Weighted(true);
+    scorer80->MultiplyKineticEnergy(true);
+    scorer80->DivideByVelocity(true);    
+    
+    
+    fTARCNeutSD->RegisterPrimitive(scorer00);
+    fTARCNeutSD->RegisterPrimitive(scorer10);
+    fTARCNeutSD->RegisterPrimitive(scorer20);
+    fTARCNeutSD->RegisterPrimitive(scorer30);
+    fTARCNeutSD->RegisterPrimitive(scorer40);
+    fTARCNeutSD->RegisterPrimitive(scorer50);
+    fTARCNeutSD->RegisterPrimitive(scorer60);
+    fTARCNeutSD->RegisterPrimitive(scorer70);
+    fTARCNeutSD->RegisterPrimitive(scorer80);
 
-    G4PSNofCollision*   scorer1 = new G4PSNofCollision(psName="CollWeight");
-    scorer1->Weighted(true);
-    fTARCNeutSD->RegisterPrimitive(scorer1);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer1);
-
-    G4PSPopulation*   scorer2N = new G4PSPopulation(psName="Population");
-    fTARCNeutSD->RegisterPrimitive(scorer2N);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer2N);
-
-    G4PSTrackCounter* scorer3 = new G4PSTrackCounter(psName="Track_Enter",fCurrent_In);
-    fTARCNeutSD->RegisterPrimitive(scorer3);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer3);
-
-    G4PSTrackLength* scorer4 = new G4PSTrackLength(psName="Track_Length");
-    fTARCNeutSD->RegisterPrimitive(scorer4);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer4);
-
-    G4PSTrackLength* scorer5 = new G4PSTrackLength(psName="Track_Length_Weighted");
-    scorer5->Weighted(true);
-    fTARCNeutSD->RegisterPrimitive(scorer5);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer5);
-
-    G4PSTrackLength* scorer6 = new G4PSTrackLength(psName="Track_Length_Weighted.KE");
-    scorer6->Weighted(true);
-    scorer6->MultiplyKineticEnergy(true);
-    fTARCNeutSD->RegisterPrimitive(scorer6);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer6);
-
-    G4PSTrackLength* scorer7 = new G4PSTrackLength(psName="Track_Length_Weighted_By_Velocity");
-    scorer7->Weighted(true);
-    scorer7->DivideByVelocity(true);
-    fTARCNeutSD->RegisterPrimitive(scorer7);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer7);
-
-    G4PSTrackLength* scorer8 = new G4PSTrackLength(psName="Track_Length_Weighted_KE_By_Velocity");
-    scorer8->Weighted(true);
-    scorer8->MultiplyKineticEnergy(true);
-    scorer8->DivideByVelocity(true);
-    fTARCNeutSD->RegisterPrimitive(scorer8);
-    fTARCNeutSRCSD->RegisterPrimitive(scorer8);
+    
+    G4PSNofCollision*   scorer01 = new G4PSNofCollision(psName="Collisions1");
+    G4PSNofCollision*   scorer11 = new G4PSNofCollision(psName="CollWeight1");
+    scorer11->Weighted(true);
+    G4PSPopulation*   scorer21 = new G4PSPopulation(psName="Population1");
+    G4PSTrackCounter* scorer31 = new G4PSTrackCounter(psName="Track_Enter1",fCurrent_In);
+    G4PSTrackLength* scorer41 = new G4PSTrackLength(psName="SL1");   // Step_Length
+    G4PSTrackLength* scorer51 = new G4PSTrackLength(psName="SLW1");  // Step_Length_Weighted
+    scorer51->Weighted(true);
+    G4PSTrackLength* scorer61 = new G4PSTrackLength(psName="SLWE1");   // Step_Length_Weighted.KE
+    scorer61->Weighted(true);
+    scorer61->MultiplyKineticEnergy(true);
+    G4PSTrackLength* scorer71 = new G4PSTrackLength(psName="SLW_V1");       // Step_Length_Weighted_By_Velocity
+    scorer71->Weighted(true);
+    scorer71->DivideByVelocity(true);
+    G4PSTrackLength* scorer81 = new G4PSTrackLength(psName="SLWE_V1");       // Track_Length_Weighted_KE_By_Velocity
+    scorer81->Weighted(true);
+    scorer81->MultiplyKineticEnergy(true);
+    scorer81->DivideByVelocity(true);    
+    
+    
+    fTARCNeutSRCSD->RegisterPrimitive(scorer01);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer11);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer21);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer31);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer41);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer51);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer61);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer71);
+    fTARCNeutSRCSD->RegisterPrimitive(scorer81);
     
     fSDConstructed = true;
   }
@@ -258,7 +248,7 @@ void G4TARCParallelWorld::ConstructSD() {
 
 
 void G4TARCParallelWorld::SetSerialGeometry(G4bool ser) {
-  if (fSerial = ser) return;
+  if (fSerial == ser) return;
   fSerial = ser;
   if (!fConstructed) return;
 }
