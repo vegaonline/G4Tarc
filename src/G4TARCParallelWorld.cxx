@@ -133,15 +133,15 @@ void G4TARCParallelWorld::ConstructSD() {
   if (!fSDConstructed) {
     auto SDman = G4SDManager::GetSDMpointer();
     G4String fltName, fParticleName, psName, filterName;
-    
+
     fNeutronFilter = new G4SDParticleFilter(filterName="neutronFilter", fParticleName = "neutron");
     /*
     fGammaFilter = new G4SDParticleFilter(filterName="gammaFilter", fParticleName = "gamma");
     fElectronFilter = new G4SDParticleFilter(filterName="ElectronFilter", fParticleName = "e-");
-    fPositronFilter = new G4SDParticleFilter(filterName="PositronFilter", fParticleName = "e+");    
+    fPositronFilter = new G4SDParticleFilter(filterName="PositronFilter", fParticleName = "e+");
     fEPFilter = new G4SDParticleFilter(filterName="EPFilter");
     fEPFilter->add("e-");
-    fEPFilter->add("e+");    
+    fEPFilter->add("e+");
     fProtonFilter = new G4SDParticleFilter(filterName="ProtonFilter", fParticleName = "proton");
     fAntiProtonFilter = new G4SDParticleFilter(filterName="AntiProtonFilter", fParticleName = "anti_proton");
     fMuPlusFilter = new G4SDParticleFilter(filterName="MuPFilter", fParticleName = "mu+");
@@ -161,7 +161,7 @@ void G4TARCParallelWorld::ConstructSD() {
     fAlphaFilter = new G4SDParticleFilter(filterName="AlphaFilter", fParticleName = "alpha");
     fHe3Filter = new G4SDParticleFilter(filterName="He3Filter", fParticleName = "He3");
     */
-    
+
     G4MultiFunctionalDetector* fTARCNeutSD = new G4MultiFunctionalDetector("TARCNeut");
     SDman->AddNewDetector(fTARCNeutSD);
     fTARCNeutSD->SetFilter(fNeutronFilter);
@@ -198,9 +198,9 @@ void G4TARCParallelWorld::ConstructSD() {
     G4PSTrackLength* scorer80 = new G4PSTrackLength(psName="SLWE_V0");       // Track_Length_Weighted_KE_By_Velocity
     scorer80->Weighted(true);
     scorer80->MultiplyKineticEnergy(true);
-    scorer80->DivideByVelocity(true);    
-    
-    
+    scorer80->DivideByVelocity(true);
+
+
     fTARCNeutSD->RegisterPrimitive(scorer00);
     fTARCNeutSD->RegisterPrimitive(scorer10);
     fTARCNeutSD->RegisterPrimitive(scorer20);
@@ -211,7 +211,7 @@ void G4TARCParallelWorld::ConstructSD() {
     fTARCNeutSD->RegisterPrimitive(scorer70);
     fTARCNeutSD->RegisterPrimitive(scorer80);
 
-    
+
     G4PSNofCollision*   scorer01 = new G4PSNofCollision(psName="Collisions1");
     G4PSNofCollision*   scorer11 = new G4PSNofCollision(psName="CollWeight1");
     scorer11->Weighted(true);
@@ -229,9 +229,9 @@ void G4TARCParallelWorld::ConstructSD() {
     G4PSTrackLength* scorer81 = new G4PSTrackLength(psName="SLWE_V1");       // Track_Length_Weighted_KE_By_Velocity
     scorer81->Weighted(true);
     scorer81->MultiplyKineticEnergy(true);
-    scorer81->DivideByVelocity(true);    
-    
-    
+    scorer81->DivideByVelocity(true);
+
+
     fTARCNeutSRCSD->RegisterPrimitive(scorer01);
     fTARCNeutSRCSD->RegisterPrimitive(scorer11);
     fTARCNeutSRCSD->RegisterPrimitive(scorer21);
@@ -241,7 +241,7 @@ void G4TARCParallelWorld::ConstructSD() {
     fTARCNeutSRCSD->RegisterPrimitive(scorer61);
     fTARCNeutSRCSD->RegisterPrimitive(scorer71);
     fTARCNeutSRCSD->RegisterPrimitive(scorer81);
-    
+
     fSDConstructed = true;
   }
 }
@@ -254,6 +254,7 @@ void G4TARCParallelWorld::SetSerialGeometry(G4bool ser) {
 }
 
 G4VIStore* G4TARCParallelWorld::CreateImportanceStore(){
+  G4VPhysicalVolume* thisGhostWorld = GetWorld();
   G4cout << " G4TARCParallelWorld:: Creating Importance Store " << G4endl;
   if (!fPVolumeStore.Size())  {
     G4Exception("G4TARCParallelWorld::CreateImportanceStore"
@@ -262,17 +263,16 @@ G4VIStore* G4TARCParallelWorld::CreateImportanceStore(){
   }
   // creating and filling the importance store
   //  G4IStore *istore = new G4IStore(*fWorldVolume);
-  G4IStore *istore = G4IStore::GetInstance(GetName());
+  G4IStore *fMyIstore = G4IStore::GetInstance(thisGhostWorld->GetName());
   G4GeometryCell gWorldVolumeCell(GetWorldVolumeAddress(), 0);
-  G4double imp = 1;
-  istore->AddImportanceGeometryCell(imp, gWorldVolumeCell);
+
+  fMyIstore->AddImportanceGeometryCell(1, gWorldVolumeCell);
   // set importance values and create scorers
   //  G4int number_shells = analysis->GetNumberShells();
   // G4int cell(fShellNumber);
   for (G4int cell = 0; cell < fRefShellNumber; cell++) {
     G4GeometryCell gCell = GetGeometryCell(cell);
-    imp = 1;
-    istore->AddImportanceGeometryCell(imp, gCell.GetPhysicalVolume(), cell);
+    fMyIstore->AddImportanceGeometryCell(1, gCell.GetPhysicalVolume(), cell);
   }
-  return istore;
+  return fMyIstore;
 }

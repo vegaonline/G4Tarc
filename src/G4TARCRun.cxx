@@ -27,9 +27,16 @@ G4TARCRun::G4TARCRun() : G4Run() {
   }
   fNColl = fCollID.size();
   fRunMap.resize(fNColl);
-  
-  StartProcessing();
 
+  StartProcessing();
+}
+
+G4TARCRun::~G4TARCRun(){
+  for (G4int i = 0; i < fNColl; i++){
+    if (fRunMap[i]) fRunMap[i]->clear();
+  }
+  fCollID.clear();
+  fCollName.clear();
 }
 
 void G4TARCRun::initVectors() {
@@ -376,7 +383,7 @@ void G4TARCRun::AddFlux(const G4String& particleName) {
 
 
 void G4TARCRun::RecordEvent(const G4Event* thisEvent) {
-  ++fNevt;  
+  ++fNevt;
   G4HCofThisEvent* HCE = thisEvent->GetHCofThisEvent();
   if (!HCE) return;
 
@@ -573,8 +580,8 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
     if (localRun->fRunMap[i])
       *fRunMap[i] += *localRun->fRunMap[i];
   }
-  
- 
+
+
   fNevt                     =  std::max(fNevt, localRun->GetNumberOfEvents()); //     localRun->fNevt;
   fIncidentBeamEnergy       = localRun->fIncidentBeamEnergy;
   fExiting_Flux             += localRun->GetExitingFlux();    // fExiting_Flux;
@@ -588,6 +595,7 @@ void G4TARCRun::Merge(const G4Run* thisRun) {
   fPiZero_flux              += localRun->fPiZero_flux;
   fPositron_flux            += localRun->fPositron_flux;
   fProton_flux              += localRun->fProton_flux;
+  fAntiProton_flux      += localRun->fAntiProton_flux;
   fMuon_flux                += localRun->fMuon_flux;
   fTriton_flux              += localRun->fTriton_flux;
   fDeuteron_flux            += localRun->fDeuteron_flux;

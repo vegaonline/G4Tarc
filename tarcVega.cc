@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 
+#include "G4Types.hh"
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
 #else
@@ -28,7 +29,7 @@
 #include "G4TARCSteppingAction.hh"
 #include "G4TARCStackingAction.hh"
 
-// I am adding all these and later we may be selective to pick effective ones
+// I am adding all these and later we may be selective to pick effective ones  :: for biasing and scoring
 #include "G4GeometrySampler.hh"
 #include "G4GeneralParticleSource.hh"
 #include "G4ImportanceBiasing.hh"
@@ -94,7 +95,6 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-
   // Choose the Random Engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
@@ -120,30 +120,27 @@ int main(int argc, char** argv) {
   }
 
   // construction of default run manager
-  #ifdef G4MULTITHREADED
+#ifdef G4MULTITHREADED
   	auto runManager = new G4MTRunManager;
     if ( nThreads > 0 ) {
       runManager->SetNumberOfThreads(nThreads);
     }
     G4cout << "Code is started with " << runManager->GetNumberOfThreads() << " threads. " << G4endl;
-  #else
+#else
   	auto runManager = new G4RunManager;
-  #endif
+#endif
 
   auto scoreManager = G4ScoringManager::GetScoringManager();
   scoreManager->SetVerboseLevel(1);
 
   G4String fileName = argv[1];
 
-
   //  construction of detector geometry setup
+  G4String parallelWorldName = "tarcParallelWorld";
   auto geomConstruct = new G4TARCDetectorConstruction(fileName);
   runManager->SetUserInitialization(geomConstruct);    // RUNMANAGER for Geometry
-
-  G4String parallelWorldName = "tarcParallelWorld";                // trying to use it
   auto parallelWorld =  new G4TARCParallelWorld(parallelWorldName);
   geomConstruct->RegisterParallelWorld(parallelWorld);
-
   G4GeometrySampler pgsN(parallelWorld->GetWorldVolume(), "neutron");
   //G4GeometrySampler pgsP(parallelWorld->GetWorldVolume(), "proton");
   pgsN.SetParallel(true);
@@ -171,15 +168,12 @@ int main(int argc, char** argv) {
 
   runManager->SetUserInitialization(phys);      // RUNMANAGER for Physics List
 
-
-
   // Action Initialization
   runManager->SetUserInitialization(new G4TARCActionInitialization());
 
+  //                                                                           runManager->Initialize();
   runManager->Initialize();
   parallelWorld->CreateImportanceStore();
-
-
   // Create new drawByParticleID model
   G4TrajectoryDrawByParticleID* model = new G4TrajectoryDrawByParticleID;
   // Configure model
@@ -190,7 +184,6 @@ int main(int argc, char** argv) {
   model->Set("proton", "red");
   model->Set("neutron", "yellow"); //G4Color(0.7, 0.1, 0.4));
   //Register model with visualization manager
-
 
   // Visualization
   auto visManager = new G4VisExecutive;
@@ -206,23 +199,23 @@ int main(int argc, char** argv) {
     UImanager->ApplyCommand(command + macro);
   } else {
     UImanager->ApplyCommand("/control/execute vis.mac");
-    #ifdef G4UI_USE
+#ifdef G4UI_USE
       G4UIExecutive* ui = new G4UIExecutive(argc, argv, session);
-    #endif
+#endif
     ui->SessionStart();
     delete ui;
   }
 
   G4GeometryManager::GetInstance()->OpenGeometry();
-  pgsN.ClearSampling();
+  // pgsN.ClearSampling();
 
   //termination of job
-  #ifdef G4VIS_USE
-    delete visManager;
-	G4cout << "Vis manager deleted" << G4endl;
-  #endif
-  // delete runManager;
-  G4cout << "run manager deleted" << G4endl;
+#ifdef G4VIS_USE
+  delete visManager;
+  G4cout << "Vis manager deleted" << G4endl;
+#endif
+  delete runManager;
+  //G4cout << "run manager deleted" << G4endl;
 
   return 0;
 }

@@ -29,7 +29,7 @@ class G4TARCRun : public G4Run {
 
 public:
   G4TARCRun();
-  virtual ~G4TARCRun(){};
+  virtual ~G4TARCRun();
 
 public:
   void ReadExperimentalDataFromFile(G4String& );
@@ -224,21 +224,21 @@ private:
   std::vector<std::vector<G4THitsMap<G4double> > > fRunMapPara;// [2][16]
   std::vector<std::vector<G4int> > fColIDPara;                 // [fParaName.size][fPrimeNameSum.size]
   */
-  
+
   G4String fParaName[2]    = {"TARCNeut", "TARCNeutSRC"};
   G4String fScorerName[18]  = {"Collisions0", "CollWeight0", "Population0", "Track_Enter0", "SL0", "SLW0", "SLWE0", "SLW_V0", "SLWE_V0","Collisions1", "CollWeight1", "Population1", "Track_Enter1", "SL1", "SLW1", "SLWE1", "SLW_V1", "SLWE_V1"};
 
   static const G4int fParaNumber = 2;      // (static)fParaName.size();
   static const G4int fScorerNumber = 18;    //fScorerName.size();
   static const G4int kLim = fScorerNumber / 2 - 1;
-  
+
   std::vector<G4String> fCollName;
   //  std::vector<std::vector<G4int> > fCollID;
   std::vector<G4int> fCollID;
 
   // G4THitsMap<G4double> fRunMapTARC[fParaNumber][fScorerNumber]; // map for accumulation [i][j]: i for det j for scorer
 
-  std::vector<std::vector<G4THitsMap<G4double>* > > fRunMapTARC;
+  //std::vector<std::vector<G4THitsMap<G4double>* > > fRunMapTARC;
 
   std::vector<G4THitsMap<G4double>* > fRunMap;
 };
