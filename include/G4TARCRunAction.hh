@@ -84,6 +84,11 @@ private:
   G4double fTARC_Integral_E;
   G4double fTARC_lithium;
   G4double fTARC_lithium_E;
+  G4double fAbsolute_TotalFlux;
+  G4double fAbsFlux;
+  G4double fAbsEFlux;
+  G4double fAbsFluence;
+  G4double fAbsFluenceShell;
 
 };
 

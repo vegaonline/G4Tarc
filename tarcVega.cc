@@ -82,7 +82,7 @@ void PrintUsage() {
          << G4endl;
   G4cerr << "\t \t Here -t option is available for multithreaded mode only." << G4endl;
   G4cerr << "The geometry that can be used from GeomData directory is :" << G4endl;
-  G4cerr << system("ls -l Data/GeomData/");
+  G4cerr << system("ls -l Data/GeomData/*.gdml");
   G4cerr << G4endl;
 }
 
@@ -171,7 +171,7 @@ int main(int argc, char** argv) {
   // Action Initialization
   runManager->SetUserInitialization(new G4TARCActionInitialization());
 
-  //                                                                           runManager->Initialize();
+  // Initialize Runmanager 
   runManager->Initialize();
   parallelWorld->CreateImportanceStore();
   // Create new drawByParticleID model
@@ -214,7 +214,7 @@ int main(int argc, char** argv) {
   delete visManager;
   G4cout << "Vis manager deleted" << G4endl;
 #endif
-  delete runManager;
+  //delete runManager;
   //G4cout << "run manager deleted" << G4endl;
 
   return 0;

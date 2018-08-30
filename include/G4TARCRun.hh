@@ -57,10 +57,10 @@ public:
   virtual void Merge(const G4Run*);
   virtual void FillPerEvent(G4double ) { ;}
 
-  G4int GetNumberOfHitsMap()  const                                {return fRunMap.size();}
-  G4THitsMap<G4double>* GetHitsMap(G4int idx)                      {return fRunMap[idx];}
-  G4THitsMap<G4double>* GetHitsMap(const G4String& detName, const G4String& colName);
-  G4THitsMap<G4double>* GetHitsMap(const G4String& fullName);
+  G4int GetNumberOfHitsMap()  const                                            {return fRunMap->GetSize();}
+  G4THitsMap<G4double> GetHitsMap(G4int idx)                      {return fRunMap[idx];}
+  G4THitsMap<G4double> GetHitsMap(const G4String& detName, const G4String& colName);
+  G4THitsMap<G4double> GetHitsMap(const G4String& fullName);
   void DumpAllScorer(){};
 
   void AddFlux(const G4String&);
@@ -69,8 +69,10 @@ public:
   void analyseNeutronRadialFluence(G4double, G4double, G4int); //G4double, G4int);
   void analyseNeutronFluence(G4double, G4double );
 
+  G4double GetCollectionValue(G4int) const;
+
 private:
-  G4double GetTotal(const G4THitsMap<G4double> &) const;
+  G4double GetTotal(const G4THitsMap<G4double>& ) const;
 
 public:
   G4bool flag;
@@ -212,11 +214,30 @@ public:
   G4double fIncidentBeamEnergy;
   G4String  fIncidentBeamParticleName;
 
+  G4String fParaName[2]    = {"TARCNeut", "TARCNeutSRC"};
+  G4String fScorerName[18]  = {"Collisions0", "CollWeight0", "Population0", "Track_Enter0", "SL0", "SLW0", "SLWE0", "SLW_V0", "SLWE_V0","Collisions1", "CollWeight1", "Population1", "Track_Enter1", "SL1", "SLW1", "SLWE1", "SLW_V1", "SLWE_V1"};
+  static const G4int fParaNumber = 2;      // (static)fParaName.size();
+  static const G4int fScorerNumber = 18;    //fScorerName.size();
+
 private:
   G4String                         fExptlDataFileName = "Data/TARC_EXPT_DATA/TARC_EXPTL_DATA.txt";
   std::vector<G4int>         fFluxTableList {36, 38};
   unsigned                         fMeanEnergyTable = 40;
   std::vector<G4double>  fMeanEnergyT40List;
+
+
+    static const G4int kLim = fScorerNumber / 2 - 1;
+
+    std::vector<G4String> fCollName;
+    //  std::vector<std::vector<G4int> > fCollID;
+    std::vector<G4int> fCollID;
+
+    // G4THitsMap<G4double> fRunMapTARC[fParaNumber][fScorerNumber]; // map for accumulation [i][j]: i for det j for scorer
+
+    //std::vector<std::vector<G4THitsMap<G4double>* > > fRunMapTARC;
+
+    //std::vector<G4THitsMap<G4double>* > fRunMap;
+    G4THitsMap<G4double> fRunMap[fScorerNumber];
 
   /*
   std::vector<std::vector<G4THitsMap<G4double> > > fRunMapSum; // [2][16]
@@ -225,21 +246,5 @@ private:
   std::vector<std::vector<G4int> > fColIDPara;                 // [fParaName.size][fPrimeNameSum.size]
   */
 
-  G4String fParaName[2]    = {"TARCNeut", "TARCNeutSRC"};
-  G4String fScorerName[18]  = {"Collisions0", "CollWeight0", "Population0", "Track_Enter0", "SL0", "SLW0", "SLWE0", "SLW_V0", "SLWE_V0","Collisions1", "CollWeight1", "Population1", "Track_Enter1", "SL1", "SLW1", "SLWE1", "SLW_V1", "SLWE_V1"};
-
-  static const G4int fParaNumber = 2;      // (static)fParaName.size();
-  static const G4int fScorerNumber = 18;    //fScorerName.size();
-  static const G4int kLim = fScorerNumber / 2 - 1;
-
-  std::vector<G4String> fCollName;
-  //  std::vector<std::vector<G4int> > fCollID;
-  std::vector<G4int> fCollID;
-
-  // G4THitsMap<G4double> fRunMapTARC[fParaNumber][fScorerNumber]; // map for accumulation [i][j]: i for det j for scorer
-
-  //std::vector<std::vector<G4THitsMap<G4double>* > > fRunMapTARC;
-
-  std::vector<G4THitsMap<G4double>* > fRunMap;
 };
 #endif

@@ -209,9 +209,9 @@ void RootDataPlotting(){
   c0->cd(1);
   gPad->SetLogx();
   gPad->SetLogy();
-  TARCG4FluenceHi->SetTitle("G4 Flux");
+  TARCG4FluenceHi->SetTitle("G4 based Neutron Flux");
   TARCG4FluenceHi->GetXaxis()->SetTitle("Energy / eV");
-  TARCG4FluenceHi->GetYaxis()->SetTitle("Flux ( dN/dE / source gamma)");
+  TARCG4FluenceHi->GetYaxis()->SetTitle("Neutron Flux ( dN/dE / source gamma)");
   TARCG4FluenceHi->GetYaxis()->SetTitleOffset(1.2);
   TARCG4FluenceHi->SetMarkerStyle(3);
   TARCG4FluenceHi->SetMarkerColor(kBlue + 3);
@@ -220,7 +220,7 @@ void RootDataPlotting(){
   c0->cd(2); // Right Top gPad
   gPad->SetLogx();
   gPad->SetLogy();
-  TARCG4FluenceLi->SetTitle("G4 Flux Li Data");
+  TARCG4FluenceLi->SetTitle("Neutron Flux at Li detector Data");
   TARCG4FluenceLi->SetMarkerStyle(3);
   TARCG4FluenceLi->GetXaxis()->SetTitle("Energy / eV");
   TARCG4FluenceLi->GetYaxis()->SetTitle("Flux ( dN/dE / source gamma)");
@@ -236,8 +236,8 @@ void RootDataPlotting(){
   tlx=new TLatex(0.12, 0.93, "TARC fluence comparison  for 1.5 GeV/c protons ");
   tlx->SetTextSize(0.5);
   tlx->SetNDC(kTRUE);
-  tlx->Draw();
-  gPad->DrawFrame(1.0e-3, 1.0e5, 1.0e7, 1.0e10,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
+  //tlx->Draw();
+  // gPad->DrawFrame(1.0e-3, 1.0e5, 1.0e7, 1.0e10,"; Energy/eV; EdF/dE n/cm^{2}/10^{9}p")->GetXaxis()->SetTitleOffset(1.2);
       
   TARCDataFluenceHi->SetMarkerStyle(kFullCircle);
   TARCDataFluenceHi->SetMarkerSize(0.8);
@@ -247,11 +247,11 @@ void RootDataPlotting(){
   TARCDataFluenceHe3->SetMarkerStyle(kOpenSquare);
   TARCDataFluenceHe3->SetMarkerSize(0.7);
   TARCDataFluenceHe3->SetMarkerColor(kRed );
-  TARCDataFluenceHe3->Draw("SAME E1");
+  //  TARCDataFluenceHe3->Draw("SAME E1");
       
   TARCDataFluenceLi->SetMarkerStyle(kDiamond);
   TARCDataFluenceLi->SetMarkerColor(kYellow -1);
-  TARCDataFluenceLi->Draw("SAME E1");
+  //TARCDataFluenceLi->Draw("SAME E1");
    
   double start = 0.13, stop = 0.9;
   double xwidth  = 0.35, ywidth = 0.14;
