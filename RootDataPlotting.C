@@ -66,13 +66,18 @@ void RootDataPlotting(){
   TH1F* TARCG4RatioHe3         = new TH1F("RatioG4He", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   //  TH1F* TARCG4RatRatHe3        = new TH1F("He3RatioBYRatio", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4RatioLi          = new TH1F("RatioG4Li", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
+  TH1F* TARCNeutCorr           = new TH1F("Correlation", "TARC Correlation function", 0, 50,1.0);
   //  TH1F* TARCG4RatRatLi         = new TH1F("LiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
   TH2F* radialHisto            = new TH2F("Radial", "TARC radial", 1000, -1000, 1000, 1000, 1.0, 2.5e+7);
 
   // Variables for histograms
-  double energy, tarcflux, errstat, g4flux, g4perp, g4fluence, g4error, rawflux, eflux, tarcmeanflux, abseflux;
+  double energy, time, tarcflux, errstat, g4flux, g4perp, g4fluence, g4error, rawflux, eflux, tarcmeanflux, abseflux;
   double radius, g4shell, g4shellerr, tarcmeanstep, tarccyl, tarcfrontflux;
+  double t0Corr = 0.37; //us
+  double KCorr = 173.3; // keV X us^2
   TLatex* tlx;
+  double maxNewX = -99999.99, minNewX = -1.0 * maxNewX;
+  double maxY = maxNewX, minY = minNewX;
   
   
   // Fill the histograms
@@ -81,6 +86,22 @@ void RootDataPlotting(){
     h3NExiting->GetEntry(irow);
     ExitingSpec->Fill(energy);
   }
+
+  std::ofstream ETout ("testET.dat", std::ios::out);
+  for (int irow = 0; irow < h2NET->GetEntries(); irow++) {
+    h2NET->SetBranchAddress("energy", &energy);
+    h2NET->SetBranchAddress("time", &time); // this time is already in microsecond
+    h2NET->GetEntry(irow);
+    double newX = (time + t0Corr) * sqrt(energy/1000.0);
+    maxNewX = std::max(maxNewX, newX);
+    minNewX = std::min(minNewX, newX);
+    maxY = std::max(maxY, energy);
+    minY = std::min(minY, energy);
+    //cout << "   maxX: " << maxNewX << "  minX: " << minNewX << "  maxY: " << maxY << "  minY: " << minY << endl;
+    ETout << newX << "   " << energy << std::endl;
+    TARCNeutCorr->Fill(newX, energy);
+  }
+  ETout.close();
 
   for (int irow = 0; irow < Flux4002->GetEntries(); ++irow) {
      Flux4002->SetBranchAddress("energy",     &energy);        Flux4002->GetEntry(irow);
@@ -94,8 +115,6 @@ void RootDataPlotting(){
      Flux4002->SetBranchAddress("eflux",      &eflux);         Flux4002->GetEntry(irow);
      Flux4002->SetBranchAddress("g4eflux",    &tarcmeanflux);  Flux4002->GetEntry(irow);
      Flux4002->SetBranchAddress("gstep",      &tarcmeanstep);  Flux4002->GetEntry(irow);
-     Flux4002->SetBranchAddress("gfl_cyl",    &tarccyl);       Flux4002->GetEntry(irow);
-     Flux4002->SetBranchAddress("g4front",    &tarcfrontflux); Flux4002->GetEntry(irow);
      Flux4002->SetBranchAddress("g4shell",    &g4shell);       Flux4002->GetEntry(irow);
      Flux4002->SetBranchAddress("g4shellerr", &g4shellerr);    Flux4002->GetEntry(irow);
      
@@ -134,8 +153,6 @@ void RootDataPlotting(){
     Flux4004->SetBranchAddress("g4err",      &g4error);       Flux4004->GetEntry(irow);
     Flux4004->SetBranchAddress("rawflux",    &rawflux);       Flux4004->GetEntry(irow);
     Flux4004->SetBranchAddress("gstep",      &tarcmeanstep);  Flux4004->GetEntry(irow);
-    Flux4004->SetBranchAddress("gfl_cyl",    &tarccyl);       Flux4004->GetEntry(irow);
-    Flux4004->SetBranchAddress("g4front",    &tarcfrontflux); Flux4004->GetEntry(irow);
     Flux4004->SetBranchAddress("g4shell",    &g4shell);       Flux4004->GetEntry(irow);
     Flux4004->SetBranchAddress("g4shellerr", &g4shellerr);    Flux4004->GetEntry(irow);
    
@@ -173,8 +190,6 @@ void RootDataPlotting(){
     Flux4005->SetBranchAddress("g4err",     &g4error);       Flux4005->GetEntry(irow);
     Flux4005->SetBranchAddress("rawflux",   &rawflux);       Flux4005->GetEntry(irow);
     Flux4005->SetBranchAddress("gstep",     &tarcmeanstep);  Flux4005->GetEntry(irow);
-    Flux4005->SetBranchAddress("gfl_cyl",   &tarccyl);       Flux4005->GetEntry(irow);
-    Flux4005->SetBranchAddress("g4front",   &tarcfrontflux); Flux4002->GetEntry(irow);
     Flux4005->SetBranchAddress("g4shell",   &g4shell);       Flux4005->GetEntry(irow);
      
      
@@ -535,7 +550,7 @@ void RootDataPlotting(){
   gPad->SetLogy();
   gStyle->SetTitle("fluence");
   gPad->DrawFrame(-220, 1e-3, 220.0, 5.0e11, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
-  RadShellFluence->SetMarkerStyle(21);
+  RadShellFluence->SetMarkerStyle(7);
   RadShellFluence->SetMarkerColor(kRed);
   RadShellFluence->SetMarkerSize(0.8);
   //RadShellFluence->Scan();
@@ -564,7 +579,24 @@ void RootDataPlotting(){
   savedFileN = thisTitlePart10 + "_radial.png";
   c10->Print(savedFileN);
   c10->Close();
- 
+
+
+  //******************************** c11 *******************************************
+
+  TCanvas* c11 = new TCanvas("c11", "TARC Neutron ET correlation", 900, 700);
+  gStyle->SetHistLineWidth(3);
+  gStyle->SetTitleX(0.2);
+  gPad->DrawFrame(0.0, 1.0e-4, 60.0, 1.0e8, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+  gPad->SetLogy();
+  //gPad->SetLogx();
+  TARCNeutCorr->Print();
+  gStyle->SetTitle("Neutron energy-time correlation");
+  TARCNeutCorr->Draw();
+  savedFileN = thisTitlePart10 + "_Neutron_ET_Correlation.png";
+  c11->Print(savedFileN);
+  c11->Close();
+  
+
   
   tf1->Close();
 }

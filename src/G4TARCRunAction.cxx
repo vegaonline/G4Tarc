@@ -144,10 +144,8 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleDColumn("eflux");   // 8
   fAnalysisManager->CreateNtupleDColumn("g4eflux");    // 9
   fAnalysisManager->CreateNtupleDColumn("gstep");      // 10
-  // fAnalysisManager->CreateNtupleDColumn("gfl_cyl");    // 11
-  //fAnalysisManager->CreateNtupleDColumn("g4front");    // 12
-  fAnalysisManager->CreateNtupleDColumn("g4shell");   // 13  :: 11
-  fAnalysisManager->CreateNtupleDColumn("g4shellerr");   // 14  :: 12
+  fAnalysisManager->CreateNtupleDColumn("g4shell");   // 11
+  fAnalysisManager->CreateNtupleDColumn("g4shellerr");   // 12
   fAnalysisManager->FinishNtuple(); // ntupleID: 3
 
   fAnalysisManager->CreateNtuple("h5_Flux_4004", "Neutrons G4TARC flux");
@@ -160,8 +158,6 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleDColumn("g4err");
   fAnalysisManager->CreateNtupleDColumn("rawflux");
   fAnalysisManager->CreateNtupleDColumn("gstep");
-  //fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
-  //fAnalysisManager->CreateNtupleDColumn("g4front");
   fAnalysisManager->CreateNtupleDColumn("g4shell");
   fAnalysisManager->CreateNtupleDColumn("g4shellerr");
   fAnalysisManager->FinishNtuple(); // ntupleID: 4
@@ -174,16 +170,10 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleDColumn("g4flux");
   fAnalysisManager->CreateNtupleDColumn("g4perp");
   fAnalysisManager->CreateNtupleDColumn("g4fluence");
-  //fAnalysisManager->CreateNtupleDColumn("g4zflux");
   fAnalysisManager->CreateNtupleDColumn("g4err");
-  //fAnalysisManager->CreateNtupleDColumn("flux5cm");
-  //fAnalysisManager->CreateNtupleDColumn("err5cm");
   fAnalysisManager->CreateNtupleDColumn("rawflux");
   fAnalysisManager->CreateNtupleDColumn("gstep");
-  //fAnalysisManager->CreateNtupleDColumn("gfl_cyl");
-  //fAnalysisManager->CreateNtupleDColumn("g4front");
   fAnalysisManager->CreateNtupleDColumn("g4shell");
-  //fAnalysisManager->CreateNtupleDColumn("g4_shell_err");
   fAnalysisManager->FinishNtuple(); // ntupleID: 5
 
   fAnalysisManager->CreateNtuple("h7_Created_N_A", "Created Neutrons");
@@ -245,27 +235,11 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleDColumn("syst_err");
   fAnalysisManager->FinishNtuple(); // ntupleID: 11
 
-/*
-  fAnalysisManager->CreateNtuple("h13_Rad_Fluence_Li", "Radial Fluence Li");
-  fAnalysisManager->CreateNtupleDColumn("radius");
-  fAnalysisManager->CreateNtupleDColumn("energy");
-  fAnalysisManager->CreateNtupleDColumn("data");
-  fAnalysisManager->CreateNtupleDColumn("stat_err");
-  fAnalysisManager->CreateNtupleDColumn("syst_err");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 12
-
-  fAnalysisManager->CreateNtuple("h14_Rad_Fluence", "Radial Fluence");
-  fAnalysisManager->CreateNtupleDColumn("radius");
-  fAnalysisManager->CreateNtupleDColumn("energy");
-  fAnalysisManager->CreateNtupleDColumn("fluence");
-  fAnalysisManager->CreateNtupleDColumn("he_data");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 13
-*/
   fAnalysisManager->CreateNtuple("h15_Other_ET", "OTHER Time");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleDColumn("primary");
-  fAnalysisManager->FinishNtuple(); // ntupleID: 14  : 12                        after commenting 12 and 13
+  fAnalysisManager->FinishNtuple(); // ntupleID: 12
 
   G4cout << "BookHisto Ntuples created." << G4endl;
 
@@ -274,8 +248,8 @@ void G4TARCRunAction::BookHistogram() {
 void G4TARCRunAction::FillRadialExperimentalData(const G4TARCRun* tarcRun){
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
 
-  for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  fExptRadiiTables.size(); ij1++){  0~ 41 to 7 ~ 48
-    for (std::size_t ij2 = 0; ij2 < tarcRun->fExptRadiiTables[ij1].size(); ij2++){    //   fExptRadiiTables[ij1].size(); ij2++){
+  for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  0~ 41 to 7 ~ 48
+    for (std::size_t ij2 = 0; ij2 < tarcRun->fExptRadiiTables[ij1].size(); ij2++){
       fAnalysisManager->FillNtupleDColumn(9, 0, tarcRun->fExptRadiiTables[ij1][ij2] );  //  converted to mm
       fAnalysisManager->FillNtupleDColumn(9, 1, tarcRun->fExptEnergyBin[ij1]);
       fAnalysisManager->FillNtupleDColumn(9, 2, tarcRun->fExptFluenceTables[ij1][ij2] * 100.0);   // transferring to unit n/cm^2/eV/10^9p
@@ -370,12 +344,8 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
     fAnalysisManager->FillNtupleDColumn(4, 6, fAbsLowError);
     fAnalysisManager->FillNtupleDColumn(4, 7, tarcRun->fFlux_Low[ij1]);
     fAnalysisManager->FillNtupleDColumn(4, 8, tarcRun->fLow_Fluence_Step[ij1]);         // low_fluence_step
-    //fAnalysisManager->FillNtupleDColumn(4, 9, 0.0);        // abs low fluence cyl
-    //fAnalysisManager->FillNtupleDColumn(4, 10, 0.0);           // abs low fluence front
     fAnalysisManager->FillNtupleDColumn(4, 9, fAbsLowFluenceShell);           // abs low fluence shell
     fAnalysisManager->FillNtupleDColumn(4, 10, fAbsLowFluenceShellError);           // abs low fluence shell error
-    // fAnalysisManager->FillNtupleDColumn(4, 11, fAbsLowFluenceShell);           // abs low fluence shell
-    // fAnalysisManager->FillNtupleDColumn(4, 12, fAbsLowFluenceShellError);           // abs low fluence shell error
     fAnalysisManager->AddNtupleRow(4);
 
   }
@@ -406,9 +376,6 @@ void G4TARCRunAction::NeutronFluxHistogram(G4int fNevents, const G4TARCRun* tarc
     fAnalysisManager->FillNtupleDColumn(5, 7, tarcRun->fLithium_Flux[ij1] * 100.0);
     fAnalysisManager->FillNtupleDColumn(5, 8, tarcRun->fLithium_Fluence_Step[ij1]);
     fAnalysisManager->FillNtupleDColumn(5, 9, fAbsLithiumFluenceShell);
-    //fAnalysisManager->FillNtupleDColumn(5, 9, 0.0);
-    //fAnalysisManager->FillNtupleDColumn(5, 10, 0.0);
-    // fAnalysisManager->FillNtupleDColumn(5, 11, fAbsLithiumFluenceShell);
     fAnalysisManager->AddNtupleRow(5);
 
   }
@@ -480,7 +447,7 @@ void  G4TARCRunAction::ResultSummary(const G4int nEvent, const G4TARCRun* tarcRu
   trackout << "Integral Neutron Flux at 45.6 cms:  " << tarcRun->fIntegral_flux_46cm * xFac
 	          << " Integral EFLUX at 45.6 cms:  "         << trVal2                                                       << enerU2 << G4endl;
 
-  trackout << "********** Some Important parameters per event  *************************" <<G4endl;
+  trackout << "   ********** Some Important parameters per event  *************************" <<G4endl;
   trackout << std::setprecision(4) << "   Average Number of protons:      " << tarcRun->fProton_flux * xFac << G4endl;
   trackout << std::setprecision(4) << "   Average Number of Anti-protons: " << tarcRun->fAntiProton_flux * xFac << G4endl;
   trackout << std::setprecision(4) << "   Average Number of gammas:       " << tarcRun->fGamma_flux * xFac << G4endl;
@@ -499,18 +466,17 @@ void  G4TARCRunAction::ResultSummary(const G4int nEvent, const G4TARCRun* tarcRu
   trackout << std::setprecision(4) << "   Average Number of Tritons:      " << tarcRun->fTriton_flux * xFac << G4endl;
 
 
-  trackout << " ****************** Some Neutron Related results per event **************" << G4endl;
+  trackout << "   ****************** Some Neutron Related results per event **************" << G4endl;
   trackout << std::setprecision(4) << "   Neutron Init:                   " << tarcRun->fNeutronInit * xFac <<  G4endl;
   trackout << G4endl;
-  trackout << " ****************** Some Neutron Related results  **************" << G4endl;
+  trackout << "   ****************** Some Neutron Related results  **************" << G4endl;
   for (G4int ii = 0; ii < tarcRun->fScorerNumber; ii++){
     G4int jj = ii % 9;
     if (tarcRun->GetCollectionValue(ii) ){
       trackout << std::setprecision(4) << ii+1
                  << ". For " << tarcRun->fParaName[jj] << "  Total " << tarcRun->fScorerName[ii] << " :  " << tarcRun->GetCollectionValue(ii) << G4endl;
-    }
   }
-  
+
   trackout << G4endl;
   trackout.close();
 }
