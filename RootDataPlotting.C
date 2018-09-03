@@ -66,9 +66,9 @@ void RootDataPlotting(){
   TH1F* TARCG4RatioHe3         = new TH1F("RatioG4He", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   //  TH1F* TARCG4RatRatHe3        = new TH1F("He3RatioBYRatio", "TARC Fluence Ratio G4 Fluence (He3)", (xLoCnt - 1), fXbinLo);
   TH1F* TARCG4RatioLi          = new TH1F("RatioG4Li", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
-  TH1F* TARCNeutCorr           = new TH1F("Correlation", "TARC Correlation function", 0, 50,1.0);
   //  TH1F* TARCG4RatRatLi         = new TH1F("LiRatioBYRatio", "TARC Fluence Ratio G4 Fluence (Li)", (xLoCnt - 1), fXbinLo);
   TH2F* radialHisto            = new TH2F("Radial", "TARC radial", 1000, -1000, 1000, 1000, 1.0, 2.5e+7);
+  TH2F* TARCNeutCorr           = new TH2F("Correlation", "TARC Correlation function", 5000, 0.52, 50, 5000,0.00057, 1.8e9);
 
   // Variables for histograms
   double energy, time, tarcflux, errstat, g4flux, g4perp, g4fluence, g4error, rawflux, eflux, tarcmeanflux, abseflux;
@@ -97,10 +97,10 @@ void RootDataPlotting(){
     minNewX = std::min(minNewX, newX);
     maxY = std::max(maxY, energy);
     minY = std::min(minY, energy);
-    //cout << "   maxX: " << maxNewX << "  minX: " << minNewX << "  maxY: " << maxY << "  minY: " << minY << endl;
     ETout << newX << "   " << energy << std::endl;
     TARCNeutCorr->Fill(newX, energy);
   }
+  cout << "   maxX: " << maxNewX << "  minX: " << minNewX << "  maxY: " << maxY << "  minY: " << minY << endl;
   ETout.close();
 
   for (int irow = 0; irow < Flux4002->GetEntries(); ++irow) {
@@ -586,7 +586,7 @@ void RootDataPlotting(){
   TCanvas* c11 = new TCanvas("c11", "TARC Neutron ET correlation", 900, 700);
   gStyle->SetHistLineWidth(3);
   gStyle->SetTitleX(0.2);
-  gPad->DrawFrame(0.0, 1.0e-4, 60.0, 1.0e8, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+  //gPad->DrawFrame(0.0, 1.0, 60.0, 1.0e10, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
   gPad->SetLogy();
   //gPad->SetLogx();
   TARCNeutCorr->Print();
