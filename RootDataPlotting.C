@@ -86,7 +86,7 @@ void RootDataPlotting(){
     h3NExiting->GetEntry(irow);
     ExitingSpec->Fill(energy);
   }
-
+  /*
   std::ofstream ETout ("testET.dat", std::ios::out);
   for (int irow = 0; irow < h2NET->GetEntries(); irow++) {
     h2NET->SetBranchAddress("energy", &energy);
@@ -102,7 +102,7 @@ void RootDataPlotting(){
   }
   cout << "   maxX: " << maxNewX << "  minX: " << minNewX << "  maxY: " << maxY << "  minY: " << minY << endl;
   ETout.close();
-
+  */
   for (int irow = 0; irow < Flux4002->GetEntries(); ++irow) {
      Flux4002->SetBranchAddress("energy",     &energy);        Flux4002->GetEntry(irow);
      Flux4002->SetBranchAddress("tarcflux",   &tarcflux);      Flux4002->GetEntry(irow);
