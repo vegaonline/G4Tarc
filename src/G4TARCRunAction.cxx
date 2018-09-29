@@ -418,7 +418,6 @@ void  G4TARCRunAction::ResultSummary(const G4int nEvent, const G4TARCRun* tarcRu
   G4String enerU1 = "", enerU2 = "";
   G4double xFac = 1.0 / (G4double)nEvent; //tarcRun->fNevt;
 
-
   G4double fExitFlux = tarcRun->GetExitingFlux();
   G4double fExitEnergy = tarcRun->GetExitingEnergy();
   //G4double fExitCheckFlux = tarcRun->GetExitingCheckFlux();
@@ -470,12 +469,14 @@ void  G4TARCRunAction::ResultSummary(const G4int nEvent, const G4TARCRun* tarcRu
   trackout << std::setprecision(4) << "   Neutron Init:                   " << tarcRun->fNeutronInit * xFac <<  G4endl;
   trackout << G4endl;
   trackout << "   ****************** Some Neutron Related results  **************" << G4endl;
+  /*
   for (G4int ii = 0; ii < tarcRun->fScorerNumber; ii++){
     G4int jj = ii % 9;
-    if (tarcRun->GetCollectionValue(ii) ){
+    if (tarcRun->GetCollectionValue(ii) )
       trackout << std::setprecision(4) << ii+1
                  << ". For " << tarcRun->fParaName[jj] << "  Total " << tarcRun->fScorerName[ii] << " :  " << tarcRun->GetCollectionValue(ii) << G4endl;
   }
+  */
 
   trackout << G4endl;
   trackout.close();

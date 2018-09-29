@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
   char*                       physnameInput = getenv("PHYSLIST");
   G4String                    physicsName   = "";
   if (physnameInput)          physicsName   = G4String(physnameInput);
-  if (!physicsName.size())    physicsName   = "QGSP_BIc_HP";
+  if (!physicsName.size())    physicsName   = "QGSP_BERT_HP";
 
   if (physicsName.size() && physFactory.IsReferencePhysList(physicsName)){
       phys = physFactory.GetReferencePhysList(physicsName);
@@ -171,11 +171,11 @@ int main(int argc, char** argv) {
   // Action Initialization
   runManager->SetUserInitialization(new G4TARCActionInitialization());
 
-  // Initialize Runmanager 
+  // Initialize Runmanager
   runManager->Initialize();
   parallelWorld->CreateImportanceStore();
   // Create new drawByParticleID model
-  G4TrajectoryDrawByParticleID* model = new G4TrajectoryDrawByParticleID;
+  auto model = new G4TrajectoryDrawByParticleID;
   // Configure model
   model->SetDefault("white");
   model->Set("gamma", "green");

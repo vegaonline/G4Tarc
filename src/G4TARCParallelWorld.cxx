@@ -49,7 +49,7 @@ void G4TARCParallelWorld::DefineShellsBlocks() {
     tmp -=fRefShellThickness;
     fInnerRadiusofShell.push_back(tmp);
   }
-  std::cout << " Define Blocks in ParallelWorld  initialised." << std::endl;
+  std::cout << "Define Blocks in ParallelWorld  initialised." << std::endl;
 }
 
 

@@ -52,35 +52,31 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
     for(fLVciter = fLVS->begin(); fLVciter != fLVS->end(); fLVciter++) {
       G4String LVName = (*fLVciter)->GetName();
       if ((LVName.find(sslog) != std::string::npos) || (LVName.find(sslog2) != std::string::npos)){
-	  (*fLVciter)->SetMaterial(fTc99);
-	  (*fLVciter)->SetVisAttributes(new G4Colour(1.0, 0.5, 0.5));
+	      (*fLVciter)->SetMaterial(fTc99);
+	      (*fLVciter)->SetVisAttributes(new G4Colour(1.0, 0.5, 0.5));
       }
       fLVvectorMini.push_back(*fLVciter);
 
-      /*
+/*
       std::size_t found1 = LVName.find("blockA_log");
       std::size_t found2 = LVName.find("blockB_log");
       std::size_t found3 = LVName.find("blockC_log");
       std::size_t found4 = LVName.find("Sphere_log");
       std::size_t found5 = LVName.find("Tube_log");
       if ((found1 != std::string::npos) || (found2 != std::string::npos)
-	  || (found3 != std::string::npos) || (found4 != std::string::npos)
-	  || (found5 != std::string::npos)
+	     || (found3 != std::string::npos) || (found4 != std::string::npos)
+	      || (found5 != std::string::npos)
       ){
-	if ((LVName.find(sslog) != std::string::npos) || (LVName.find(sslog2) != std::string::npos)){
-	  (*fLVciter)->SetMaterial(fTc99);
-	  (*fLVciter)->SetVisAttributes(new G4Colour(1.0, 0.5, 0.5));
-	}
-	fLVvectorMini.push_back(*fLVciter);
-	//G4cout << (*fLVciter)->GetName() << G4endl;
+	      if ((LVName.find(sslog) != std::string::npos) || (LVName.find(sslog2) != std::string::npos)){
+	        (*fLVciter)->SetMaterial(fTc99);
+	        (*fLVciter)->SetVisAttributes(new G4Colour(1.0, 0.5, 0.5));
+	      }
+	      fLVvectorMini.push_back(*fLVciter);
+	      //G4cout << (*fLVciter)->GetName() << G4endl;
       }
+*/
     }
-      */
   }
- }
-
-
-
 
   // sample_phys :: CopyNo:0 sampleSphere_log
 /*
@@ -91,7 +87,7 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
            << G4endl;
   }
 */
-  G4cout <<*(G4Material::GetMaterialTable()) << G4endl;
+  //G4cout <<*(G4Material::GetMaterialTable()) << G4endl;
   return fWorldPhysVol;
 }
 
