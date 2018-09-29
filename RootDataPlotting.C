@@ -12,7 +12,7 @@
 
 void RootDataPlotting(){
   // ROOT Data file loaded
-  TFile* tf1 = TFile::Open("res.root");
+  TFile* tf1 = TFile::Open("G4TARC_output.root");
 
   // Declaring some parameters could be used for scaling/binning
   const int xHiCnt = 22;
@@ -86,23 +86,25 @@ void RootDataPlotting(){
     h3NExiting->GetEntry(irow);
     ExitingSpec->Fill(energy);
   }
+
+  //std::ofstream ETout ("testET.dat", std::ios::out);
   /*
-  std::ofstream ETout ("testET.dat", std::ios::out);
   for (int irow = 0; irow < h2NET->GetEntries(); irow++) {
     h2NET->SetBranchAddress("energy", &energy);
     h2NET->SetBranchAddress("time", &time); // this time is already in microsecond
     h2NET->GetEntry(irow);
     double newX = (time + t0Corr) * sqrt(energy/1000.0);
-    maxNewX = std::max(maxNewX, newX);
-    minNewX = std::min(minNewX, newX);
-    maxY = std::max(maxY, energy);
-    minY = std::min(minY, energy);
-    ETout << newX << "   " << energy << std::endl;
+    // maxNewX = std::max(maxNewX, newX);
+    // minNewX = std::min(minNewX, newX);
+    // maxY = std::max(maxY, energy);
+    // minY = std::min(minY, energy);
+    // ETout << newX << "   " << energy << std::endl;
     TARCNeutCorr->Fill(newX, energy);
   }
-  cout << "   maxX: " << maxNewX << "  minX: " << minNewX << "  maxY: " << maxY << "  minY: " << minY << endl;
-  ETout.close();
   */
+  //cout << "   maxX: " << maxNewX << "  minX: " << minNewX << "  maxY: " << maxY << "  minY: " << minY << endl;
+  //ETout.close();
+
   for (int irow = 0; irow < Flux4002->GetEntries(); ++irow) {
      Flux4002->SetBranchAddress("energy",     &energy);        Flux4002->GetEntry(irow);
      Flux4002->SetBranchAddress("tarcflux",   &tarcflux);      Flux4002->GetEntry(irow);
@@ -549,13 +551,15 @@ void RootDataPlotting(){
   gStyle->SetTitleX(0.2);
   gPad->SetLogy();
   gStyle->SetTitle("fluence");
-  gPad->DrawFrame(-220, 1e-3, 220.0, 5.0e11, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
-  RadShellFluence->SetMarkerStyle(7);
+  // gPad->DrawFrame(-220, 1e-3, 220.0, 5.0e11, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+  gPad->DrawFrame(-10.0, 1e-3, 220.0, 5.0e11, "; Radial Distance / cm; dF/dE (n/cm^{2}/eV/10^{9} p)")->GetXaxis()->SetTitleOffset(1.2);
+  RadShellFluence->SetMarkerStyle(28); //7);
   RadShellFluence->SetMarkerColor(kRed);
   RadShellFluence->SetMarkerSize(0.8);
   //RadShellFluence->Scan();
   //RadShellFluence->Draw("radialFluenceTrueMean/radialEnergyTrueMean  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
-  RadShellFluence->Draw("fluence/energy  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
+  //  RadShellFluence->Draw("fluence/energy  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
+  RadShellFluence->Draw("true_f/true_e * 100.0  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
   ExptLiData->SetMarkerStyle(28);
   ExptLiData->SetMarkerSize(0.8);
   ExptLiData->SetMarkerColor(kBlue);
@@ -582,7 +586,7 @@ void RootDataPlotting(){
 
 
   //******************************** c11 *******************************************
-
+  /*
   TCanvas* c11 = new TCanvas("c11", "TARC Neutron ET correlation", 900, 700);
   gStyle->SetHistLineWidth(3);
   gStyle->SetTitleX(0.2);
@@ -595,8 +599,22 @@ void RootDataPlotting(){
   savedFileN = thisTitlePart10 + "_Neutron_ET_Correlation.png";
   c11->Print(savedFileN);
   c11->Close();
-  
-
-  
+  */
+ //******************************** C12 *******************************************
+ TCanvas* c12 = new TCanvas("c12","", 1020, 800);
+ gPad->SetLogx();
+ gPad->SetLogy();
+ TARCG4FluenceHi->SetTitle("G4 based Neutron Flux");
+ TARCG4FluenceHi->GetXaxis()->SetTitle("Energy / eV");
+ TARCG4FluenceHi->GetYaxis()->SetTitle("Neutron Flux ( dF/dE (n/cm^{2}/eV/10^{9} proton))");
+ TARCG4FluenceHi->GetYaxis()->SetTitleOffset(1.2);
+ TARCG4FluenceHi->SetMarkerStyle(3);
+ TARCG4FluenceHi->SetMarkerColor(kBlue + 3);
+ TARCG4FluenceHi->Draw(""); //"SAME");
+ savedFileN = thisTitlePart10 + "_G4_Neutron_Flux.png";
+ c12->Print(savedFileN);
+ c12->Close();
+ //******************************** END ***********************************************
+															     
   tf1->Close();
 }
