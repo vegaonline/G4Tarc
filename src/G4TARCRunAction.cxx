@@ -77,7 +77,8 @@ void G4TARCRunAction::BookHistogram() {
   delete G4AnalysisManager::Instance();
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   //fAnalysisManager->SetNtupleMerging(true, 0, true);  // row-wise saving mode
-  fAnalysisManager->SetNtupleMerging(true, 0, false);
+  // fAnalysisManager->SetNtupleMerging(true, 0, false);
+  fAnalysisManager->SetNtupleMerging(true);
   fAnalysisManager->SetVerboseLevel(1);    // 4);
   fAnalysisManager->SetFileName(fAnalysisFileName);
   //if (!fHistoBooked)  fAnalysisManager->SetFirstHistoId(1);

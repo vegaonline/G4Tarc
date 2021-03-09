@@ -43,6 +43,7 @@
 #include "G4HadronElasticPhysicsXS.hh"
 #include "G4HadronElasticPhysicsHP.hh"
 #include "G4HadronCaptureProcess.hh"
+#include "G4HadronElasticProcess.hh"
 #include "G4HadronFissionProcess.hh"
 #include "G4HadronPhysicsFTFP_BERT.hh"
 #include "G4HadronPhysicsFTFP_BERT_HP.hh"

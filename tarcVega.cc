@@ -201,9 +201,9 @@ int main(int argc, char** argv) {
     UImanager->ApplyCommand("/control/execute vis.mac");
 #ifdef G4UI_USE
       G4UIExecutive* ui = new G4UIExecutive(argc, argv, session);
+      ui->SessionStart();
+      delete ui;
 #endif
-    ui->SessionStart();
-    delete ui;
   }
 
   G4GeometryManager::GetInstance()->OpenGeometry();
