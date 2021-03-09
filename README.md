@@ -13,3 +13,15 @@ that reacts with the transuranic element that has to be treated in resonance reg
 There is another version of the same code that uses small portable pulsed neutron source 
 array. It does not need any accelerator. So this is not messy. It needs an array of 
 portable pulsed neutron generator.
+
+To compile:
+ either use canonical steps with cmake and make,
+ OR just run "MYMAKE_G4_TARC.RUN" followed by make.
+
+To run:
+
+./TARCVEGA.run run.mac | vis.mac
+
+The output file is "G4TARC_output.root" which could be copied as res.root.
+The file "RootMacroNew.C" stored in "IMP_CODELETS" directory could be used to produced png using ROOT.
+
