@@ -36,12 +36,14 @@ void G4TARCDetectorConstruction::SetReadFile( const G4String& gdmlFile ) {
 
 G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
   if (!fConstructed) {
-    fConstructed = true;
     if (!fFileLoaded) {
       fParser.Read(fGdmlFileNAME, true);
       fFileLoaded = true;
       fWorldPhysVol = fParser.GetWorldVolume();
     }
+	G4cout << "GDML loaded" << G4endl;
+    fConstructed = true;
+
 
     addTransU();   // define extra material(s) for testSphere LV
 
@@ -87,7 +89,7 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
            << G4endl;
   }
 */
-  //G4cout <<*(G4Material::GetMaterialTable()) << G4endl;
+  G4cout <<*(G4Material::GetMaterialTable()) << G4endl;
   return fWorldPhysVol;
 }
 

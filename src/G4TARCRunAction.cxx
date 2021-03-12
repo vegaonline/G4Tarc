@@ -6,13 +6,13 @@
 #include "G4TARCRunAction.hh"
 
 G4TARCRunAction::G4TARCRunAction() : G4UserRunAction(), fHistoBooked(false), fEventNum(0) {
-  //  G4RunManager::GetRunManager()->SetPrintProgress(1);
-  //G4cout << "RunAction ctor starts for " << this << G4endl;
+  G4RunManager::GetRunManager()->SetPrintProgress(1);
+  // G4cout << "RunAction ctor starts for " << this << G4endl;
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   DefineShellBlocks();
   if (!fHistoBooked) BookHistogram();
   G4cout << fAnalysisManager->GetType() << " data is being stored." << G4endl;
-  //G4cout << "RunAction ctor done for one" << this << G4endl;
+  // G4cout << "RunAction ctor done for one" << this << G4endl;
 }
 
 G4TARCRunAction::~G4TARCRunAction() {
@@ -25,7 +25,6 @@ G4Run* G4TARCRunAction::GenerateRun() {
 
 void G4TARCRunAction::BeginOfRunAction(const G4Run* thisRun){
   auto fAnalysisManager = G4AnalysisManager::Instance();
-
   G4cout << " Run # " << thisRun->GetRunID() << " starts. " << G4endl;
   fAnalysisManager->OpenFile();
 }

@@ -97,7 +97,7 @@ private:
 
 private:
   static G4ThreadLocal G4bool fConstructedSDandField;
-  G4bool                   fConstructed;
+  G4bool                   fConstructed = false;
   G4bool                   fLogiTestLogPBeamTest = false;
   G4bool                   fFileLoaded = false;
   G4TARCDetectorMessenger* fDetectorMessenger = 0;

@@ -21,10 +21,9 @@
 #include "G4TARCDetectorConstruction.hh"
 #include "G4TARCParallelWorld.hh"
 #include "G4TARCPhysicsList.hh"
-//#include "G4TARCPhysicsListMessenger.hh"
-// #include "G4TARCPrimaryGeneratorAction.hh"
+// #include "G4TARCPhysicsListMessenger.hh"
 #include "G4TARCActionInitialization.hh"
-//  #include "G4TARCRunAction.hh"
+#include "G4TARCRunAction.hh"
 #include "G4TARCEventAction.hh"
 #include "G4TARCSteppingAction.hh"
 #include "G4TARCStackingAction.hh"
@@ -56,17 +55,17 @@
 #include "G4Material.hh"
 #include "G4TrajectoryDrawByParticleID.hh"
 
-#include "FTFP_BERT.hh"
-#include "FTFP_BERT_HP.hh"
-#include "QGSP_BERT.hh"
+// #include "FTFP_BERT.hh"
+// #include "FTFP_BERT_HP.hh"
+// #include "QGSP_BERT.hh"
 #include "QGSP_BIC_HP.hh"
-#include "QGSP_BIC_AllHP.hh"
-#include "QGSP_BIC.hh"
-#include "QGS_BIC.hh"
-#include "QGSP_INCLXX.hh"
-#include "QGSP_INCLXX_HP.hh"
-#include "QBBC.hh"
-#include "LBE.hh"
+// #include "QGSP_BIC_AllHP.hh"
+// #include "QGSP_BIC.hh"
+// #include "QGS_BIC.hh"
+// #include "QGSP_INCLXX.hh"
+// #include "QGSP_INCLXX_HP.hh"
+// #include "QBBC.hh"
+// #include "LBE.hh"
 
 
 #include "G4UImanager.hh"
@@ -134,6 +133,7 @@ int main(int argc, char** argv) {
   scoreManager->SetVerboseLevel(1);
 
   G4String fileName = argv[1];
+  std::cout << "geometry Name: " << fileName << std::endl;
 
   //  construction of detector geometry setup
   G4String parallelWorldName = "tarcParallelWorld";

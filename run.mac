@@ -4,7 +4,7 @@
 /control/verbose 0
 /tracking/verbose 0
 /event/verbose 0
-/run/verbose 0
+/run/verbose 2
 /gps/verbose 0 #2
 
 /tracking/storeTrajectory 0
@@ -47,5 +47,5 @@
 #/tarc/histo/fileName Hadro
 #/tarc/histo/setHisto 0 10  0 1500 MeV
 
-/run/beamOn 10000
+/run/beamOn 500
 
