@@ -12,7 +12,8 @@
 
 
 void RootMacroNew() {
-  TFile*   tf1 = TFile::Open("res.root");
+  // TFile*   tf1 = TFile::Open("res.root");
+  TFile*   tf1 = TFile::Open("G4TARC_output.root");
 
   // Variables required
   const int xHiCnt = 22, xLoCnt = 102;
