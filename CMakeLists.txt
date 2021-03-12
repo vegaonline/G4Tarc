@@ -4,7 +4,7 @@
 # Abhijit Bhattacharyya
 # Nov 2017 : CERN
 #----------------------------------------------------------------
-cmake_minimum_required(VERSION 2.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 project(TARC)
 cmake_policy(SET CMP0003 NEW)

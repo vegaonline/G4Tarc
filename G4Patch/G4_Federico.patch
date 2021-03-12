@@ -1,0 +1,45 @@
+diff --git a/source/processes/hadronic/models/particle_hp/src/G4ParticleHPInelasticCompFS.cc b/source/processes/hadronic/models/particle_hp/src/G4ParticleHPInelasticCompFS.cc
+index b4aa7d5..0830aa0 100644
+--- a/source/processes/hadronic/models/particle_hp/src/G4ParticleHPInelasticCompFS.cc
++++ b/source/processes/hadronic/models/particle_hp/src/G4ParticleHPInelasticCompFS.cc
+@@ -410,8 +410,7 @@ void G4ParticleHPInelasticCompFS::CompositeApply(const G4HadProjectile& theTrack
+           // QI introudced since G4NDL3.15
+           // G4double QM=(incidReactionProduct.GetMass()+targetMass)-(aHadron.GetMass()+residualMass);
+           // eExcitation = QM-QI[it];
+-          eExcitation = QI[0] - QI[it];   // Bug fix #1838
+-          if(eExcitation < 20*CLHEP::keV) eExcitation = 0;
++          eExcitation = std::max(0.,QI[0] - QI[it]);   // Bug fix #1838
+
+           // Re-evluate iLevel based on this eExcitation
+           iLevel = 0;
+@@ -598,8 +597,7 @@ void G4ParticleHPInelasticCompFS::CompositeApply(const G4HadProjectile& theTrack
+ // Next 12 lines are Emilio's replacement
+       // G4double QM=(incidReactionProduct.GetMass()+targetMass)-(aHadron.GetMass()+residualMass);
+       // G4double eExcitation = QM-QI[it];
+-      G4double eExcitation = QI[0] - QI[it];  // Fix of bug #1838
+-      if(eExcitation<20*CLHEP::keV){eExcitation=0;}
++      G4double eExcitation = std::max(0.,QI[0] - QI[it]);  // Fix of bug #1838
+       two_body_reaction(&incidReactionProduct,&theTarget,&aHadron,eExcitation);
+       if(thePhotons==0 && eExcitation>0){
+         for(iLevel=theGammas.GetNumberOfLevels()-1; iLevel>=0; iLevel--)
+diff --git a/source/processes/hadronic/processes/src/G4HadronElasticProcess.cc b/source/processes/hadronic/processes/src/G4HadronElasticProcess.cc
+index dadae1b596..3681a08c92 100644
+--- a/source/processes/hadronic/processes/src/G4HadronElasticProcess.cc
++++ b/source/processes/hadronic/processes/src/G4HadronElasticProcess.cc
+@@ -188,6 +188,8 @@ G4HadronElasticProcess::PostStepDoIt(const G4Track& track,
+ 
+   // directions
+   G4ThreeVector indir = track.GetMomentumDirection();
++  G4double phi = CLHEP::twopi*G4UniformRand();
++  G4ThreeVector it(0., 0., 1.);
+   G4ThreeVector outdir = result->GetMomentumChange();
+ 
+   if(verboseLevel>1) {
+@@ -206,6 +208,7 @@ G4HadronElasticProcess::PostStepDoIt(const G4Track& track,
+   theTotalResult->ProposeEnergy(efinal);
+ 
+   if(efinal > 0.0) {
++    outdir.rotate(phi, it);
+     outdir.rotateUz(indir);
+     theTotalResult->ProposeMomentumDirection(outdir);
+   } else {

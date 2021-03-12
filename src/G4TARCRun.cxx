@@ -160,46 +160,46 @@ void G4TARCRun::initVectors() {
   fTARC_Integral = 0.0; fTARC_Integral_E = 0.0; fTARC_lithium = 0.0;
   fTARC_lithium_E = 0.0; fTARC_helium = 0.0; fTARC_helium_E = 0.0;
   fIntegral_EFlux = 0.0;
-  fIntegral_flux_5cm = 0;
-  fIntegral_flux_10cm = 0;
-  fIntegral_flux_46cm = 0;
-  fIntegral_flux_70cm = 0;
-  fIntegral_flux_100cm = 0;
-  fIntegral_flux_120cm = 0;
-  fTARC_Integral_Eflux_46cm = 0;
-  fExiting_Flux = 0;
-  fExiting_check_Flux = 0;
+  fIntegral_flux_5cm = 0.0;
+  fIntegral_flux_10cm = 0.0;
+  fIntegral_flux_46cm = 0.0;
+  fIntegral_flux_70cm = 0.0;
+  fIntegral_flux_100cm = 0.0;
+  fIntegral_flux_120cm = 0.0;
+  fTARC_Integral_Eflux_46cm = 0.0;
+  fExiting_Flux = 0.0;
+  fExiting_check_Flux = 0.0;
   fExiting_Energy = 0.0;
 
-  fTotalFlux = 0;
-  fExiting_Flux = 0;
-  fExiting_check_Flux = 0;
-  fIntegral_flux_5cm = 0;
-  fIntegral_flux_10cm = 0;
-  fIntegral_flux_46cm = 0;
-  fIntegral_flux_70cm = 0;
-  fIntegral_flux_100cm = 0;
-  fIntegral_flux_120cm = 0;
-  fGamma_flux = 0;
-  fNeutron_flux = 0;
-  fNeutron_check = 0;
-  fNeutronInit = 0;        // k_eff
-  fNeutronBreed = 0;   // k_eff
-  fElectron_flux = 0;
-  fPiPlus_flux = 0;
-  fPiMinus_flux = 0;
-  fPiZero_flux = 0;
-  fPositron_flux = 0;
-  fProton_flux = 0;
-  fAntiProton_flux = 0;
-  fDeuteron_flux = 0;
-  fTriton_flux = 0;
-  fAlpha_flux = 0;
-  fHe3_flux = 0;
-  fNucleii_flux = 0;
-  fMuon_flux = 0;
-  fOther_flux = 0;
-  fDuplicate_neutrons = 0;
+  fTotalFlux = 0.0;
+  fExiting_Flux = 0.0;
+  fExiting_check_Flux = 0.0;
+  fIntegral_flux_5cm = 0.0;
+  fIntegral_flux_10cm = 0.0;
+  fIntegral_flux_46cm = 0.0;
+  fIntegral_flux_70cm = 0.0;
+  fIntegral_flux_100cm = 0.0;
+  fIntegral_flux_120cm = 0.0;
+  fGamma_flux = 0.0;
+  fNeutron_flux = 0.0;
+  fNeutron_check = 0.0;
+  fNeutronInit = 0.0;    // k_eff
+  fNeutronBreed = 0.0;   // k_eff
+  fElectron_flux = 0.0;
+  fPiPlus_flux = 0.0;
+  fPiMinus_flux = 0.0;
+  fPiZero_flux = 0.0;
+  fPositron_flux = 0.0;
+  fProton_flux = 0.0;
+  fAntiProton_flux = 0.0;
+  fDeuteron_flux = 0.0;
+  fTriton_flux = 0.0;
+  fAlpha_flux = 0.0;
+  fHe3_flux = 0.0;
+  fNucleii_flux = 0.0;
+  fMuon_flux = 0.0;
+  fOther_flux = 0.0;
+  fDuplicate_neutrons = 0.0;
 
   flag = false;
   fNumGen = 0;
@@ -474,22 +474,22 @@ void G4TARCRun::ReadExperimentalDataFromFile(G4String& exptFileName){
 
 
 void G4TARCRun::AddFlux(const G4String& particleName) {
-  if(particleName == "gamma")               fGamma_flux++;
-  if(particleName == "neutron")               fNeutron_flux++;
-  if(particleName == "e-")                        fElectron_flux++;
-  if(particleName == "pi-")                       fPiMinus_flux++;
-  if(particleName == "pi+")                      fPiPlus_flux++;
-  if(particleName == "pi0")                      fPiZero_flux++;
-  if(particleName == "e+")                       fPositron_flux++;
-  if(particleName == "proton")                 fProton_flux++;
-  if(particleName == "anti_proton")         fAntiProton_flux++;
-  if(particleName == "alpha")                   fAlpha_flux++;
-  if(particleName == "He3")                     fHe3_flux++;
-  if(particleName == "deuteron")              fDeuteron_flux++;
-  if(particleName == "triton")                   fTriton_flux++;
-  if(particleName == "mu-")                     fMuon_flux++;
-  if(particleName == "mu+")                    fMuon_flux++;
-  if(particleName == "other")                   fOther_flux++;
+  if(particleName == "gamma")            fGamma_flux++;
+  if(particleName == "neutron")          fNeutron_flux++;
+  if(particleName == "e-")               fElectron_flux++;
+  if(particleName == "pi-")              fPiMinus_flux++;
+  if(particleName == "pi+")              fPiPlus_flux++;
+  if(particleName == "pi0")              fPiZero_flux++;
+  if(particleName == "e+")               fPositron_flux++;
+  if(particleName == "proton")           fProton_flux++;
+  if(particleName == "anti_proton")      fAntiProton_flux++;
+  if(particleName == "alpha")            fAlpha_flux++;
+  if(particleName == "He3")              fHe3_flux++;
+  if(particleName == "deuteron")         fDeuteron_flux++;
+  if(particleName == "triton")           fTriton_flux++;
+  if(particleName == "mu-")              fMuon_flux++;
+  if(particleName == "mu+")              fMuon_flux++;
+  if(particleName == "other")            fOther_flux++;
   if(particleName == "neutron_check")    fNeutron_check++;
   if(particleName == "neutron_fluence")  fNeutron_fluence++;
 }
@@ -521,9 +521,6 @@ void G4TARCRun::analyseNeutronFluence(G4double energyL, G4double thisStepL) {
   }
 }
 
-
-
-
 void G4TARCRun::analyseNeutronShellFluence(G4double energyL, G4double StepLengthL){
   G4double tempE = energyL / eV;
 
@@ -547,7 +544,6 @@ void G4TARCRun::analyseNeutronShellFluence(G4double energyL, G4double StepLength
 }
 
 
-
 void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4double radiusL,
   G4double cosAngleL, G4String& fParticleNameL)
   //G4double zPosL,G4double cosAngleL, G4String fParticleNameL)
@@ -568,7 +564,6 @@ void G4TARCRun::analyseNeutronFlux(G4double n_EnergyL, G4int thisTrackIDL, G4dou
       for (G4int ii1 = 0; ii1 < fMaxRadCount; ii1++){
         if (std::abs(radiusL - fRadList[ii1]) <= 0.01){
           for (G4int ii2 = 0; ii2 < fMaxRadCount; ii2++){
-            // if (std::abs(n_EnergyL - fExptEnergyBin[ii2]) < fractional_fBinWidth * fExptEnergyBin[ii2])
             if (std::abs(tempEnergy - fExptEnergyBin[ii2]) < (fFracBinWidth * fExptEnergyBin[ii2]))
               fFlux_Radius[ii1][ii2] += OnebyCosAngle;
           }
