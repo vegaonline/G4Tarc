@@ -13,7 +13,7 @@ G4TARCRun::G4TARCRun() : G4Run() {
 
   fCollID.resize(fScorerNumber, 0);
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
-  SDMan->SetVerboseLevel(1);
+  SDMan->SetVerboseLevel(0);
   G4String fullName;
   G4int k = 0;
   for (G4int i = 0; i < fParaNumber; i++) {
@@ -38,7 +38,6 @@ G4TARCRun::~G4TARCRun(){
   }
   fCollID.clear();
   fCollName.clear();
-
 }
 
 

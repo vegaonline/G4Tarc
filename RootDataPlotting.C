@@ -37,17 +37,17 @@ void RootDataPlotting(){
   TH2* OtherET             = (TH2*) tf1->Get("OtherPartET");
 
   // NTuples read from Tree  in the ROOT file and kept as tuples for further computation
-  TNtuple* h1SecTuple      = (TNtuple*) tf1->Get("h1_Secondary");
-  TNtuple* h2NET           = (TNtuple*) tf1->Get("h2_N_ET");
-  TNtuple* h3NExiting      = (TNtuple*) tf1->Get("h3_N_Exiting");
-  TNtuple* Flux4002        = (TNtuple*) tf1->Get("h4_Flux_4002");
-  TNtuple* Flux4004        = (TNtuple*) tf1->Get("h5_Flux_4004");
-  TNtuple* Flux4005        = (TNtuple*) tf1->Get("h6_Flux_4005"); 
-  TNtuple* h8SpallN        = (TNtuple*) tf1->Get("h8_Created_N");
-  TNtuple* RadShellFluence = (TNtuple*) tf1->Get("h9_Rad_Shell_Fluence");  
-  TNtuple* ExptLiData      = (TNtuple*) tf1->Get("h10_Rad_Fluence_Expt_Li_Data");
-  TNtuple* ExptHe3Data     = (TNtuple*) tf1->Get("h11_Rad_Fluence_Expt_He3_Data");
-  TNtuple* h15OtherET      = (TNtuple*) tf1->Get("h15_Other_ET");
+  TNtuple* h1SecTuple      = (TNtuple*) tf1->Get("h0_Secondary");
+  TNtuple* h2NET           = (TNtuple*) tf1->Get("h1_N_ET");
+  TNtuple* h3NExiting      = (TNtuple*) tf1->Get("h2_N_Exiting");
+  TNtuple* Flux4002        = (TNtuple*) tf1->Get("h3_Flux_4002");
+  TNtuple* Flux4004        = (TNtuple*) tf1->Get("h4_Flux_4004");
+  TNtuple* Flux4005        = (TNtuple*) tf1->Get("h5_Flux_4005"); 
+  TNtuple* h8SpallN        = (TNtuple*) tf1->Get("h7_Created_N");
+  TNtuple* RadShellFluence = (TNtuple*) tf1->Get("h8_Rad_Shell_Fluence");  
+  TNtuple* ExptLiData      = (TNtuple*) tf1->Get("h9_Rad_Fluence_Expt_Li_Data");
+  TNtuple* ExptHe3Data     = (TNtuple*) tf1->Get("h10_Rad_Fluence_Expt_He3_Data");
+  TNtuple* h15OtherET      = (TNtuple*) tf1->Get("h12_Other_ET");
 
 
   // Declare Histograms to produce  

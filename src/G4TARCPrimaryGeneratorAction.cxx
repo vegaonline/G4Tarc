@@ -12,9 +12,7 @@ G4TARCPrimaryGeneratorAction::G4TARCPrimaryGeneratorAction()
 {
   //	G4AutoLock lock(&myPrimGenMutex);
     fGPS = new G4GeneralParticleSource();
-    //fHisto = G4TARCHistoManager::GetPointer();
     fGunMess = new G4TARCPrimaryMessenger(this);
-    //fGunMess = new G4TARCPrimaryMessenger();
 }
 
 G4TARCPrimaryGeneratorAction::~G4TARCPrimaryGeneratorAction() {

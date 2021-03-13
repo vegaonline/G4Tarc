@@ -25,7 +25,7 @@ export AllowForHeavyElements=1
 #export G4NEUTRONHP_DO_NOT_ADJUST_FINAL_STATE=1
 #export G4CASCADE_USE_PRECOMPOUND=1    # if set switches off Doppler
 
-export PHYSLIST="QGSP_BIC_HP"
+export PHYSLIST="QGSP_BERT_HP"
 #export dateStr="histo"_`date +%d_%m_%Y`
 #mkdir -p $dateStr
 

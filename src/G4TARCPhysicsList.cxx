@@ -10,7 +10,7 @@ G4TARCPhysicsList::G4TARCPhysicsList()
 : G4VModularPhysicsList()
 //, fEmPhysicsList(0), fThermal(true), fParticleList(0) 
 {
-    verboseLevel     = 1;
+    verboseLevel     = 0;
     fThermal         = true;
 
     G4LossTableManager::Instance();
@@ -53,7 +53,7 @@ void G4TARCPhysicsList::ConstructProcess() {
   G4cout << " Hadron Physics number: " << fHadronPhys.size() << G4endl;
   for ( size_t i = 0; i < fHadronPhys.size(); i++ ){
     fHadronPhys[i]->ConstructProcess();
-    fHadronPhys[i]->SetVerboseLevel(1);
+    fHadronPhys[i]->SetVerboseLevel(0);
   }
 }
 
@@ -81,7 +81,7 @@ void G4TARCPhysicsList::neutronProcess(){
   // (re) create process: elastic
   //
   G4HadronElasticProcess* process1 = new G4HadronElasticProcess();
-  process1->SetVerboseLevel(1);
+  process1->SetVerboseLevel(0);
   pManager->AddDiscreteProcess(process1);
   //
   // model1a
@@ -99,7 +99,7 @@ void G4TARCPhysicsList::neutronProcess(){
   // (re) create process: inelastic
   //
   G4NeutronInelasticProcess* process2 = new G4NeutronInelasticProcess();
-  process2->SetVerboseLevel(1);
+  process2->SetVerboseLevel(0);
   pManager->AddDiscreteProcess(process2);
   //
   // cross section data set
@@ -113,7 +113,7 @@ void G4TARCPhysicsList::neutronProcess(){
   // (re) create process: nCapture
   //
   G4HadronCaptureProcess* process3 = new G4HadronCaptureProcess();
-  process3->SetVerboseLevel(1);
+  process3->SetVerboseLevel(0);
   pManager->AddDiscreteProcess(process3);
   //
   // cross section data set
@@ -126,7 +126,7 @@ void G4TARCPhysicsList::neutronProcess(){
   // (re) create process: nFission
   //
   G4HadronFissionProcess* process4 = new G4HadronFissionProcess();
-  process4->SetVerboseLevel(1);
+  process4->SetVerboseLevel(0);
   pManager->AddDiscreteProcess(process4);
   //
   // cross section data set

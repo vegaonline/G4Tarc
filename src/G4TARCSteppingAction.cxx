@@ -20,7 +20,7 @@ G4TARCSteppingAction::G4TARCSteppingAction(G4TARCEventAction* anEvent)
   for (int i = 0; i < fRefShellNumber; i++) {
     G4double tmp = fRadiusReference[i];
     fOuterRadiusofShell.push_back(tmp);
-    tmp -=fRefShellThickness;
+    tmp -= fRefShellThickness;
     fInnerRadiusofShell.push_back(tmp);
   }
 }
@@ -129,7 +129,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
       eleTest = matTest->GetElement(0);
       //G4cout << lvName << "    " << eleTest->GetName() << G4endl;
     }
-    //DumpCS(fParticleType, eleTest, matTest);
+    DumpCS(fParticleType, eleTest, matTest);
   }
 
   
@@ -197,10 +197,10 @@ void G4TARCSteppingAction::DumpCS(const G4ParticleDefinition* fParticleType, con
             fParticleTestProcEnergy < 1.0 * GeV;
             mom *= 10.0, fParticleTestProcEnergy = std::sqrt(sqr(fParticleMass) + sqr(mom))) {
               const G4DynamicParticle* fDynPart = new G4DynamicParticle(fParticleType, G4ThreeVector(1, 0, 0), fParticleTestProcEnergy - fParticleMass);
-
-              //G4double cross_section = hadProc->GetMicroscopicCrossSection(fDynPart, fElement, matTest);   //, 293.0);
-              //G4double cs_lhep = (G4HadronCrossSections::Instance())->GetInelasticCrossSection(fDynPart, fElement, 293.0);
-              //csFile << mom / MeV << "      " << cross_section * 1000.0 / barn << G4endl;   // "    " << cs_lhep * 10000.0 / barn << G4endl;
+              G4double cross_section = hadProc->GetMicroscopicCrossSection(fDynPart, fElement, matTest);   //, 293.0);
+              // G4double cs_lhep = (G4HadronCrossSections::Instance())->GetInelasticCrossSection(fDynPart, fElement, 293.0);
+              //csFile << mom / MeV << "      " << cross_section * 1000.0 / barn << G4endl << "    " << cs_lhep * 10000.0 / barn << G4endl;
+              csFile << mom / MeV << "      " << cross_section * 1000.0 / barn << G4endl;   // "    " << cs_lhep * 10000.0 / barn << G4endl;
 
               delete fDynPart;
       }

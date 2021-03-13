@@ -4,7 +4,7 @@
 /control/verbose 0
 /tracking/verbose 0
 /event/verbose 0
-/run/verbose 2
+/run/verbose 0
 /gps/verbose 0 #2
 
 /tracking/storeTrajectory 0
@@ -37,7 +37,8 @@
 
 #### Beam energy is in gaussian profile  with 1 keV dispersion
 /gps/ene/type Gauss
-/gps/ene/mono 1.73 GeV   # 2.5 GeV/c
+/gps/ene/mono 1.00 GeV   # 2.5 GeV/c
+#/gps/ene/mono 1.73 GeV   # 2.5 GeV/c
 #/gps/ene/mono 3.62 GeV   # 3.5 GeV/c
 #/gps/ene/mono 1.0 GeV
 /gps/ene/sigma 0.5 keV
@@ -47,5 +48,5 @@
 #/tarc/histo/fileName Hadro
 #/tarc/histo/setHisto 0 10  0 1500 MeV
 
-/run/beamOn 500
+/run/beamOn 20
 

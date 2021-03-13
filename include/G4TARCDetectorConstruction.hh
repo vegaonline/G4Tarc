@@ -84,7 +84,7 @@ public:
   virtual ~G4TARCDetectorConstruction();
 
   virtual G4VPhysicalVolume* Construct();
-  virtual void ConstructSDandField();
+  virtual void ConstructSDandField(){};
   void SetReadFile( const G4String& );  // GDML file reader
   inline G4VPhysicalVolume* GetWorldVolume() { return fWorldPhysVol; }
 

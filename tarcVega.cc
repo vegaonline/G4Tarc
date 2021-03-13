@@ -55,17 +55,17 @@
 #include "G4Material.hh"
 #include "G4TrajectoryDrawByParticleID.hh"
 
-// #include "FTFP_BERT.hh"
-// #include "FTFP_BERT_HP.hh"
-// #include "QGSP_BERT.hh"
+#include "FTFP_BERT.hh"
+#include "FTFP_BERT_HP.hh"
+#include "QGSP_BERT.hh"
 #include "QGSP_BIC_HP.hh"
-// #include "QGSP_BIC_AllHP.hh"
-// #include "QGSP_BIC.hh"
-// #include "QGS_BIC.hh"
-// #include "QGSP_INCLXX.hh"
-// #include "QGSP_INCLXX_HP.hh"
-// #include "QBBC.hh"
-// #include "LBE.hh"
+#include "QGSP_BIC_AllHP.hh"
+#include "QGSP_BIC.hh"
+#include "QGS_BIC.hh"
+#include "QGSP_INCLXX.hh"
+#include "QGSP_INCLXX_HP.hh"
+#include "QBBC.hh"
+#include "LBE.hh"
 
 
 #include "G4UImanager.hh"
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 #endif
 
   auto scoreManager = G4ScoringManager::GetScoringManager();
-  scoreManager->SetVerboseLevel(1);
+  scoreManager->SetVerboseLevel(0);
 
   G4String fileName = argv[1];
   std::cout << "geometry Name: " << fileName << std::endl;
@@ -207,7 +207,7 @@ int main(int argc, char** argv) {
   }
 
   G4GeometryManager::GetInstance()->OpenGeometry();
-  // pgsN.ClearSampling();
+  pgsN.ClearSampling();
 
   //termination of job
 #ifdef G4VIS_USE

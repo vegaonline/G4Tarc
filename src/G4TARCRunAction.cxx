@@ -6,13 +6,11 @@
 #include "G4TARCRunAction.hh"
 
 G4TARCRunAction::G4TARCRunAction() : G4UserRunAction(), fHistoBooked(false), fEventNum(0) {
-  G4RunManager::GetRunManager()->SetPrintProgress(1);
-  // G4cout << "RunAction ctor starts for " << this << G4endl;
+  G4RunManager::GetRunManager()->SetPrintProgress(0);
   G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
   DefineShellBlocks();
   if (!fHistoBooked) BookHistogram();
   G4cout << fAnalysisManager->GetType() << " data is being stored." << G4endl;
-  // G4cout << "RunAction ctor done for one" << this << G4endl;
 }
 
 G4TARCRunAction::~G4TARCRunAction() {
@@ -26,6 +24,7 @@ G4Run* G4TARCRunAction::GenerateRun() {
 void G4TARCRunAction::BeginOfRunAction(const G4Run* thisRun){
   auto fAnalysisManager = G4AnalysisManager::Instance();
   G4cout << " Run # " << thisRun->GetRunID() << " starts. " << G4endl;
+  fAnalysisManager->SetVerboseLevel(0);
   fAnalysisManager->OpenFile();
 }
 
@@ -78,38 +77,38 @@ void G4TARCRunAction::BookHistogram() {
   //fAnalysisManager->SetNtupleMerging(true, 0, true);  // row-wise saving mode
   // fAnalysisManager->SetNtupleMerging(true, 0, false);
   fAnalysisManager->SetNtupleMerging(true);
-  fAnalysisManager->SetVerboseLevel(1);    // 4);
+  fAnalysisManager->SetVerboseLevel(0);    // 4);
   fAnalysisManager->SetFileName(fAnalysisFileName);
   //if (!fHistoBooked)  fAnalysisManager->SetFirstHistoId(1);
   //fAnalysisManager->SetFirstHistoId(0);
   fHistoBooked = true;
 
-  //1
+  //0
   fAnalysisManager->CreateH1("Gamma","Gamma Edep (eV)", 2e4, 1.0e3, 1e9);  // 0:
 
-  //2
+  //1
   fAnalysisManager->CreateH1("NeutronEnergy","Neutron energy (eV) vs. 1/mom /eV", 5e3, 1.0e5, 5.0e9); // , 0.0, 50.0);  // 100000, 0., 1000000.);
 
-  //3
+  //2
   fAnalysisManager->CreateH1("ElectronEdep","Electron Edep (eV)", 2e3, 1.0e4, 1.0e7);
-  //4
+  //3
   fAnalysisManager->CreateH1("PositronEdep","Positron Edep (keV)", 2e2, 10.0, 4.0e8);
-  //5
+  //4
   fAnalysisManager->CreateH1("OtherEdep","Other Edep (eV)", 1e4, 1.0e6, 5.0e9);
-  //6
+  //5
   fAnalysisManager->CreateH1("ParticleStack","Particle Stack", 2e3, 0.0, 1e9);
-  //7
+  //6
   fAnalysisManager->CreateH1("NeutronPerEvent","Neutrons/event", 5e2, 0.0, 1e5);
-  //8
+  //7
   fAnalysisManager->CreateH1("ProtonPerEvent","Protons/event", 5e2, 0.0, 30.0);
-  //9
+  //8
   fAnalysisManager->CreateH2("NeutronET","log(Neutron Energy <eV>) vs. log(Time <us> )", 50, -3.0, 4.5, 50, -4, 7); // H2:1
-  //10
+  //9
   fAnalysisManager->CreateH2("OtherPartET","log(OTHER particle Energy <eV>) vs. log(Time <us>)", 50, -3.0, 4.5, 50, -4.5, 6.0); // H2:2
-  //11
-  //fAnalysisManager->CreateH2("NeutronCapture", "Neutron Capture / 10^9 p", 700, 0, 10000, 400, 0, 1e9);  //H2:3
+  //10
+  fAnalysisManager->CreateH2("NeutronCapture", "Neutron Capture / 10^9 p", 700, 0, 10000, 400, 0, 1e9);  //H2:3
 
-  fAnalysisManager->CreateNtuple("h1_Secondary", "Secondary Particle Info");
+  fAnalysisManager->CreateNtuple("h0_Secondary", "Secondary Particle Info");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleIColumn("particle");
@@ -122,17 +121,17 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleIColumn("event");
   fAnalysisManager->FinishNtuple(); // ntupleID: 0
 
-  fAnalysisManager->CreateNtuple("h2_N_ET", "Neutron Time");
+  fAnalysisManager->CreateNtuple("h1_N_ET", "Neutron Time");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleDColumn("primary");
   fAnalysisManager->FinishNtuple(); // ntupleID: 1
 
-  fAnalysisManager->CreateNtuple("h3_N_Exiting", "Neutrons Exiting");
+  fAnalysisManager->CreateNtuple("h2_N_Exiting", "Neutrons Exiting");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->FinishNtuple(); // ntupleID: 2
 
-  fAnalysisManager->CreateNtuple("h4_Flux_4002", "Neutrons G4TARC flux");
+  fAnalysisManager->CreateNtuple("h3_Flux_4002", "Neutrons G4TARC flux");
   fAnalysisManager->CreateNtupleDColumn("energy");     // 0
   fAnalysisManager->CreateNtupleDColumn("tarcflux");   // 1
   fAnalysisManager->CreateNtupleDColumn("errstat");    // 2
@@ -148,7 +147,7 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleDColumn("g4shellerr");   // 12
   fAnalysisManager->FinishNtuple(); // ntupleID: 3
 
-  fAnalysisManager->CreateNtuple("h5_Flux_4004", "Neutrons G4TARC flux");
+  fAnalysisManager->CreateNtuple("h4_Flux_4004", "Neutrons G4TARC flux");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("tarcflux");
   fAnalysisManager->CreateNtupleDColumn("errstat");
@@ -163,7 +162,7 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->FinishNtuple(); // ntupleID: 4
 
 
-  fAnalysisManager->CreateNtuple("h6_Flux_4005", "Neutrons G4TARC flux");
+  fAnalysisManager->CreateNtuple("h5_Flux_4005", "Neutrons G4TARC flux");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("tarcflux");
   fAnalysisManager->CreateNtupleDColumn("errstat");
@@ -176,7 +175,7 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleDColumn("g4shell");
   fAnalysisManager->FinishNtuple(); // ntupleID: 5
 
-  fAnalysisManager->CreateNtuple("h7_Created_N_A", "Created Neutrons");
+  fAnalysisManager->CreateNtuple("h6_Created_N_A", "Created Neutrons");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleIColumn("particle");
@@ -185,7 +184,7 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->FinishNtuple(); // ntupleID: 6
 
 
-  fAnalysisManager->CreateNtuple("h8_Created_N", "Created Neutrons");
+  fAnalysisManager->CreateNtuple("h7_Created_N", "Created Neutrons");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleDColumn("starte");
@@ -196,30 +195,30 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->CreateNtupleDColumn("zmom");
   fAnalysisManager->CreateNtupleDColumn("startt");
   fAnalysisManager->CreateNtupleDColumn("radius");
-  fAnalysisManager->CreateNtupleDColumn("e_parent");
+  fAnalysisManager->CreateNtupleDColumn("eparent");
   fAnalysisManager->CreateNtupleIColumn("parent");
   fAnalysisManager->CreateNtupleDColumn("step");
   fAnalysisManager->CreateNtupleIColumn("dupli");
   fAnalysisManager->FinishNtuple(); // ntupleID: 7
 
 
-  fAnalysisManager->CreateNtuple("h9_Rad_Shell_Fluence", "Radial Shell Fluence");
+  fAnalysisManager->CreateNtuple("h8_Rad_Shell_Fluence", "Radial Shell Fluence");
   fAnalysisManager->CreateNtupleDColumn("radius");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("fluence");
-  fAnalysisManager->CreateNtupleDColumn("true_e");
-  fAnalysisManager->CreateNtupleDColumn("true_f");
+  fAnalysisManager->CreateNtupleDColumn("truee");
+  fAnalysisManager->CreateNtupleDColumn("truef");
   fAnalysisManager->FinishNtuple(); // ntupleID: 8
 
 
-  fAnalysisManager->CreateNtuple("h10_Rad_Fluence_Expt_Li_Data", "Lithium Radial Fluence Exptl Data");
+  fAnalysisManager->CreateNtuple("h9_Rad_Fluence_Expt_Li_Data", "Lithium Radial Fluence Exptl Data");
   fAnalysisManager->CreateNtupleDColumn("radius");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("data");
   fAnalysisManager->CreateNtupleDColumn("error");
   fAnalysisManager->FinishNtuple(); // ntupleID: 9
 
-  fAnalysisManager->CreateNtuple("h11_Rad_Fluence_Expt_He3_Data", "He3 Radial Fluence Exptl Data");
+  fAnalysisManager->CreateNtuple("h10_Rad_Fluence_Expt_He3_Data", "He3 Radial Fluence Exptl Data");
   fAnalysisManager->CreateNtupleDColumn("radius");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("data");
@@ -227,15 +226,15 @@ void G4TARCRunAction::BookHistogram() {
   fAnalysisManager->FinishNtuple(); // ntupleID: 10
 
 
-  fAnalysisManager->CreateNtuple("h12_3GeV5_He3_Expt_Data", "Radial Fluence He3 Expt Data");
+  fAnalysisManager->CreateNtuple("h11_3GeV5_He3_Expt_Data", "Radial Fluence He3 Expt Data");
   fAnalysisManager->CreateNtupleDColumn("radius");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("data");
-  fAnalysisManager->CreateNtupleDColumn("stat_err");
-  fAnalysisManager->CreateNtupleDColumn("syst_err");
+  fAnalysisManager->CreateNtupleDColumn("staterr");
+  fAnalysisManager->CreateNtupleDColumn("systerr");
   fAnalysisManager->FinishNtuple(); // ntupleID: 11
 
-  fAnalysisManager->CreateNtuple("h15_Other_ET", "OTHER Time");
+  fAnalysisManager->CreateNtuple("h12_Other_ET", "OTHER Time");
   fAnalysisManager->CreateNtupleDColumn("energy");
   fAnalysisManager->CreateNtupleDColumn("time");
   fAnalysisManager->CreateNtupleDColumn("primary");
@@ -251,7 +250,7 @@ void G4TARCRunAction::FillRadialExperimentalData(const G4TARCRun* tarcRun){
   for (G4int ij1 = 0; ij1 < 8; ij1++) {  //  0~ 41 to 7 ~ 48
     for (std::size_t ij2 = 0; ij2 < tarcRun->fExptRadiiTables[ij1].size(); ij2++){
       fAnalysisManager->FillNtupleDColumn(9, 0, tarcRun->fExptRadiiTables[ij1][ij2] );  //  converted to mm
-      fAnalysisManager->FillNtupleDColumn(9, 1, tarcRun->fExptEnergyBin[ij1]);
+      fAnalysisManager->FillNtupleDColumn(9, 1, tarcRun->fExptEnergyBin[ij1]);  
       fAnalysisManager->FillNtupleDColumn(9, 2, tarcRun->fExptFluenceTables[ij1][ij2] * 100.0);   // transferring to unit n/cm^2/eV/10^9p
       fAnalysisManager->FillNtupleDColumn(9, 3, tarcRun->fExptErrTables[ij1][ij2] * 100.0);
       fAnalysisManager->AddNtupleRow(9);
@@ -267,8 +266,7 @@ void G4TARCRunAction::FillRadialExperimentalData(const G4TARCRun* tarcRun){
       fAnalysisManager->AddNtupleRow(10);
     }
   }
-
-  G4cout << "Experimental data filling complete." << G4endl;
+  G4cout << "Experimental data filling complete for tuple 9 and 10." << G4endl;
 }
 
 
@@ -403,7 +401,6 @@ void G4TARCRunAction::RadialFluxHistogram(G4int fNevents, const G4TARCRun* tarcR
         fAnalysisManager->FillNtupleDColumn(8, 3, tarcRun->fLithium_Radial_True_Mean[ijk2]);
         fAnalysisManager->FillNtupleDColumn(8, 4, fAbsRadFluenceTrueMean);
         fAnalysisManager->AddNtupleRow(8);
-
       }
     }
   }

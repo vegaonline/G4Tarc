@@ -5,7 +5,7 @@
 /tracking/verbose 0
 /event/verbose 0
 /vis/verbose errors
-/run/verbose 2
+/run/verbose 0
 /gps/verbose 0 #2
 
 /run/initialize
@@ -26,7 +26,7 @@
 /vis/viewer/set/viewpointThetaPhi 73 9 deg
 /vis/scene/add/userAction
 
-/vis/ogl/set/displayListLimit 100000000000
+/vis/ogl/set/displayListLimit 10000000
 /tracking/storeTrajectory 0   #  this is zero as core dumps after 37th event
 /vis/scene/add/trajectories smooth
 #/vis/scene/add/trajectories smooth rich
@@ -88,7 +88,8 @@
 
 #### Beam energy is in gaussian profile with 1 keV dispersion
 /gps/ene/type Gauss
-/gps/ene/mono 2.67 GeV    # 2.5 GeV/c
+/gps/ene/mono/1.73 GeV 
+#/gps/ene/mono 2.67 GeV    # 2.5 GeV/c
 #/gps/ene/mono 3.62 GeV    # 3.5 GeV/c
 /gps/ene/sigma 0.5 keV
 
@@ -99,4 +100,4 @@
 #/tarc/histo/setHisto 0 10  0 1500 MeV
 
 
-/run/beamOn 2
+/run/beamOn 20

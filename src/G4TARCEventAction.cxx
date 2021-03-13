@@ -1,19 +1,12 @@
 #include "G4TARCEventAction.hh"
 
 G4TARCEventAction::G4TARCEventAction(): fNeutronStack(0)  {
-    //fDebugStarted = false;
-    // fEventMessenger = new G4TARCEventActionMessenger (this);
-    //fUITARC = G4UImanager::GetUIpointer();
-    //fHisto = G4TARCHistoManager::GetPointer();
-    //auto fAnalysisManager = G4AnalysisManager::Instance();
-    //fSelected = 0;
-    SetPrintModulo(1);
+    SetPrintModulo(0);
     fPrimarySet = false;
     fMaxRadCount = 0;
 }
 
 G4TARCEventAction::~G4TARCEventAction() {
-  // delete fEventMessenger;
 }
 
 void G4TARCEventAction::BeginOfEventAction( const G4Event* evt ){
@@ -104,22 +97,22 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
     return;
   }
   G4int iParent = 0;
-  if (parentParticleL == "gamma")        iParent = 1;
-  else if (parentParticleL == "neutron") iParent = 2;
-  else if(reduced_fluxL)                 iParent = -2;
-  else if (parentParticleL == "e-")      iParent = 3;
-  else if (parentParticleL == "pi-")     iParent = 4;
-  else if (parentParticleL == "pi+")     iParent = 5;
-  else if (parentParticleL == "pi0")     iParent = 6;
-  else if (parentParticleL == "e+")      iParent = 7;
-  else if (parentParticleL == "proton")  iParent = 8;
+  if (parentParticleL == "gamma")             iParent = 1;
+  else if (parentParticleL == "neutron")      iParent = 2;
+  else if(reduced_fluxL)                      iParent = -2;
+  else if (parentParticleL == "e-")           iParent = 3;
+  else if (parentParticleL == "pi-")          iParent = 4;
+  else if (parentParticleL == "pi+")          iParent = 5;
+  else if (parentParticleL == "pi0")          iParent = 6;
+  else if (parentParticleL == "e+")           iParent = 7;
+  else if (parentParticleL == "proton")       iParent = 8;
   else if (parentParticleL == "anti_proton")  iParent = 8;
-  else if (parentParticleL == "mu-")     iParent = 9;
-  else if (parentParticleL == "mu+")     iParent = 10;
-  else if (parentParticleL == "alpha")     iParent = 11;
-  else if (parentParticleL == "He3")     iParent = 12;
+  else if (parentParticleL == "mu-")          iParent = 9;
+  else if (parentParticleL == "mu+")          iParent = 10;
+  else if (parentParticleL == "alpha")        iParent = 11;
+  else if (parentParticleL == "He3")          iParent = 12;
   else if (parentParticleL == "deuteron")     iParent = 13;
-  else if (parentParticleL == "triton")     iParent = 14;
+  else if (parentParticleL == "triton")       iParent = 14;
 
   auto fAnalysisManager = G4AnalysisManager::Instance();
   
@@ -133,7 +126,6 @@ void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4d
   fAnalysisManager->FillNtupleDColumn(0,7, parentEnergyL);
   fAnalysisManager->FillNtupleIColumn(0,8, number_generationsL);
   fAnalysisManager->FillNtupleIColumn(0,9, fEventID);
-  
   fAnalysisManager->AddNtupleRow(0);
   
 }
@@ -163,7 +155,6 @@ void G4TARCEventAction::otherEnergyTime(G4double thisE, G4double thisT, G4double
   fAnalysisManager->FillNtupleDColumn(12, 1, tempT);
   fAnalysisManager->FillNtupleDColumn(12, 2, tempE0);
   fAnalysisManager->AddNtupleRow(12);     // ID 14 becomes 12 after commenting out 12 and 13
-  
 }
 
 
@@ -172,12 +163,11 @@ void G4TARCEventAction::exitingTally(G4bool exiting_flag, G4double energyL){
   if(exiting_flag) {
     G4TARCRun* thisRun = static_cast<G4TARCRun*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
     thisRun->CalcExitingFlux(energyL);
-    
     fAnalysisManager->FillNtupleDColumn(2, 0, energyL / eV);
     fAnalysisManager->AddNtupleRow(2);
-    
   }
 }
+
 
 void G4TARCEventAction::exitingTallyCheck(G4bool exiting_flag_check){
   if (exiting_flag_check){
