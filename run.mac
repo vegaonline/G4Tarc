@@ -48,5 +48,5 @@
 #/tarc/histo/fileName Hadro
 #/tarc/histo/setHisto 0 10  0 1500 MeV
 
-/run/beamOn 20
+/run/beamOn 8
 

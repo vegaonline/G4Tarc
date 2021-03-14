@@ -201,7 +201,8 @@ void G4TARCPhysicsList::AddPhysicsList(const G4String& name) {
     AddPhysicsList("emstandard_opt2");
     AddPhysicsList("QGSP_BERT");
   } else if (name == "QGSP_BERT_HP")  {
-    SetBuilderList1(true);
+    // SetBuilderList1(true);
+    SetBuilderList1();
     fHadronPhys.push_back( new G4HadronPhysicsQGSP_BERT_HP());
   } else if (name == "QGSP_BIC") {
     SetBuilderList0();
@@ -216,11 +217,13 @@ void G4TARCPhysicsList::AddPhysicsList(const G4String& name) {
     fHadronPhys.push_back( new G4NeutronCrossSectionXS(verboseLevel));
   } else if (name == "QGSP_BIC_HP") {
     // AddPhysicsList("emstandard_opt0");
-    SetBuilderList0(true);
+    //SetBuilderList0(true);
+    SetBuilderList0();
     fHadronPhys.push_back( new G4HadronPhysicsQGSP_BIC_HP());
   } else if (name == "QGSP_INCLXX_HP") {
     // AddPhysicsList("emstandard_opt0");
-    SetBuilderList0(true);
+    // SetBuilderList0(true);
+    SetBuilderList0();
     fHadronPhys.push_back( new G4HadronPhysicsINCLXX("inclxx-hp",true,true,false));
   } else if (name == "QGSP_INCLXX") {
     // AddPhysicsList("emstandard_opt0");

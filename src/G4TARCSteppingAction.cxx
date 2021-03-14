@@ -127,7 +127,7 @@ void G4TARCSteppingAction::ProcessStepping(const G4Step* myStep){
     if (matTest){
       //G4cout << matTest->GetNumberOfElements() << G4endl;
       eleTest = matTest->GetElement(0);
-      //G4cout << lvName << "    " << eleTest->GetName() << G4endl;
+      G4cout << "For dumpCS " << lvName << "    " << eleTest->GetName() << G4endl;
     }
     DumpCS(fParticleType, eleTest, matTest);
   }
@@ -188,9 +188,10 @@ void G4TARCSteppingAction::DumpCS(const G4ParticleDefinition* fParticleType, con
   G4ProcessManager* procManager = fParticleType->GetProcessManager();
   G4ProcessVector* procLists = procManager->GetProcessList();
   for (G4int iProc = 0; iProc < procLists->size(); iProc++){
-    //  G4cout << iProc << "    " << (*procLists)[iProc]->GetProcessType() << "    " << (*procLists)[iProc]->GetProcessName() << G4endl;
+    G4cout << iProc << "    " << (*procLists)[iProc]->GetProcessType() << "    " << (*procLists)[iProc]->GetProcessName() << G4endl;
     if ((*procLists)[iProc]->GetProcessType() == 4) {  // IonInelastic:4  RadioActiveDecay : 6    msc : 2   coupledtransportation : 1
-      G4double fParticleMass = fParticleType->GetPDGMass();
+	
+	  G4double fParticleMass = fParticleType->GetPDGMass();
       G4double fParticleTestProcEnergy = 0.0;
       G4HadronicProcess* hadProc = static_cast<G4HadronicProcess*>((*procLists)[iProc]);
       for (G4double mom = 10.0 * keV, fParticleTestProcEnergy = std::sqrt(sqr(fParticleMass) + sqr(mom));
@@ -207,4 +208,5 @@ void G4TARCSteppingAction::DumpCS(const G4ParticleDefinition* fParticleType, con
     }
   }
   csFile.close();
+
 }

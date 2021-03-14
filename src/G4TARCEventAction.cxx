@@ -1,7 +1,7 @@
 #include "G4TARCEventAction.hh"
 
 G4TARCEventAction::G4TARCEventAction(): fNeutronStack(0)  {
-    SetPrintModulo(0);
+    SetPrintModulo(1);
     fPrimarySet = false;
     fMaxRadCount = 0;
 }
@@ -39,7 +39,7 @@ void G4TARCEventAction::EndOfEventAction( const G4Event* evt) {
 void G4TARCEventAction::analyseSecondaries(G4double energyL, G4String nameL, G4double timeL, G4double momentumL,
   G4int ParentIDL, G4double primaryEnergyL, G4double parentEnergyL, G4String parentParticleL, G4bool reduced_fluxL,
   G4int number_generationsL){
-    //G4cout << " Analyse Secondary started" << G4endl;
+  // G4cout << " Analyse Secondary started" << G4endl;
 
   G4TARCRun* thisRun = static_cast<G4TARCRun*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
