@@ -22,6 +22,5 @@ To run:
 
 ./TARCVEGA.run run.mac | vis.mac
 
-The output file is "G4TARC_output.root" which could be copied as res.root.
-The file "RootDataPlotting.C" could be used to produced png using ROOT.
+The file "RootDataPlotting.C" could be used to produced png file using ROOT.
 
