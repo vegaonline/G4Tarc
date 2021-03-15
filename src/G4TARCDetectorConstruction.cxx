@@ -49,12 +49,15 @@ G4VPhysicalVolume* G4TARCDetectorConstruction::Construct() {
     fLVS = G4LogicalVolumeStore::GetInstance();
     G4String sslog  = "sampleSphere_log";
     G4String sslog2 = "sampleSphere_log2";
+    
     for(fLVciter = fLVS->begin(); fLVciter != fLVS->end(); fLVciter++) {
       G4String LVName = (*fLVciter)->GetName();
-      G4cout << "LVName: " << LVName << G4endl;
+      // G4cout << "LVName: " << LVName << G4endl;
       if ((LVName.find(sslog) != std::string::npos) || (LVName.find(sslog2) != std::string::npos)){
-	      (*fLVciter)->SetMaterial(fTc99);
+	// (*fLVciter)->SetMaterial(fTc99);
+	(*fLVciter)->UpdateMaterial(fTc99);
 	      (*fLVciter)->SetVisAttributes(new G4Colour(1.0, 0.5, 0.5));
+	      G4cout << "Logical volume: " << LVName << " is filled with Tc99." << G4endl;
       }
       fLVvectorMini.push_back(*fLVciter);
     }
