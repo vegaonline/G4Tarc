@@ -559,7 +559,7 @@ void RootDataPlotting(){
   //RadShellFluence->Scan();
   //RadShellFluence->Draw("radialFluenceTrueMean/radialEnergyTrueMean  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
   //  RadShellFluence->Draw("fluence/energy  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
-  RadShellFluence->Draw("true_f/true_e * 100.0  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
+  RadShellFluence->Draw("truef/truee * 100.0  : radius / 10.0", "", "SAME"); // to convert to cm^{2}
   ExptLiData->SetMarkerStyle(28);
   ExptLiData->SetMarkerSize(0.8);
   ExptLiData->SetMarkerColor(kBlue);

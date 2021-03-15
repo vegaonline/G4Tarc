@@ -51,6 +51,8 @@
 #include "G4NuclearLevelData.hh"
 #include "G4DecayPhysics.hh"
 #include "G4ParticleTable.hh"
+#include "G4ParticleHPManager.hh"
+#include "G4NeutronHPManager.hh"
 #include "G4VTrajectoryModel.hh"
 #include "G4Material.hh"
 #include "G4TrajectoryDrawByParticleID.hh"
@@ -170,6 +172,12 @@ int main(int argc, char** argv) {
 
   // Action Initialization
   runManager->SetUserInitialization(new G4TARCActionInitialization());
+  G4NeutronHPManager::GetInstance()->SetProduceFissionFragments( true );
+  G4NeutronHPManager::GetInstance()->SetSkipMissingIsotopes( true );
+  G4NeutronHPManager::GetInstance()->SetNeglectDoppler( false );
+  G4NeutronHPManager::GetInstance()->SetUseOnlyPhotoEvaporation( false );
+  G4NeutronHPManager::GetInstance()->SetDoNotAdjustFinalState( false );
+  G4NeutronHPManager::GetInstance()->SetVerboseLevel(0);
 
   // Initialize Runmanager
   runManager->Initialize();

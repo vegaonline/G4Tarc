@@ -41,8 +41,10 @@ void G4TARCRunAction::EndOfRunAction(const G4Run* aRun) {
     ResultSummary(fEventNum, tarcRun);
   }
   auto fAnalysisManager = G4AnalysisManager::Instance();
-  fAnalysisManager->Write();
-  fAnalysisManager->CloseFile();
+  //  if (fAnalysisManager->IsActive() ) {  // if I use it then ROOT file gets corrupted
+    fAnalysisManager->Write();
+    fAnalysisManager->CloseFile();
+    // }
   G4cout << "END of RUNAction" << G4endl;
 }
 
